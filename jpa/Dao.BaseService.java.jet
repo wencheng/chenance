@@ -1,0 +1,56 @@
+<%@ jet 
+    class="BaseServiceJET" 
+    imports="jp.xet.jiemamy.porter.util.StringUtils
+             jp.xet.jiemamy.core.model.entity.TableModel
+			 "
+%>
+<%
+TableModel table = (TableModel)argument;
+String name = StringUtils.toJavaClassName(table.getName(),"t_");
+String packagename = "center";
+%>
+package jp.co.tanakadenshi.pams.<%=packagename%>.entity.service.impl.base;
+
+import java.util.List;
+import java.util.Date;
+import javax.persistence.Query;
+import jp.co.tanakadenshi.pams.<%=packagename%>.entity.<%=name%>;
+import jp.co.tanakadenshi.pams.<%=packagename%>.entity.service.I<%=name%>Service;
+
+/**
+ * <%=table.getLogicalName()%>'s DAO
+ */
+public abstract class <%=name%>BaseService extends BaseService implements I<%=name%>Service {
+
+    @SuppressWarnings("unchecked")
+	public List<<%=name%>> findAll() {
+        Query query = em.createQuery("SELECT e FROM <%=name%> e WHERE is_deleted = 0");
+        return query.getResultList();
+    }
+
+    public void save(<%=name%> entity) {
+        if (entity.getId() == null) {
+            // new
+            entity.setInsertDatetime(new Date());
+            em.persist(entity);
+        } else {
+            // update
+            em.merge(entity);
+        }
+    }
+
+    public void remove(Integer id, String updater) {
+        <%=name%> entity = find(id);
+        if (entity != null) {
+            //em.remove(entity);
+            entity.setDeleted(true);
+            entity.setUpdater(updater);
+            em.merge(entity);
+        }
+    }
+
+    public <%=name%> find(Integer id) {
+        return em.find(<%=name%>.class, id);
+    }
+
+}
