@@ -1,26 +1,26 @@
 <%@ jet 
-    class="BaseServiceJET" 
+    class="ServiceJET" 
     imports="jp.xet.jiemamy.porter.util.StringUtils
              jp.xet.jiemamy.core.model.entity.TableModel
 			 "
 %>
 <%
-TableModel table = (TableModel)argument;
-String name = StringUtils.toJavaClassName(table.getName(),"t_");
-String packagename = "center";
+Object[] args = (Object[])argument; 
+TableModel table = (TableModel)args[0];
+String name = StringUtils.toJavaClassName(table.getName(),(String)args[2]);
+String packagename = (String)args[1];
 %>
-package jp.co.tanakadenshi.pams.<%=packagename%>.entity.service.impl.base;
+package <%=packagename%>;
 
 import java.util.List;
 import java.util.Date;
 import javax.persistence.Query;
-import jp.co.tanakadenshi.pams.<%=packagename%>.entity.<%=name%>;
-import jp.co.tanakadenshi.pams.<%=packagename%>.entity.service.I<%=name%>Service;
+import cn.sh.fang.chenance.data.entity.<%=name%>;
 
 /**
  * <%=table.getLogicalName()%>'s DAO
  */
-public abstract class <%=name%>BaseService extends BaseService implements I<%=name%>Service {
+public class <%=name%>Service extends BaseService {
 
     @SuppressWarnings("unchecked")
 	public List<<%=name%>> findAll() {

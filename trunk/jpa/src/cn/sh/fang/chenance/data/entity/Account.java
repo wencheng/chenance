@@ -1,4 +1,4 @@
-package cn.sh.fang.chinance.data.entity;
+package cn.sh.fang.chenance.data.entity;
 
 import javax.persistence.*;
 
@@ -7,7 +7,7 @@ import javax.persistence.*;
  */
 @Table(name="t_account")
 @Entity
-public class Account {
+public class Account extends BaseEntity {
 
     /**  */
     @Id
