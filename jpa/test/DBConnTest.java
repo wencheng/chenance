@@ -7,7 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-import cn.sh.fang.chinance.data.entity.Account;
+import cn.sh.fang.chenance.data.entity.Account;
 
 public class DBConnTest {
 	EntityManagerFactory factory;

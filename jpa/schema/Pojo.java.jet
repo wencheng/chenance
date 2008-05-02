@@ -1,0 +1,193 @@
+<%@ jet 
+    class="PojoJET" 
+    imports="jp.xet.jiemamy.porter.util.StringUtils
+             jp.xet.jiemamy.core.model.entity.TableModel
+             jp.xet.jiemamy.core.model.definition.ColumnModel
+             jp.xet.jiemamy.core.model.relation.*
+             java.util.List
+             java.util.HashMap
+             "
+%>
+<%
+    Object[] args = (Object[]) argument;
+    TableModel table = (TableModel) args[0];
+    String packagename = (String) args[1];
+    String prefix = (String) args[2];
+    String priType = null;
+
+    String classname = StringUtils.toJavaClassName(table.getName(),prefix);
+    List<ColumnModel> cols = table.getColumns();
+    HashMap<ColumnModel,String> types = new HashMap<ColumnModel,String>(); 
+    HashMap<ColumnModel,String> names = new HashMap<ColumnModel,String>(); 
+%>
+<% if (packagename != null && packagename.length() > 0) {%>
+package <%=packagename%>;
+<% } %>
+
+import javax.persistence.*;
+
+<% if (org.apache.commons.lang.StringUtils.isEmpty(table.getLogicalName()) == false) {%>
+/**
+ * <%=table.getLogicalName()%>
+ */
+<% } %>
+@Table(name="<%=table.getName()%>")
+@Entity
+public class <%=classname%> extends BaseEntity {
+
+<%
+    List<ColumnModel> pri = table.getPrimaryKeyColumns();
+    // Composite Primary Key
+    if (pri.size() > 1) {
+%>
+    public class <%=classname%>Pk {
+    
+<%
+    for (ColumnModel def : pri) {
+        String type = StringUtils.toJavaType(def.getDataType());
+        String name = StringUtils.toJavaName(def.getName());
+        types.put(def,type);
+        names.put(def,name);
+%>
+<%  if (org.apache.commons.lang.StringUtils.isEmpty(def.getLogicalName()) == false) {%>
+        /** <%=def.getLogicalName()%> */
+<%  } %>
+        @Column(name="<%=def.getName()%>")
+        private <%=type%> <%=name%>;
+        
+<%  } %>
+<%  for (ColumnModel def : pri) {
+        String type = types.get(def);
+        String name = names.get(def);
+        types.remove(def);
+        names.remove(def);
+        String cname = StringUtils.toCapital(name);
+%>
+        public <%=type%> get<%=cname%>() {
+            return this.<%=name%>;
+        }
+    
+        public void set<%=cname%>(<%=type%> <%=name%>) {
+            this.<%=name%> = <%=name%>;
+        }
+    
+<%  } %>
+    }
+
+    /** 主キー */
+    @EmbeddedId
+    private <%=classname%>Pk id;
+    
+<%
+    priType = classname+"Pk";
+    types.put(pri.get(0),classname+"Pk");
+    names.put(pri.get(0),"id");
+
+    // Single Primary Key
+    } else if (pri.size() == 1) {
+        ColumnModel def = pri.get(0);
+        String type = StringUtils.toJavaType(def.getDataType());
+        String name = StringUtils.toJavaName(def.getName());
+        types.put(def,type);
+        names.put(def,name);
+%>
+<%  if (org.apache.commons.lang.StringUtils.isEmpty(def.getLogicalName()) == false) {%>
+    /** <%=def.getLogicalName()%> */
+<%  } %>
+    @Id
+    private <%=types.get(def)%> <%=names.get(def)%>;
+    
+<%
+    }
+    
+    // Foriegn Keys
+    List<AbstractConnectionModel> rels = table.getSourceConnections();
+    for (AbstractConnectionModel fk : rels) {
+        if (fk instanceof ForeignKeyModel) {
+            List<ForeignKeyMapping> maps = ((ForeignKeyModel)fk).getMappings();
+            String type = StringUtils.toCapital(StringUtils.toJavaName(maps.get(0).getReferenceColumn().getAssignedTable().getName(),prefix));
+            types.put(maps.get(0).getConstraintColumn(),type);
+            String name = maps.size() > 1 ?
+                    StringUtils.toJavaName(maps.get(0).getReferenceColumn().getAssignedTable().getName(),prefix) :
+                    StringUtils.toJavaName(maps.get(0).getConstraintColumn().getName());
+            if (name.endsWith("Id")) {
+                name = name.substring(0,name.length()-2);
+            }
+            names.put(maps.get(0).getConstraintColumn(),name);
+%>
+<%  if (org.apache.commons.lang.StringUtils.isEmpty(maps.get(0).getReferenceColumn().getAssignedTable().getLogicalName()) == false) {%>
+    /** <%=maps.get(0).getReferenceColumn().getAssignedTable().getLogicalName()%> */
+<%  } %>
+    @ManyToOne(fetch=FetchType.LAZY, targetEntity=<%=type%>.class)
+<%
+            if (maps.size() == 1) {
+                ForeignKeyMapping map = maps.get(0);
+%>
+    @JoinColumn(name="<%=map.getConstraintColumn().getName()%>", referencedColumnName="<%=map.getReferenceColumn().getName()%>")
+<%
+            } else {
+%>
+    @JoinColumns ({
+<%
+                for (ForeignKeyMapping map : maps) {%>
+        @JoinColumn(name="<%=map.getConstraintColumn().getName()%>", referencedColumnName="<%=map.getReferenceColumn().getName()%>"),
+<%              }%>
+    })
+<%          }%>
+    private <%=type%> <%=name%>;
+
+<%      }
+    }
+
+    // All other columns
+    for (ColumnModel def : cols) {
+      if (pri.contains(def)||def.isForeignKeyColumn()) {
+          continue;
+      }
+      String type = StringUtils.toJavaType(def.getDataType());
+      String name = StringUtils.toJavaName(def.getName());
+      types.put(def,type);
+      names.put(def,name);
+%>
+<%  if (org.apache.commons.lang.StringUtils.isEmpty(def.getLogicalName()) == false) {%>
+    /** <%=def.getLogicalName()%> */
+<%  } %>
+    @Column(name="<%=def.getName()%>")
+    private <%=types.get(def)%> <%=names.get(def)%>;
+
+<%  }  // end of All other columns
+
+    // Compoiste PK Getter/Setter
+    if (priType != null) {
+        String name = "id";
+        String cname = StringUtils.toCapital(name);
+%>
+    public <%=priType%> get<%=cname%>() {
+        return this.<%=name%>;
+    }
+    
+    public void set<%=cname%>(<%=priType%> <%=name%>) {
+        this.<%=name%> = <%=name%>;
+    }
+
+<%
+    }
+
+    // Other Getter/Setters
+    for (ColumnModel k : types.keySet()) {
+        String type = types.get(k);
+        String name = names.get(k);
+        String cname = StringUtils.toCapital(name);
+%>
+    public <%=type%> get<%=cname%>() {
+        return this.<%=name%>;
+    }
+    
+    public void set<%=cname%>(<%=type%> <%=name%>) {
+        this.<%=name%> = <%=name%>;
+    }
+    
+<%
+    } // end of getter/setter
+%>
+}

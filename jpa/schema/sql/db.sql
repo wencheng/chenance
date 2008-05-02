@@ -1,6 +1,6 @@
 /**
  * SQL genereted by Jiemamy
- * Create: 2008/04/30 19:10:02
+ * Create: 2008/05/02 17:23:23
  */
 
 -- define: t_account
@@ -28,8 +28,16 @@ CREATE TABLE t_category (
 
 INSERT INTO t_category (id, name, description)
   VALUES (1000000, 'debit', '');
+INSERT INTO t_category (id, name)
+  VALUES (1010000, 'êHîÔ');
+INSERT INTO t_category (id, name)
+  VALUES (1010100, 'äOêH');
 INSERT INTO t_category (id, name, description)
   VALUES (2000000, 'credit', '');
+INSERT INTO t_category (id, name)
+  VALUES (2010000, 'ããó^');
+INSERT INTO t_category (id, name)
+  VALUES (2010100, 'âÔé–');
 INSERT INTO t_category (id, name, description)
   VALUES (3000000, 'transfer', '');
 

@@ -4,7 +4,8 @@
 			 "
 %>
 <%
-TableModel table = (TableModel)argument;
+Object[] args = (Object[])argument; 
+TableModel table = (TableModel)args[0];
 %>
 ALTER TABLE <%=table.getName()%> ADD COLUMN (
   insert_datetime DATETIME NOT NULL,
