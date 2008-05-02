@@ -1,4 +1,4 @@
-package cn.sh.fang.gtp.entity;
+
 
 import java.util.HashMap;
 
@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+
+import cn.sh.fang.chinance.data.entity.Account;
 
 public class DBConnTest {
 	EntityManagerFactory factory;

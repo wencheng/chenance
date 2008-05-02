@@ -1,4 +1,4 @@
-package cn.sh.fang.gtp.entity;
+package cn.sh.fang.chinance.data.entity;
 
 
 import java.io.Serializable;
