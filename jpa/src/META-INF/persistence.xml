@@ -6,12 +6,18 @@
 	<persistence-unit name="gfp-swt-jpa"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>cn.sh.fang.gtp.entity.Account</class>
-		<class>cn.sh.fang.gtp.entity.BaseEntity</class>
-		<class>cn.sh.fang.gtp.entity.Category</class>
-		<class>cn.sh.fang.gtp.entity.Investment</class>
-		<class>cn.sh.fang.gtp.entity.Transaction</class>
-		<class>cn.sh.fang.gtp.entity.TransactionBreakdown</class>
+		<class>
+		cn.sh.fang.chinance.data.entity.Account</class>
+		<class>
+		cn.sh.fang.chinance.data.entity.BaseEntity</class>
+		<class>
+		cn.sh.fang.chinance.data.entity.Category</class>
+		<class>
+		cn.sh.fang.chinance.data.entity.Investment</class>
+		<class>
+		cn.sh.fang.chinance.data.entity.Transaction</class>
+		<class>
+		cn.sh.fang.chinance.data.entity.TransactionBreakdown</class>
 		<properties>
 			<property name="hibernate.connection.username" value="sa" />
 			<property name="hibernate.connection.password" value="" />

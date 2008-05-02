@@ -1,7 +1,8 @@
-#Wed Apr 30 18:12:06 JST 2008
+#Fri May 02 10:12:50 JST 2008
 eclipse.preferences.version=1
-encoding//src/cn/sh/fang/gtp/entity/Account.java=UTF-8
-encoding//src/cn/sh/fang/gtp/entity/Category.java=UTF-8
-encoding//src/cn/sh/fang/gtp/entity/Investment.java=UTF-8
-encoding//src/cn/sh/fang/gtp/entity/Transaction.java=UTF-8
-encoding//src/cn/sh/fang/gtp/entity/TransactionBreakdown.java=UTF-8
+encoding//src/cn/sh/fang/chinance/data/entity/Account.java=UTF-8
+encoding//src/cn/sh/fang/chinance/data/entity/Category.java=UTF-8
+encoding//src/cn/sh/fang/chinance/data/entity/Investment.java=UTF-8
+encoding//src/cn/sh/fang/chinance/data/entity/Transaction.java=UTF-8
+encoding//src/cn/sh/fang/chinance/data/entity/TransactionBreakdown.java=UTF-8
+instance/org.eclipse.core.net/org.eclipse.core.net.hasMigrated=true
