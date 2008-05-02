@@ -1,4 +1,4 @@
-package cn.sh.fang.gfp.swt;
+package cn.sh.fang.chenance;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -43,14 +43,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import cn.sh.fang.gfp.swt.listener.FileOpenListener;
-import cn.sh.fang.gfp.swt.provider.BalanceSheetCellModifier;
-import cn.sh.fang.gfp.swt.provider.BalanceSheetContentProvider;
-import cn.sh.fang.gfp.swt.provider.BalanceSheetLabelProvider;
-import cn.sh.fang.gfp.swt.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.gfp.swt.util.CalendarCellEditor;
-import cn.sh.fang.gfp.swt.util.TableViewerEx;
-import cn.sh.fang.gtp.entity.Category;
+import cn.sh.fang.chenance.listener.FileOpenListener;
+import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
+import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
+import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
+import cn.sh.fang.chenance.util.swt.TableViewerEx;
+import cn.sh.fang.chinance.data.entity.Category;
 
 
 /**

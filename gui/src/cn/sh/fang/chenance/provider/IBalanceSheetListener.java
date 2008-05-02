@@ -1,12 +1,6 @@
-package cn.sh.fang.gfp.swt.provider;
+package cn.sh.fang.chenance.provider;
 
-import cn.sh.fang.gtp.entity.Transaction;
-/*
- * (c) Copyright Mirasol Op'nWorks Inc. 2002, 2003. 
- * http://www.opnworks.com
- * Created on Jun 11, 2003 by lgauthier@opnworks.com
- *
- */
+import cn.sh.fang.chinance.data.entity.Transaction;
 
 public interface IBalanceSheetListener {
 	

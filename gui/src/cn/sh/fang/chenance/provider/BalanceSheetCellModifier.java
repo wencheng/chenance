@@ -1,4 +1,4 @@
-package cn.sh.fang.gfp.swt.provider;
+package cn.sh.fang.chenance.provider;
 
 import java.text.NumberFormat;
 import java.util.Date;
@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
-import cn.sh.fang.gfp.swt.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.gtp.entity.Transaction;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
+import cn.sh.fang.chinance.data.entity.Transaction;
 
 public class BalanceSheetCellModifier implements ICellModifier {
 

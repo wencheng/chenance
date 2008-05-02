@@ -1,4 +1,4 @@
-package cn.sh.fang.gfp.swt.provider;
+package cn.sh.fang.chenance.provider;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +9,7 @@ import java.util.Set;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import cn.sh.fang.gtp.entity.Transaction;
+import cn.sh.fang.chinance.data.entity.Transaction;
 
 /**
  * Class that plays the role of the domain model in the TableViewerExample In
