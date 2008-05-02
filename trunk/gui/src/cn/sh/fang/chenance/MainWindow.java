@@ -14,6 +14,8 @@ import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
@@ -43,6 +45,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.listener.FileOpenListener;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
@@ -50,7 +53,6 @@ import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
 import cn.sh.fang.chenance.util.swt.TableViewerEx;
-import cn.sh.fang.chinance.data.entity.Category;
 
 
 /**
@@ -74,6 +76,7 @@ public class MainWindow {
 
 	private Table table;
 	private TableViewer tableViewer;
+	BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
 
 	/**
 	 * @param args
@@ -268,7 +271,7 @@ public class MainWindow {
 		cols[Column.DATE.ordinal()].setText("日付");
 		cols[Column.DATE.ordinal()].setAlignment(SWT.CENTER);
 		cols[Column.CATEGORY.ordinal()].setText("費目");
-		cols[Column.CATEGORY.ordinal()].setWidth(100);
+		cols[Column.CATEGORY.ordinal()].setWidth(150);
 		cols[Column.DEBIT.ordinal()].setText("支払");
 		cols[Column.DEBIT.ordinal()].setAlignment(SWT.RIGHT);
 		cols[Column.CREDIT.ordinal()].setText("預入");
@@ -285,8 +288,14 @@ public class MainWindow {
 		table.setMenu(menu);
 
 		// ボタン
-		Button button4 = new Button(composite, SWT.NULL);
-		button4.setText("追加");
+		Button btnAdd = new Button(composite, SWT.NULL);
+		btnAdd.setText("追加");
+		btnAdd.addSelectionListener(new SelectionAdapter() {
+	        // Add a task to the ExampleTaskList and refresh the view
+		    public void widgetSelected(SelectionEvent e) {
+	            bs.addTask();
+	        }
+	    });
 
 		// 残高ラベル
 		Label total = new Label(composite, SWT.RIGHT);
@@ -294,8 +303,6 @@ public class MainWindow {
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("残高: ");
 
-		//new SWTCalendar(composite);
-		
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
 		composite.setLayout(formLayout);
@@ -306,7 +313,7 @@ public class MainWindow {
 		setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20, SWT.NONE).width = 80;
 		
 		FormData layoutData = setFormLayoutData(tableTree, listDate, 10, SWT.NONE, listDate, 0, SWT.LEFT);
-		layoutData.height = 300;
+		layoutData.height = 400;
 		layoutData.width = 175;
 
 		setFormLayoutDataRight(customDur, listDate, 0, SWT.TOP, table, 0, SWT.RIGHT).width = 80;
@@ -314,10 +321,10 @@ public class MainWindow {
 		setFormLayoutDataRight(oneWeek, listDate, 0, SWT.TOP, oneMonth, -20, SWT.LEFT).width = 80;
 		setFormLayoutDataRight(oneDay, listDate, 0, SWT.TOP, oneWeek, -20, SWT.LEFT).width = 80;
 
-		setFormLayoutData(table, listDate, 10, tableTree, 20).height = 300;
+		setFormLayoutData(table, listDate, 10, tableTree, 20).height = 400;
 		table.setSize(tabFolder.getSize());
 
-		setFormLayoutData(button4, table, 0, SWT.TOP, table, 10, SWT.NONE).width = 80;
+		setFormLayoutData(btnAdd, table, 0, SWT.TOP, table, 10, SWT.NONE).width = 80;
 		setFormLayoutDataRight(total, table, 10, SWT.NONE, table, -20, SWT.RIGHT).width = 80;
 		setFormLayoutDataRight(label, table, 10, SWT.NONE, total, -100, SWT.RIGHT);
 
@@ -376,6 +383,7 @@ public class MainWindow {
 
 	private void createTableViewer() {
 		tableViewer = new TableViewerEx(table);
+		bs.setTableViewer(tableViewer);
 		tableViewer.setUseHashlookup(true);
 
 		tableViewer.setColumnProperties(Column.stringValues());
@@ -432,11 +440,10 @@ public class MainWindow {
 		editors[Column.CATEGORY.ordinal()] = e;
 
 		TextCellEditor textEditor = new TextCellEditor(table);
+		((Text) textEditor.getControl()).setTextLimit(9);
 		((Text) textEditor.getControl()).addVerifyListener(
 		new VerifyListener() {
 			public void verifyText(VerifyEvent e) {
-				// Here, we could use a RegExp such as the following
-				// if using JRE1.4 such as e.doit = e.text.matches("[\\-0-9]*");
 				e.doit = "0123456789".indexOf(e.text) >= 0;
 			}
 		});
@@ -461,7 +468,6 @@ public class MainWindow {
 		// tableViewer.setSorter(new ExampleTaskSorter(
 		// ExampleTaskSorter.DESCRIPTION));
 
-		BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
 		tableViewer.setContentProvider(bs);
 		tableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
 		tableViewer.setInput(bs);

@@ -8,8 +8,8 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
+import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.chinance.data.entity.Transaction;
 
 public class BalanceSheetCellModifier implements ICellModifier {
 
@@ -45,6 +45,9 @@ public class BalanceSheetCellModifier implements ICellModifier {
 				--i;
 			result = new Integer(1);
 			break;
+		case DEBIT:
+			result = t.getDebit() + "";
+			break;
 		case CREDIT:
 			result = t.getCredit() + "";
 			break;
@@ -74,6 +77,9 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			*/
 		case DATE:
 			t.setDate((Date) value);
+			break;
+		case DEBIT:
+			t.setDebit(Integer.valueOf((String)value));
 			break;
 		case CREDIT:
 			t.setCredit(Integer.valueOf((String)value));
