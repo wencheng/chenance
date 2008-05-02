@@ -9,7 +9,7 @@ package cn.sh.fang.chenance.provider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
-import cn.sh.fang.chinance.data.entity.Transaction;
+import cn.sh.fang.chenance.data.entity.Transaction;
 
 /**
  * Sorter for the TableViewerExample that displays items of type 

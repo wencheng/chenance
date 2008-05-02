@@ -1,21 +1,27 @@
 package cn.sh.fang.chenance.provider;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 
 import cn.sh.fang.chenance.MainWindow;
+import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.ITableLabelProviderEx;
-import cn.sh.fang.chinance.data.entity.Transaction;
 
 
 /**
@@ -53,6 +59,7 @@ public class BalanceSheetLabelProvider
 	}
 	
 	Table table;
+	private HashMap<Transaction,Button> btns = new HashMap<Transaction,Button>();
 	
 	public BalanceSheetLabelProvider(Table table) {
 		this.table = table;
@@ -81,11 +88,11 @@ public class BalanceSheetLabelProvider
 				result = t.getCategory() != null ? t.getCategory().getName() : "";
 				break;
 			case DEBIT:
-				NumberFormat exValue = NumberFormat.getCurrencyInstance(Locale.JAPAN);
+				NumberFormat exValue = NumberFormat.getCurrencyInstance();
 				result = exValue.format(t.getDebit());
 				break;
 			case CREDIT:
-				exValue = NumberFormat.getCurrencyInstance(Locale.JAPAN);
+				exValue = NumberFormat.getCurrencyInstance();
 				result = exValue.format(t.getCredit());
 				break;
 			case DETAIL:
@@ -109,9 +116,34 @@ public class BalanceSheetLabelProvider
 
 	public Button getColumnButton(Object element, int columnIndex) {
 		if (columnIndex == Column.DETAIL.ordinal()) {
-			Button btn = new Button(table, SWT.PUSH);
-			btn.setText("...");
-			return btn;
+			Transaction t = (Transaction)element;
+			Button btn = this.btns.get(t);
+			if ( btn == null ) {
+				final Button b = new Button(table, SWT.PUSH);
+				//b.setText("...");
+				b.setText(btns.size()+"");
+				b.addMouseListener(new MouseAdapter(){
+					@Override
+					public void mouseUp(MouseEvent e) {
+						super.mouseUp(e);
+						if ( e.button == 1 ) {
+							// TODO show detail dialog
+							System.out.println(b);
+						}
+					}
+				});
+				b.addListener(SWT.Move, new Listener(){
+					public void handleEvent(Event e) {
+						if ( e.type == SWT.Move) {
+							System.out.println(b+" moving");
+						}
+					}
+				});
+				btn = b;
+				this.btns.put(t, btn);
+			}
+			
+			return btn; 
 		} else {
 			return null;
 		}

@@ -25,7 +25,7 @@ import org.vafada.swtcalendar.SWTCalendarListener;
 
 public class CalendarCellEditor extends CellEditor implements Listener {
 
-	Shell popup;
+	Composite popup;
 	SWTCalendar cal;
 	Composite parent;
 
@@ -36,13 +36,13 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 
 	@Override
 	protected Control createControl(Composite parent) {
-		popup = new Shell(parent.getShell(),SWT.APPLICATION_MODAL);
-		//popup = new Shell(parent.getShell(),SWT.NO_TRIM);
+		popup = new Shell(parent.getShell(),SWT.APPLICATION_MODAL|SWT.NO_TRIM|SWT.BORDER);
 		popup.setLayout(new RowLayout());
+		
 		cal = new SWTCalendar(popup);
-		
-		
-		cal.addListener(SWT.Move, this);
+
+		//cal.addListener(SWT.Move, this);
+		//cal.addListener(SWT.Resize, this);
 
 		cal.addSWTCalendarListener(new SWTCalendarListener() {
 			public void dateChanged(SWTCalendarEvent event) {
@@ -91,7 +91,10 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 
 	public void handleEvent(Event e) {
 		if ( e.widget == cal ) {
-			cal.setBounds(0,0,222,171);
+			Rectangle rect = cal.getBounds();
+			System.out.println(rect);
+        	cal.setBounds(0,0,222,171);
+        	popup.setVisible(true);
 		}
 	}
 
@@ -105,14 +108,15 @@ public class CalendarCellEditor extends CellEditor implements Listener {
         	Table table = (Table)parent;
         	TableItem ti = table.getItem(new Point(me.x,me.y));
         	Rectangle tiRect = ti.getBounds();
-        	System.out.println("item"+tiRect);
+        	System.out.println("item "+tiRect);
         	Point p = table.toDisplay(tiRect.x,tiRect.y);
         	System.out.println("p "+p);
         	popup.setBounds(p.x+tiRect.width,p.y+tiRect.height,222,171);
-			popup.setVisible(true);
+        	cal.setBounds(0,0,222,171);
+        	popup.setVisible(true);
 		}
 	}
-
+	
 	@Override
 	public void deactivate() {
 		super.deactivate();
@@ -137,7 +141,7 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 	@Override
 	public LayoutData getLayoutData() {
 		LayoutData layoutData = super.getLayoutData();
-		layoutData.minimumWidth = 230;
+		layoutData.minimumWidth = 222;
 		return layoutData;
 	}
 

@@ -25,16 +25,19 @@ package org.vafada.swtcalendar;
 import java.util.Calendar;
 import java.util.Locale;
 
+import org.eclipse.jface.viewers.CellEditor.LayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Spinner;
 
 
@@ -76,7 +79,7 @@ public class SWTCalendar extends Composite {
             setLayout(gridLayout);
         }
 
-        header = new Composite(this, SWT.NONE);
+        header = new Composite(this, SWT.NO_TRIM);
 
         {
             {
@@ -244,13 +247,10 @@ public class SWTCalendar extends Composite {
 	}
 
 	@Override
-	public Point computeSize(int hint, int hint2, boolean changed) {
-		// TODO Auto-generated method stub
-		return super.computeSize(hint, hint2, changed);
-		//header.setBounds(0, 0, 230,180);
-		//return new Point(230,180);
+	public void setBounds(int x, int y, int width, int height) {
+		super.setBounds(0, 0, width, 171);
 	}
-	
+
 	@Override
 	public boolean setFocus() {
 		return this.dayChooser.setFocus();
