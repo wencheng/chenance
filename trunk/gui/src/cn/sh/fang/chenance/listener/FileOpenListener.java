@@ -1,4 +1,4 @@
-package cn.sh.fang.gfp.swt.listener;
+package cn.sh.fang.chenance.listener;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;

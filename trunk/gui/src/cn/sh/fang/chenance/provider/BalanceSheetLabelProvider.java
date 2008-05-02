@@ -1,4 +1,4 @@
-package cn.sh.fang.gfp.swt.provider;
+package cn.sh.fang.chenance.provider;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -12,10 +12,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 
-import cn.sh.fang.gfp.swt.MainWindow;
-import cn.sh.fang.gfp.swt.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.gfp.swt.util.ITableLabelProviderEx;
-import cn.sh.fang.gtp.entity.Transaction;
+import cn.sh.fang.chenance.MainWindow;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
+import cn.sh.fang.chenance.util.swt.ITableLabelProviderEx;
+import cn.sh.fang.chinance.data.entity.Transaction;
 
 
 /**
