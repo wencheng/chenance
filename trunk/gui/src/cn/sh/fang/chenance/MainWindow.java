@@ -114,7 +114,7 @@ public class MainWindow {
 	 */
 	private void createSShell() {
 		sShell = new Shell();
-		sShell.setText("GFP - Personal Finance Manager");
+		sShell.setText("Chenance - Personal Finance Manager");
 		sShell.setSize(1000, 400);
 
 		createMenuBar();
