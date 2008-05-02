@@ -24,51 +24,43 @@ public class Transaction extends BaseEntity {
     private Account account;
 
     /**  */
-    @Column(name="account_id")
-    private Integer accountId;
-
-    /**  */
     @Column(name="_date")
-    private java.util.Date Date;
-
-    /**  */
-    @Column(name="category_id")
-    private Integer categoryId;
+    private java.util.Date Date = new java.util.Date();
 
     /**  */
     @Column(name="debit")
-    private Integer debit;
+    private Integer debit = 0;
 
     /**  */
     @Column(name="credit")
-    private Integer credit;
+    private Integer credit = 0;
 
     /**  */
     @Column(name="is_repeat")
     private Boolean isRepeat;
 
-    public Integer getDebit() {
+    public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
+	public Integer getDebit() {
         return this.debit;
     }
     
     public void setDebit(Integer debit) {
         this.debit = debit;
-    }
-    
-    public Integer getAccountId() {
-        return this.accountId;
-    }
-    
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
-    }
-    
-    public Integer getCategoryId() {
-        return this.categoryId;
-    }
-    
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
     }
     
     public Integer getCredit() {

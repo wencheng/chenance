@@ -1,5 +1,7 @@
 package cn.sh.fang.chenance;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -45,6 +47,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.listener.FileOpenListener;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
@@ -418,23 +421,24 @@ public class MainWindow {
 		editors[Column.DATE.ordinal()] = dateEditor;
 
 		// TODO get categories
-		Category cat1 = new Category();
-		cat1.setId(1010000);
-		cat1.setName("a");
-		Category cat11 = new Category();
-		cat11.setId(1010100);
-		cat11.setName("aa");
-		Category cat2 = new Category();
-		cat2.setId(1020000);
-		cat2.setName("b");
-		Category cat21 = new Category();
-		cat21.setId(1020100);
-		cat21.setName("ba");
-		Category cat3 = new Category();
-		cat3.setId(1030000);
-		cat3.setName("c");
+		CategoryService service = new CategoryService();
+//		Category cat1 = new Category();
+//		cat1.setId(1010000);
+//		cat1.setName("a");
+//		Category cat11 = new Category();
+//		cat11.setId(1010100);
+//		cat11.setName("aa");
+//		Category cat2 = new Category();
+//		cat2.setId(1020000);
+//		cat2.setName("b");
+//		Category cat21 = new Category();
+//		cat21.setId(1020100);
+//		cat21.setName("ba");
+//		Category cat3 = new Category();
+//		cat3.setId(1030000);
+//		cat3.setName("c");
 		ComboBoxCellEditor e = new ComboBoxCellEditor(table,
-				toComboList(new Category[]{cat1,cat11,cat2,cat21,cat3}),
+				toComboList(service.findAll()),
 				SWT.READ_ONLY);
 		e.getLayoutData().minimumWidth = 30;
 		editors[Column.CATEGORY.ordinal()] = e;
@@ -473,15 +477,15 @@ public class MainWindow {
 		tableViewer.setInput(bs);
 	}
 
-	private String[] toComboList(Category[] categories) {
-		String[] ret = new String[categories.length];
+	private String[] toComboList(List<Category> categories) {
+		String[] ret = new String[categories.size()];
 		Category cat;
-		for ( int i = 0; i < categories.length; i++ ) {
-			cat = categories[i];
+		for ( int i = 0; i < categories.size(); i++ ) {
+			cat = categories.get(i);
 			if ( cat.getId()%10000 == 0 ) {
 				ret[i] = " + " + cat.getName();
 			} else {
-				ret[i] = " +-- " + cat.getName();
+				ret[i] = " |--- " + cat.getName();
 			}
 		}
 		return ret;
