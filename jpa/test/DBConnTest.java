@@ -47,7 +47,7 @@ public class DBConnTest {
 		try {
 			main.init();
 			main.create();
-		} catch (RuntimeException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
 			main.shutdown();
