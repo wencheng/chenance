@@ -13,6 +13,11 @@ Add your content here.  Format your content with:
   * Headings, paragraphs, and lists
   * Automatic links to other wiki pages
 
+Subclipse
 http://subclipse.tigris.org/update_1.2.x
 
+m2eclipse
 http://m2eclipse.sonatype.org/update/
+
+Jigloo
+http://cloudgarden1.com/update-site
