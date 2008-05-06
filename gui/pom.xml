@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>Chenance-gui</groupId>
+	<artifactId>Chenance-gui</artifactId>
+	<name></name>
+	<version>0.0.1-SNAPSHOT</version>
+	<description></description>
+	<repositories>
+		<repository>
+			<id>ibiblio.org</id>
+			<name>
+				ibiblio Mirror of http://repo1.maven.org/maven2/
+			</name>
+			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>commands</artifactId>
+			<version>3.3.0-I20070605-0010</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>swt</artifactId>
+			<version>3.3.0-v3346</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>jface</artifactId>
+			<version>3.3.0-I20070606-0010</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse</groupId>
+					<artifactId>swt</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.eclipse.core</groupId>
+					<artifactId>commands</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.swt.win32.win32</groupId>
+			<artifactId>x86</artifactId>
+			<version>3.3.0-v3346</version>
+		</dependency>
+	</dependencies>
+</project>
