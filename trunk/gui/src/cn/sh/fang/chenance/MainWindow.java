@@ -195,7 +195,7 @@ public class MainWindow {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 		
 		// 概要ツリー
-		TableTree tableTree = new TableTree(composite, SWT.BORDER
+		final TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		Table tttable = tableTree.getTable();
 		tttable.setHeaderVisible(false);
@@ -224,6 +224,7 @@ public class MainWindow {
 			TableTreeItem child = new TableTreeItem(parent, SWT.NONE);
 			child.setText(0, a.getName());
 			child.setText(1, a.getCurrentBalance()+"");
+			child.setData(a);
 			balanceSum += a.getCurrentBalance();
 		}
 		parent.setExpanded(true);
@@ -250,7 +251,7 @@ public class MainWindow {
 		Label lblName = new Label(grp, SWT.NONE);
 		lblName.setText("口座名：");
 		lblName.pack();
-		Text name = new Text(grp, SWT.BORDER);
+		final Text name = new Text(grp, SWT.BORDER);
 		
 		Label lblNamePh = new Label(grp, SWT.NONE);
 		lblNamePh.setText("口座名よみ：");
@@ -314,11 +315,45 @@ public class MainWindow {
 		Label lblMemo = new Label(grp, SWT.NONE);
 		lblMemo.setText("備考：");
 		lblMemo.pack();
-		Text memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		final Text memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		
 		Button save = new Button(grp, SWT.NONE);
 		save.setText("保存");
 
+		// イベント
+		tableTree.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				TableTreeItem i = ((TableTreeItem)e.item);
+				if ( i.getData() instanceof Account ) {
+					Account a = (Account)i.getData();
+					name.setText(a.getName());
+					memo.setText(a.getDescription());
+				}
+			}
+		});
+		save.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				TableTreeItem i = tableTree.getSelection()[0];
+				if ( i.getData() instanceof Account ) {
+					Account a = (Account)i.getData();
+					a.setName(name.getText());
+					a.setDescription(memo.getText());
+					
+					try {
+					AccountService s = new AccountService();
+					s.save(a);
+					} catch(Exception e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
 		composite.setLayout(formLayout);
