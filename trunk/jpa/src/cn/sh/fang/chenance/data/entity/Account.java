@@ -42,12 +42,15 @@ public class Account extends BaseEntity {
     private Integer interest;
 
     /**  */
-    @Column(name="initial_balance")
-    private Integer initialBalance;
+    @Column(name="start_balance")
+    private Integer startBalance;
 
     /**  */
     @Column(name="currency")
     private Integer currency;
+
+    @Column(name="current_balance")
+	private Integer currentBalance;
 
     public String getBankName() {
         return this.bankName;
@@ -81,12 +84,20 @@ public class Account extends BaseEntity {
         this.description = description;
     }
     
-    public Integer getInitialBalance() {
-        return this.initialBalance;
+    public Integer getStartBalance() {
+        return this.startBalance;
     }
     
-    public void setInitialBalance(Integer initialBalance) {
-        this.initialBalance = initialBalance;
+    public void setStartBalance(Integer initialBalance) {
+        this.startBalance = initialBalance;
+    }
+    
+    public Integer getCurrentBalance() {
+        return this.currentBalance;
+    }
+    
+    public void setCurrentBalance(Integer currentBalance) {
+        this.currentBalance = currentBalance;
     }
     
     public Integer getInterest() {
