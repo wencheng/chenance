@@ -22,11 +22,12 @@ public class DBConnTest {
 		/*
 	      <property name="hibernate.connection.url" value="jdbc:h2:tcp://localhost/test"/>
 	      */
-		String filepath = "C:/Users/Wencheng/workspace/gfp swt jpa/h2db/db";
+//		String filepath = "C:/Users/Wencheng/workspace/gfp swt jpa/h2db/db";
+		String filepath = "C:/Users/Wencheng/workspace/jpa/h2db/db";
 		HashMap<String,String> props = new HashMap<String,String>();
 		props.put("hibernate.connection.url", "jdbc:h2:"+filepath);
 		
-		factory = Persistence.createEntityManagerFactory("gfp-swt-jpa", props);
+		factory = Persistence.createEntityManagerFactory("chenance-data", props);
 		manager = factory.createEntityManager();
 	}
 
@@ -43,8 +44,8 @@ public class DBConnTest {
 	public static void main(String[] args) {
 		// TODO code application logic here
 		DBConnTest main = new DBConnTest();
-		main.init();
 		try {
+			main.init();
 			main.create();
 		} catch (RuntimeException ex) {
 			ex.printStackTrace();

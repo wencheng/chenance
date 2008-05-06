@@ -1,4 +1,4 @@
-#Fri May 02 17:45:28 JST 2008
+#Tue May 06 17:23:52 JST 2008
 eclipse.preferences.version=1
 encoding//schema/Pojo.java.jet=UTF-8
 encoding//schema/sql/Account.sql=UTF-8
@@ -16,4 +16,5 @@ encoding//src/cn/sh/fang/chenance/data/entity/Category.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Investment.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Transaction.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/TransactionBreakdown.java=UTF-8
+encoding/<project>=Shift-JIS
 instance/org.eclipse.core.net/org.eclipse.core.net.hasMigrated=true
