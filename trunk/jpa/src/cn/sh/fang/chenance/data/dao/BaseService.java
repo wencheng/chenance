@@ -12,7 +12,7 @@ import javax.persistence.PersistenceContext;
 public abstract class BaseService {
 
 	static EntityManagerFactory factory;
-	protected EntityManager em;
+	static protected EntityManager em;
 	
 	static {
 		String filepath = "C:/Users/Wencheng/workspace/jpa/h2db/db";
@@ -23,7 +23,9 @@ public abstract class BaseService {
 	}
 	
 	public BaseService() {
-		em = factory.createEntityManager();
+		if ( em == null ) {
+			em = factory.createEntityManager();
+		}
 	}
 
     @PersistenceContext
