@@ -19,5 +19,9 @@ http://subclipse.tigris.org/update_1.2.x
 m2eclipse
 http://m2eclipse.sonatype.org/update/
 
+eclipse.ini
+-vm
+C:\Program Files\Java\jdk1.6.0_06\bin\java.exe
+
 Jigloo
 http://cloudgarden1.com/update-site
