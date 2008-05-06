@@ -11,15 +11,18 @@ import javax.persistence.PersistenceContext;
 //@Transactional
 public abstract class BaseService {
 
-	EntityManagerFactory factory;
+	static EntityManagerFactory factory;
 	protected EntityManager em;
 	
-	public BaseService() {
-		String filepath = "C:/Users/Wencheng/Desktop/chenance/jpa/h2db/db";
+	static {
+		String filepath = "C:/Users/Wencheng/workspace/jpa/h2db/db";
 		HashMap<String,String> props = new HashMap<String,String>();
 		props.put("hibernate.connection.url", "jdbc:h2:"+filepath);
 		
 		factory = Persistence.createEntityManagerFactory("chenance-data", props);
+	}
+	
+	public BaseService() {
 		em = factory.createEntityManager();
 	}
 
