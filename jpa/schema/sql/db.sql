@@ -13,11 +13,17 @@ CREATE TABLE t_account (
   bank_account_no VARCHAR(20),
   bank_url VARCHAR(255),
   interest INT,
-  initial_balance INT,
-  currency INT DEFAULT 1
+  start_balance INT DEFAULT 0,
+  currency INT DEFAULT 1,
+  current_balance INT DEFAULT 0
 );
 
-
+INSERT INTO t_account (id, name, description)
+  VALUES (1, '生活費', '家賃、光熱費など');
+INSERT INTO t_account (bank_name, id, name, description)
+  VALUES (NULL, 2, '食費', '食べ物、飲み物');
+INSERT INTO t_account (id, name, description, bank_name)
+  VALUES (3, '銀行貯金', '銀行残高と引き出し履歴', 'いきいき銀行');
 
 -- define: t_category
 CREATE TABLE t_category (

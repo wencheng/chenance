@@ -17,8 +17,8 @@
               <size></size>
               <defaultValue></defaultValue>
               <constraints>
-                <string>primary_key</string>
                 <string>not_null</string>
+                <string>primary_key</string>
               </constraints>
               <check>
                 <name></name>
@@ -58,8 +58,8 @@
               <size>50</size>
               <defaultValue></defaultValue>
               <constraints>
-                <string>unique</string>
                 <string>not_null</string>
+                <string>unique</string>
               </constraints>
               <check>
                 <name></name>
@@ -167,11 +167,11 @@
               <id>2533779805767383919</id>
             </jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
             <jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
-              <name>initial_balance</name>
+              <name>start_balance</name>
               <logicalName></logicalName>
               <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
               <size></size>
-              <defaultValue></defaultValue>
+              <defaultValue>0</defaultValue>
               <constraints/>
               <check>
                 <name></name>
@@ -181,6 +181,24 @@
               <description></description>
               <assignedTable reference="../../.."/>
               <id>3222067711285488854</id>
+            </jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
+            <jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
+              <name>current_balance</name>
+              <logicalName></logicalName>
+              <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
+              <size></size>
+              <defaultValue>0</defaultValue>
+              <constraints>
+                <string>not_null</string>
+              </constraints>
+              <check>
+                <name></name>
+                <definition></definition>
+                <id>746126614074588452</id>
+              </check>
+              <description></description>
+              <assignedTable reference="../../.."/>
+              <id>8911483223628588130</id>
             </jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
             <jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
               <name>currency</name>
@@ -201,7 +219,99 @@
           </columns>
           <indexes/>
           <checks/>
-          <records/>
+          <records>
+            <jp.xet.jiemamy.core.model.entity.record.RecordModel>
+              <record class="linked-hash-map">
+                <entry>
+                  <long>8762994186082145207</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>1</value>
+                    <id>8811476365945280142</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>8107781891345818355</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>生活費</value>
+                    <id>5098853705832772358</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>5613473447181766465</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>家賃、光熱費、交通費など</value>
+                    <id>4935307973220273996</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+              </record>
+              <id>2182695791702110966</id>
+            </jp.xet.jiemamy.core.model.entity.record.RecordModel>
+            <jp.xet.jiemamy.core.model.entity.record.RecordModel>
+              <record class="linked-hash-map">
+                <entry>
+                  <long>4279075087201212091</long>
+                  <jp.xet.jiemamy.core.model.entity.record.NullRecordValueModel>
+                    <id>7225407792277523241</id>
+                  </jp.xet.jiemamy.core.model.entity.record.NullRecordValueModel>
+                </entry>
+                <entry>
+                  <long>8762994186082145207</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>2</value>
+                    <id>7489081724320335619</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>8107781891345818355</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>食費</value>
+                    <id>5880536722755069599</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>5613473447181766465</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>毎日飲食に消費したお金</value>
+                    <id>2017917348453197422</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+              </record>
+              <id>8764075350115541252</id>
+            </jp.xet.jiemamy.core.model.entity.record.RecordModel>
+            <jp.xet.jiemamy.core.model.entity.record.RecordModel>
+              <record class="linked-hash-map">
+                <entry>
+                  <long>8762994186082145207</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>3</value>
+                    <id>5916308780258910783</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>8107781891345818355</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>銀行貯金</value>
+                    <id>8410847245488919207</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>5613473447181766465</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>銀行残高や引き出しの履歴</value>
+                    <id>6668129605543680452</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+                <entry>
+                  <long>4279075087201212091</long>
+                  <jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                    <value>いきいき銀行</value>
+                    <id>8446169119504498216</id>
+                  </jp.xet.jiemamy.core.model.entity.record.StandardRecordValueModel>
+                </entry>
+              </record>
+              <id>3986185596154695585</id>
+            </jp.xet.jiemamy.core.model.entity.record.RecordModel>
+          </records>
           <options/>
           <name>t_account</name>
           <logicalName></logicalName>
@@ -214,7 +324,7 @@
               <y>33</y>
             </position>
             <width>230</width>
-            <height>273</height>
+            <height>258</height>
           </constraint>
           <sourceConnections/>
           <targetConnections>
@@ -247,8 +357,8 @@
                           <size></size>
                           <defaultValue></defaultValue>
                           <constraints>
-                            <string>primary_key</string>
                             <string>not_null</string>
+                            <string>primary_key</string>
                           </constraints>
                           <check>
                             <name></name>
@@ -402,8 +512,8 @@
                           <size></size>
                           <defaultValue></defaultValue>
                           <constraints>
-                            <string>primary_key</string>
                             <string>not_null</string>
+                            <string>primary_key</string>
                           </constraints>
                           <check>
                             <name></name>
@@ -570,8 +680,8 @@
                     <size></size>
                     <defaultValue></defaultValue>
                     <constraints>
-                      <string>primary_key</string>
                       <string>not_null</string>
+                      <string>primary_key</string>
                     </constraints>
                     <check>
                       <name></name>
@@ -766,8 +876,8 @@
                           <size></size>
                           <defaultValue></defaultValue>
                           <constraints>
-                            <string>primary_key</string>
                             <string>not_null</string>
+                            <string>primary_key</string>
                           </constraints>
                           <check>
                             <name></name>
@@ -1039,8 +1149,8 @@
                                 <size></size>
                                 <defaultValue></defaultValue>
                                 <constraints>
-                                  <string>primary_key</string>
                                   <string>not_null</string>
+                                  <string>primary_key</string>
                                 </constraints>
                                 <check>
                                   <name></name>
