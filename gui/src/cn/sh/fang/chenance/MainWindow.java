@@ -421,7 +421,7 @@ public class MainWindow {
 		editors[Column.DATE.ordinal()] = dateEditor;
 
 		// TODO get categories
-		CategoryService service = new CategoryService();
+//		CategoryService service = new CategoryService();
 //		Category cat1 = new Category();
 //		cat1.setId(1010000);
 //		cat1.setName("a");
@@ -438,7 +438,8 @@ public class MainWindow {
 //		cat3.setId(1030000);
 //		cat3.setName("c");
 		ComboBoxCellEditor e = new ComboBoxCellEditor(table,
-				toComboList(service.findAll()),
+//				toComboList(service.findAll()),
+				new String[]{},
 				SWT.READ_ONLY);
 		e.getLayoutData().minimumWidth = 30;
 		editors[Column.CATEGORY.ordinal()] = e;
