@@ -90,7 +90,7 @@ public class MainWindow {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO ©“®¶¬‚³‚ê‚½ƒƒ\ƒbƒhEƒXƒ^ƒu
+		// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸãƒ¡ã‚½ãƒƒãƒ‰ãƒ»ã‚¹ã‚¿ãƒ–
 		/*
 		 * Before this is run, be sure to set up the launch configuration
 		 * (Arguments->VM Arguments) for the correct SWT library path in order
@@ -181,12 +181,12 @@ public class MainWindow {
 	private void createTabFolder() {
 		tabFolder = new TabFolder(sShell, SWT.TOP | SWT.BORDER);
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
-		item1.setText("—š—ğ");
+		item1.setText("å±¥æ­´");
 		item1.setControl(getBalanceSheetTabControl(tabFolder));
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
-		item2.setText("“Š‘");
+		item2.setText("æŠ•è³‡");
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
-		item3.setText("ŒûÀ");
+		item3.setText("å£åº§");
 		item3.setControl(getAccountTabControl(tabFolder));
 		tabFolder.setSize(sShell.getSize());
 	}
@@ -194,7 +194,7 @@ public class MainWindow {
 	private Control getAccountTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 		
-		// ŠT—vƒcƒŠ[
+		// æ¦‚è¦ãƒ„ãƒªãƒ¼
 		final TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		Table tttable = tableTree.getTable();
@@ -217,7 +217,7 @@ public class MainWindow {
 		TableColumn col1 = new TableColumn(tttable, SWT.LEFT);
 		TableColumn col2 = new TableColumn(tttable, SWT.RIGHT);
 		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
-		parent.setText(0, "ŒûÀ");
+		parent.setText(0, "å£åº§");
 		parent.setText(1, "");
 		int balanceSum = 0;
 		for ( Account a : accounts ) {
@@ -229,7 +229,7 @@ public class MainWindow {
 		}
 		parent.setExpanded(true);
 		TableTreeItem sum = new TableTreeItem(tableTree, SWT.NONE);
-		sum.setText(0, "c‚‚Ì‡Œv");
+		sum.setText(0, "æ®‹é«˜ã®åˆè¨ˆ");
 		sum.setText(1, balanceSum+"");
 		col1.pack();
 		col1.setResizable(false);
@@ -244,30 +244,30 @@ public class MainWindow {
 		parent.setFont(newFont);
 		sum.setFont(newFont);
 
-		// ƒtƒH[ƒ€
+		// ãƒ•ã‚©ãƒ¼ãƒ 
 		Group grp = new Group(composite, SWT.NONE);
-		grp.setText("ŒûÀî•ñ");
+		grp.setText("å£åº§æƒ…å ±");
 
 		Label lblName = new Label(grp, SWT.NONE);
-		lblName.setText("ŒûÀ–¼F");
+		lblName.setText("å£åº§åï¼š");
 		lblName.pack();
 		final Text name = new Text(grp, SWT.BORDER);
 		
 		Label lblNamePh = new Label(grp, SWT.NONE);
-		lblNamePh.setText("ŒûÀ–¼‚æ‚İF");
+		lblNamePh.setText("å£åº§åã‚ˆã¿ï¼š");
 		lblNamePh.pack();
 		Text namePh = new Text(grp, SWT.BORDER);
 
 		Label lblType = new Label(grp, SWT.NONE);
-		lblType.setText("ŒûÀí—ŞF");
+		lblType.setText("å£åº§ç¨®é¡ï¼š");
 		lblType.pack();
 		Combo type = new Combo(grp, SWT.READ_ONLY);
-		type.setItems(new String[]{"Œ»‹à","—a‹à","ƒJ[ƒh","“Š‘"});
+		type.setItems(new String[]{"ç¾é‡‘","é é‡‘","ã‚«ãƒ¼ãƒ‰","æŠ•è³‡"});
 		type.pack();
 		type.select(0);
 
 		Label lblCurrency = new Label(grp, SWT.NONE);
-		lblCurrency.setText("’Ê‰İF");
+		lblCurrency.setText("é€šè²¨ï¼š");
 		lblCurrency.pack();
 		Combo currency = new Combo(grp, SWT.READ_ONLY);
 		currency.setItems(new String[]{"USD","JPY","EUD","GBP","RMB"});
@@ -275,27 +275,27 @@ public class MainWindow {
 		currency.select(1);
 
 		Label lblDay = new Label(grp, SWT.NONE);
-		lblDay.setText("’÷Ø“úF");
+		lblDay.setText("ç· åˆ‡æ—¥ï¼š");
 		lblDay.pack();
 		Text day = new Text(grp, SWT.BORDER);
 
 		Label lblBankName = new Label(grp, SWT.NONE);
-		lblBankName.setText("‹âs–¼F");
+		lblBankName.setText("éŠ€è¡Œåï¼š");
 		lblBankName.pack();
 		Text bankName = new Text(grp, SWT.BORDER);
 
 		Label lblBranchName = new Label(grp, SWT.NONE);
-		lblBranchName.setText("x“X–¼F");
+		lblBranchName.setText("æ”¯åº—åï¼š");
 		lblBranchName.pack();
 		Text branchName = new Text(grp, SWT.BORDER);
 
 		Label lblBankNo = new Label(grp, SWT.NONE);
-		lblBankNo.setText("ŒûÀ”Ô†F");
+		lblBankNo.setText("å£åº§ç•ªå·ï¼š");
 		lblBankNo.pack();
 		Text bankNo = new Text(grp, SWT.BORDER);
 		
 		Label lblInterest = new Label(grp, SWT.NONE);
-		lblInterest.setText("—˜‘§—¦F");
+		lblInterest.setText("åˆ©æ¯ç‡ï¼š");
 		lblInterest.pack();
 		Text interest = new Text(grp, SWT.BORDER | SWT.RIGHT);
 		interest.setText("00.00");
@@ -304,23 +304,23 @@ public class MainWindow {
 		lblInterestR.setText("%");
 		lblInterestR.pack();
 		Combo interestPer = new Combo(grp, SWT.READ_ONLY);
-		interestPer.setItems(new String[]{"”N","Œ"});
+		interestPer.setItems(new String[]{"å¹´","æœˆ"});
 		interestPer.select(0);
 		
 		Label lblStart = new Label(grp, SWT.NONE);
-		lblStart.setText("ŠJnc‚F");
+		lblStart.setText("é–‹å§‹æ®‹é«˜ï¼š");
 		lblStart.pack();
 		Text start = new Text(grp, SWT.BORDER);
 
 		Label lblMemo = new Label(grp, SWT.NONE);
-		lblMemo.setText("”õlF");
+		lblMemo.setText("å‚™è€ƒï¼š");
 		lblMemo.pack();
 		final Text memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		
 		Button save = new Button(grp, SWT.NONE);
-		save.setText("•Û‘¶");
+		save.setText("ä¿å­˜");
 
-		// ƒCƒxƒ“ƒg
+		// ã‚¤ãƒ™ãƒ³ãƒˆ
 		tableTree.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -354,7 +354,7 @@ public class MainWindow {
 		});
 		
 		
-		// ƒŒƒCƒAƒEƒg
+		// ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
 		FormLayout formLayout = new FormLayout();
 		composite.setLayout(formLayout);
 		formLayout.marginHeight = 10;
@@ -407,7 +407,7 @@ public class MainWindow {
 	private Control getBalanceSheetTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 
-		// ŠT—vƒcƒŠ[
+		// æ¦‚è¦ãƒ„ãƒªãƒ¼
 		TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		Table tttable = tableTree.getTable();
@@ -426,20 +426,20 @@ public class MainWindow {
 		TableColumn col1 = new TableColumn(tttable, SWT.LEFT);
 		TableColumn col2 = new TableColumn(tttable, SWT.RIGHT);
 		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
-		parent.setText(0, "ŒûÀ");
+		parent.setText(0, "å£åº§");
 		parent.setText(1, "");
 		TableTreeItem child = new TableTreeItem(parent, SWT.NONE);
-		child.setText(0, "¶Šˆ”ï");
+		child.setText(0, "ç”Ÿæ´»è²»");
 		child.setText(1, "30,000");
 		child = new TableTreeItem(parent, SWT.NONE);
-		child.setText(0, "ŒâŠy");
+		child.setText(0, "å¨¯æ¥½");
 		child.setText(1, "30,000");
 		child = new TableTreeItem(parent, SWT.NONE);
-		child.setText(0, "’™‹à");
+		child.setText(0, "è²¯é‡‘");
 		child.setText(1, "30,000");
 		parent.setExpanded(true);
 		TableTreeItem sum = new TableTreeItem(tableTree, SWT.NONE);
-		sum.setText(0, "c‚‚Ì‡Œv");
+		sum.setText(0, "æ®‹é«˜ã®åˆè¨ˆ");
 		sum.setText(1, "90,000");
 		col1.pack();
 		col1.setResizable(false);
@@ -460,7 +460,7 @@ public class MainWindow {
 		 * new Font(sShell.getDisplay(), fontData); sum.setFont(newFont); }
 		 */
 
-		// “ú•t
+		// æ—¥ä»˜
 		Text listDate = new Text(composite, SWT.READ_ONLY|SWT.BORDER);
 		listDate.setText("2008/01/01");
 		newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
@@ -477,41 +477,41 @@ public class MainWindow {
 		Button oneMonth = new Button(composite, SWT.FLAT);
 		oneMonth.setText("Month");
 		Button customDur = new Button(composite, SWT.FLAT);
-		customDur.setText("ŠúŠÔw’è");
+		customDur.setText("æœŸé–“æŒ‡å®š");
 		
-		// ƒoƒ‰ƒ“ƒXƒV[ƒg
+		// ãƒãƒ©ãƒ³ã‚¹ã‚·ãƒ¼ãƒˆ
 		table = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		// ƒJƒ‰ƒ€
+		// ã‚«ãƒ©ãƒ 
 		TableColumn[] cols = new TableColumn[6];
 		for (int i = 0; i < Column.LAST.ordinal(); i++) {
 			cols[i] = new TableColumn(table, SWT.NONE);
 			cols[i].setWidth(100);
 		}
-		cols[Column.DATE.ordinal()].setText("“ú•t");
+		cols[Column.DATE.ordinal()].setText("æ—¥ä»˜");
 		cols[Column.DATE.ordinal()].setAlignment(SWT.CENTER);
-		cols[Column.CATEGORY.ordinal()].setText("”ï–Ú");
+		cols[Column.CATEGORY.ordinal()].setText("è²»ç›®");
 		cols[Column.CATEGORY.ordinal()].setWidth(150);
-		cols[Column.DEBIT.ordinal()].setText("x•¥");
+		cols[Column.DEBIT.ordinal()].setText("æ”¯æ‰•");
 		cols[Column.DEBIT.ordinal()].setAlignment(SWT.RIGHT);
-		cols[Column.CREDIT.ordinal()].setText("—a“ü");
+		cols[Column.CREDIT.ordinal()].setText("é å…¥");
 		cols[Column.CREDIT.ordinal()].setAlignment(SWT.RIGHT);
-		cols[Column.BALANCE.ordinal()].setText("c‚");
-		cols[Column.DETAIL.ordinal()].setText("Ú×");
-		// ƒŠƒXƒg
+		cols[Column.BALANCE.ordinal()].setText("æ®‹é«˜");
+		cols[Column.DETAIL.ordinal()].setText("è©³ç´°");
+		// ãƒªã‚¹ãƒˆ
 		createTableViewer();
 		cols[Column.DATE.ordinal()].pack();
-		// ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[
+		// ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼
 		Menu menu = new Menu(sShell, SWT.POP_UP);
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Popup");
 		table.setMenu(menu);
 
-		// ƒ{ƒ^ƒ“
+		// ãƒœã‚¿ãƒ³
 		Button btnAdd = new Button(composite, SWT.NULL);
-		btnAdd.setText("’Ç‰Á");
+		btnAdd.setText("è¿½åŠ ");
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 	        // Add a task to the ExampleTaskList and refresh the view
 		    public void widgetSelected(SelectionEvent e) {
@@ -519,13 +519,13 @@ public class MainWindow {
 	        }
 	    });
 
-		// c‚ƒ‰ƒxƒ‹
+		// æ®‹é«˜ãƒ©ãƒ™ãƒ«
 		Label total = new Label(composite, SWT.RIGHT);
-		total.setText("0");
+		total.setText("ï¿¥0");
 		Label label = new Label(composite, SWT.NONE);
-		label.setText("c‚: ");
+		label.setText("æ®‹é«˜: ");
 
-		// ƒŒƒCƒAƒEƒg
+		// ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ
 		FormLayout formLayout = new FormLayout();
 		composite.setLayout(formLayout);
 		formLayout.marginHeight = 10;

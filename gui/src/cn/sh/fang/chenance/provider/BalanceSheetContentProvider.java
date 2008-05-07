@@ -120,7 +120,7 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 	}
 
 	public void updateTask(Transaction task) {
-		// TODO ©“®¶¬‚³‚ê‚½ƒƒ\ƒbƒhEƒXƒ^ƒu
+		// TODO è‡ªå‹•ç”Ÿæˆã•ã‚ŒãŸãƒ¡ã‚½ãƒƒãƒ‰ãƒ»ã‚¹ã‚¿ãƒ–
 
 	}
 
