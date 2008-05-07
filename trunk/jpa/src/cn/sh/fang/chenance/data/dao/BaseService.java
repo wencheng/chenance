@@ -15,7 +15,8 @@ public abstract class BaseService {
 	static protected EntityManager em;
 	
 	static {
-		String filepath = "C:/Users/Wencheng/workspace/jpa/h2db/db";
+		//String filepath = "C:/Users/Wencheng/workspace/jpa/h2db/db";
+		String filepath = "C:/Users/Wencheng/Desktop/chenance/jpa/h2db/db";
 		HashMap<String,String> props = new HashMap<String,String>();
 		props.put("hibernate.connection.url", "jdbc:h2:"+filepath);
 		

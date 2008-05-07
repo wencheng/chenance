@@ -17,7 +17,7 @@ public class DBConnTest {
 	public DBConnTest() {
 	}
 
-	/** ‰Šú‰»ˆ— */
+	/** åˆæœŸåŒ–å‡¦ç† */
 	public void init() {
 		/*
 	      <property name="hibernate.connection.url" value="jdbc:h2:tcp://localhost/test"/>
@@ -31,7 +31,7 @@ public class DBConnTest {
 		manager = factory.createEntityManager();
 	}
 
-	/** I—¹ˆ— */
+	/** çµ‚äº†å‡¦ç† */
 	private void shutdown() {
 		manager.close();
 		factory.close();
@@ -55,10 +55,10 @@ public class DBConnTest {
 	}
 
 	/**
-	 * ƒIƒuƒWƒFƒNƒg‚Ì¶¬‚Æ‰i‘±‰»
+	 * ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç”Ÿæˆã¨æ°¸ç¶šåŒ–
 	 */
 	private void create() {
-		System.out.println("2‚Â‚ÌPersonƒIƒuƒWƒFƒNƒg‚ð‰i‘±‰»’†");
+		System.out.println("2ã¤ã®Personã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ°¸ç¶šåŒ–ä¸­");
 		EntityTransaction transaction = manager.getTransaction();
 		transaction.begin();
 		try {
@@ -73,7 +73,7 @@ public class DBConnTest {
 		} catch (Exception ex) {
 			transaction.rollback();
 		}
-		System.out.println("2‚Â‚ÌPersonƒIƒuƒWƒFƒNƒg‚ð‰i‘±‰»‚µ‚Ü‚µ‚½.");
+		System.out.println("2ã¤ã®Personã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ°¸ç¶šåŒ–ã—ã¾ã—ãŸ.");
 	}
 
 }

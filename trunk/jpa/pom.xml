@@ -17,13 +17,66 @@
 		</repository>
 		<repository>
 			<id>java.net</id>
-			<name>
-				java.net
-			</name>
+			<name>java.net</name>
 			<url>http://download.java.net/maven/2</url>
 			<layout>default</layout>
 		</repository>
 	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>sql-maven-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>1.0.71</version>
+					</dependency>
+				</dependencies>
+
+				<!-- common configuration shared by all executions -->
+				<configuration>
+					<driver>org.h2.Driver</driver>
+					<url>
+						jdbc:h2:C:/Users/Wencheng/Desktop/chenance/jpa/h2db/db/
+					</url>
+					<username>sa</username>
+					<password></password>
+					<!--all executions are ignored if -Dmaven.test.skip=true-->
+					<skip>${maven.test.skip}</skip>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>drop-and-create-db-before-test-if-any</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<autocommit>true</autocommit>
+							<srcFiles>
+								<srcFile>schema/sql/drop.sql</srcFile>
+								<!--srcFile>schema/sql/db.sql</srcFile-->
+							</srcFiles>
+							<!-- 
+							<fileset>
+								<basedir>${basedir}</basedir>
+								<includes>
+									<include>
+										schema/sql/common-columns/*.sql
+									</include>
+								</includes>
+							</fileset>
+							 -->
+							<onError>continue</onError>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>

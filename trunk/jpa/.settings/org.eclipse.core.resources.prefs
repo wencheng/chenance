@@ -1,11 +1,12 @@
-#Tue May 06 20:18:55 JST 2008
+#Wed May 07 19:34:56 JST 2008
 eclipse.preferences.version=1
 encoding//schema/Pojo.java.jet=UTF-8
-encoding//schema/sql/Account.sql=UTF-8
-encoding//schema/sql/Category.sql=UTF-8
-encoding//schema/sql/Investment.sql=UTF-8
-encoding//schema/sql/Transaction.sql=UTF-8
-encoding//schema/sql/TransactionBreakdown.sql=UTF-8
+encoding//schema/sql/common-columns/Account.sql=UTF-8
+encoding//schema/sql/common-columns/Category.sql=UTF-8
+encoding//schema/sql/common-columns/Investment.sql=UTF-8
+encoding//schema/sql/common-columns/Transaction.sql=UTF-8
+encoding//schema/sql/common-columns/TransactionBreakdown.sql=UTF-8
+encoding//schema/sql/db.sql=Shift-JIS
 encoding//src/cn/sh/fang/chenance/data/dao/AccountService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/CategoryService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/InvestmentService.java=UTF-8
@@ -16,5 +17,5 @@ encoding//src/cn/sh/fang/chenance/data/entity/Category.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Investment.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Transaction.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/TransactionBreakdown.java=UTF-8
-encoding/<project>=Shift-JIS
+encoding/<project>=UTF-8
 instance/org.eclipse.core.net/org.eclipse.core.net.hasMigrated=true
