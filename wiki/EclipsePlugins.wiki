@@ -28,3 +28,6 @@ http://cloudgarden1.com/update-site
 
 Limy
 http://www.limy.org/eclipse_plugin/latest/
+
+JadClipse
+http://sourceforge.net/projects/jadclipse/
