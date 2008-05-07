@@ -94,7 +94,7 @@ public class BalanceSheetLabelProvider
 				result = exValue.format(t.getCredit());
 				break;
 			case DETAIL:
-				result = "’èŠú";
+				result = "å®šæœŸ";
 				break;
 			default:
 				break; 	
