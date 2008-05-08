@@ -1,8 +1,11 @@
 package cn.sh.fang.chenance.data.dao;
 
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.FlushModeType;
 import javax.persistence.Query;
+
 import cn.sh.fang.chenance.data.entity.Account;
 
 /**
@@ -23,7 +26,6 @@ public class AccountService extends BaseService {
             em.persist(entity);
         } else {
             // update
-        	entity.setUpdateDatetime(new Date());
             em.merge(entity);
         }
     }
