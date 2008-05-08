@@ -94,12 +94,17 @@ public class BalanceSheetLabelProvider
 				result = exValue.format(t.getCredit());
 				break;
 			case DETAIL:
-				result = "定期";
+				result = getDetailLabel(t);
 				break;
 			default:
 				break; 	
 		}
 		return result;
+	}
+	
+	protected static String getDetailLabel(Transaction t) {
+		// TODO implement this
+		return "定期";
 	}
 
 	/**
