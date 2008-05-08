@@ -9,15 +9,19 @@
 		<class>
 		cn.sh.fang.chenance.data.entity.Account</class>
 		<class>
-		cn.sh.fang.chenance.data.entity.TransactionBreakdown</class>
+		cn.sh.fang.chenance.data.entity.Asset</class>
 		<class>
-		cn.sh.fang.chenance.data.entity.Transaction</class>
-		<class>
-		cn.sh.fang.chenance.data.entity.Investment</class>
+		cn.sh.fang.chenance.data.entity.BaseEntity</class>
 		<class>
 		cn.sh.fang.chenance.data.entity.Category</class>
 		<class>
-		cn.sh.fang.chenance.data.entity.BaseEntity</class>
+		cn.sh.fang.chenance.data.entity.Investment</class>
+		<class>
+		cn.sh.fang.chenance.data.entity.ReceiptItem</class>
+		<class>
+		cn.sh.fang.chenance.data.entity.RepeatPayment</class>
+		<class>
+		cn.sh.fang.chenance.data.entity.Transaction</class>
 		<properties>
 			<property name="hibernate.connection.username" value="sa" />
 			<property name="hibernate.connection.password" value="" />
