@@ -49,7 +49,7 @@
 
 				<executions>
 					<execution>
-						<id>drop-and-create-db-before-test-if-any</id>
+						<id>default</id>
 						<phase>process-test-resources</phase>
 						<goals>
 							<goal>execute</goal>
@@ -58,9 +58,8 @@
 							<autocommit>true</autocommit>
 							<srcFiles>
 								<srcFile>schema/sql/drop.sql</srcFile>
-								<!--srcFile>schema/sql/db.sql</srcFile-->
+								<srcFile>schema/sql/db.sql</srcFile>
 							</srcFiles>
-							<!-- 
 							<fileset>
 								<basedir>${basedir}</basedir>
 								<includes>
@@ -69,7 +68,6 @@
 									</include>
 								</includes>
 							</fileset>
-							 -->
 							<onError>continue</onError>
 						</configuration>
 					</execution>

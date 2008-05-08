@@ -1,6 +1,6 @@
-#Wed May 07 19:34:56 JST 2008
+#Thu May 08 11:49:48 JST 2008
 eclipse.preferences.version=1
-encoding//schema/Pojo.java.jet=UTF-8
+encoding//schema/jet/Pojo.java.jet=UTF-8
 encoding//schema/sql/common-columns/Account.sql=UTF-8
 encoding//schema/sql/common-columns/Category.sql=UTF-8
 encoding//schema/sql/common-columns/Investment.sql=UTF-8
