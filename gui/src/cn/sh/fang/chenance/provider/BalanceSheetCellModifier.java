@@ -1,11 +1,10 @@
 package cn.sh.fang.chenance.provider;
 
-import java.text.NumberFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.TableItem;
 
 import cn.sh.fang.chenance.data.entity.Transaction;
@@ -50,6 +49,9 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			break;
 		case CREDIT:
 			result = t.getCredit() + "";
+			break;
+		case DETAIL:
+			result = t;
 			break;
 		default:
 			result = "";

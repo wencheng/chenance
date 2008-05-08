@@ -17,38 +17,16 @@
 		</repository>
 	</repositories>
 	<dependencies>
-	<!-- 
 		<dependency>
-			<groupId>org.eclipse.equinox</groupId>
-			<artifactId>app</artifactId>
-			<version>1.0.0-v20070606</version>
-			<scope>runtime</scope>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.13</version>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.core</groupId>
-			<artifactId>runtime</artifactId>
-			<version>3.3.100-v20070530</version>
-			<scope>runtime</scope>
-			<exclusions>
-				<exclusion>
-				<groupId>org.eclipse.equinox</groupId>
-				<artifactId>app</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		 -->
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>commands</artifactId>
 			<version>3.3.0-I20070605-0010</version>
 		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>swt</artifactId>
-			<version>3.3.0-v3346</version>
-		</dependency>
-		 -->
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>jface</artifactId>
