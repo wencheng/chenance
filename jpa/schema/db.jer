@@ -336,7 +336,7 @@
                   <constraintColumn class="jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel">
                     <name>account_id</name>
                     <logicalName></logicalName>
-                    <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../columns/jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
+                    <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType">BIGINT</dataType>
                     <size></size>
                     <defaultValue></defaultValue>
                     <constraints>
@@ -717,7 +717,7 @@
                   <jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
                     <name>account_id</name>
                     <logicalName></logicalName>
-                    <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../columns/jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
+                    <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../jp.xet.jiemamy.core.model.relation.ForeignKeyModel/mappings/jp.xet.jiemamy.core.model.relation.ForeignKeyMapping/constraintColumn/dataType"/>
                     <size></size>
                     <defaultValue></defaultValue>
                     <constraints>
@@ -775,7 +775,7 @@
                   <jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel>
                     <name>category_id</name>
                     <logicalName></logicalName>
-                    <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../columns/jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
+                    <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../jp.xet.jiemamy.core.model.relation.ForeignKeyModel/mappings/jp.xet.jiemamy.core.model.relation.ForeignKeyMapping/constraintColumn/dataType"/>
                     <size></size>
                     <defaultValue></defaultValue>
                     <constraints>
@@ -872,7 +872,7 @@
                         <referenceColumn class="jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel">
                           <name>id</name>
                           <logicalName></logicalName>
-                          <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../../../../columns/jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
+                          <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../../../../columns/jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel/dataType"/>
                           <size></size>
                           <defaultValue></defaultValue>
                           <constraints>
@@ -1128,7 +1128,7 @@
                         <constraintColumn class="jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel">
                           <name>transaction_id</name>
                           <logicalName></logicalName>
-                          <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../../../../columns/jp.xet.jiemamy.core.model.definition.ColumnDefinitionModel[8]/dataType"/>
+                          <dataType class="jp.xet.jiemamy.core.model.definition.type.JiemamyType" reference="../../../../../../../../jp.xet.jiemamy.core.model.relation.ForeignKeyModel/mappings/jp.xet.jiemamy.core.model.relation.ForeignKeyMapping/constraintColumn/dataType"/>
                           <size></size>
                           <defaultValue></defaultValue>
                           <constraints>

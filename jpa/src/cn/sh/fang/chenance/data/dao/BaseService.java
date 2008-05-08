@@ -35,18 +35,24 @@ public abstract class BaseService {
 		}
 	}
 
+	/*
     @PersistenceContext
-    public void setEntityManager(EntityManager em) {
-        this.em = em;
+    public void setEntityManager(EntityManager arg) {
+        em = arg;
     }
 
 	public EntityManager getEntityManager() {
 		return em;
 	}
+	*/
     
 	public static void shutdown() {
 		t.commit();
 		em.close();
 		factory.close();
+	}
+
+	public static void commit() {
+		t.commit();
 	}
 }
