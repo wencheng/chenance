@@ -1,6 +1,11 @@
 package cn.sh.fang.chenance;
 
+import static cn.sh.fang.chenance.util.UIMessageBundle._;
+import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutData;
+import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
+
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.CellEditor;
@@ -29,7 +34,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
@@ -51,12 +55,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
-import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.listener.FileOpenListener;
+import cn.sh.fang.chenance.listener.ChangeLanguageListener;
+import cn.sh.fang.chenance.listener.AccountTabListener.AccountListSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountTabListener.SaveAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
+import cn.sh.fang.chenance.listener.FileListener.FileSaveListener;
+import cn.sh.fang.chenance.provider.AccountEditorProvider;
+import cn.sh.fang.chenance.provider.AccountListProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
@@ -138,20 +146,38 @@ public class MainWindow {
 
 		// File
 		MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-		fileMenuHeader.setText("&File");
+		fileMenuHeader.setText(_("&File"));
 		Menu fileMenu = new Menu(sShell, SWT.DROP_DOWN);
 		fileMenuHeader.setMenu(fileMenu);
 		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileOpenItem.setText("&Open");
+		fileOpenItem.setText(_("&Open"));
 		fileOpenItem.addSelectionListener(new FileOpenListener());
+		MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
+		fileSaveItem.setText(_("&Save"));
+		fileSaveItem.addSelectionListener(new FileSaveListener());
 
 		// Edit
 		MenuItem menuItem2 = new MenuItem(menuBar, SWT.CASCADE);
-		menuItem2.setText("Edit");
+		menuItem2.setText(_("&Edit"));
+
+		// Lang
+		MenuItem langMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+		langMenuHeader.setText(_("&Language"));
+		Menu langMenu = new Menu(sShell, SWT.DROP_DOWN);
+		langMenuHeader.setMenu(langMenu);
+		MenuItem langEnItem = new MenuItem(langMenu, SWT.RADIO);
+		langEnItem.setText(_("English"));
+		langEnItem.addSelectionListener(new ChangeLanguageListener(Locale.ENGLISH));
+		MenuItem langJaItem = new MenuItem(langMenu, SWT.RADIO);
+		langJaItem.setText(_("日本語"));
+		langJaItem.addSelectionListener(new ChangeLanguageListener(Locale.JAPANESE));
+		MenuItem langZhItem = new MenuItem(langMenu, SWT.RADIO);
+		langZhItem.setText(_("简体中文"));
+		langZhItem.addSelectionListener(new ChangeLanguageListener(Locale.CHINESE));
 
 		// Help
-		MenuItem menuItem3 = new MenuItem(menuBar, SWT.CASCADE);
-		menuItem3.setText("&Help");
+		MenuItem menuItem4 = new MenuItem(menuBar, SWT.CASCADE);
+		menuItem4.setText(_("&Help"));
 	}
 
 	/**
@@ -184,177 +210,34 @@ public class MainWindow {
 	private void createTabFolder() {
 		tabFolder = new TabFolder(sShell, SWT.TOP | SWT.BORDER);
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
-		item1.setText("履歴");
+		item1.setText(_("Balance"));
 		item1.setControl(getBalanceSheetTabControl(tabFolder));
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
-		item2.setText("投資");
+		item2.setText(_("Invests"));
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
-		item3.setText("口座");
+		item3.setText(_("Accounts"));
 		item3.setControl(getAccountTabControl(tabFolder));
 		tabFolder.setSize(sShell.getSize());
 	}
 
+	Table accountListTable;
+	
 	private Control getAccountTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 
 		// 概要ツリー
 		final TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
-		Table tttable = tableTree.getTable();
-		tttable.setHeaderVisible(false);
-		tttable.setLinesVisible(false);
-		tttable.addMouseListener(new MouseAdapter() {
-			public void mouseDoubleClick(MouseEvent e) {
-				if (e.button == 1) {
-					Table t = (Table) e.widget;
-					TableItem i = t.getItem(new Point(e.x, e.y));
-					System.out.println(i + " was d-clicked");
-				}
-			}
-		});
-
-		AccountService service = new AccountService();
-		List<Account> accounts = service.findAll();
-
-		TableColumn col1 = new TableColumn(tttable, SWT.LEFT);
-		TableColumn col2 = new TableColumn(tttable, SWT.RIGHT);
-		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
-		parent.setText(0, "口座");
-		parent.setText(1, "");
-		int balanceSum = 0;
-		for (Account a : accounts) {
-			TableTreeItem child = new TableTreeItem(parent, SWT.NONE);
-			child.setText(0, a.getName());
-			child.setText(1, a.getCurrentBalance() + "");
-			child.setData(a);
-			balanceSum += a.getCurrentBalance();
-		}
-		parent.setExpanded(true);
-		TableTreeItem sum = new TableTreeItem(tableTree, SWT.NONE);
-		sum.setText(0, "残高の合計");
-		sum.setText(1, balanceSum + "");
-		col1.pack();
-		col1.setResizable(false);
-		// col1.setWidth(col1.getWidth() + 20);
-		col2.pack();
-		col2.setWidth(80);
-		col2.setResizable(false);
-
-		FontData fd = parent.getFont().getFontData()[0];
-		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
-				fd.getHeight(), fd.getStyle() | SWT.BOLD));
-		parent.setFont(newFont);
-		sum.setFont(newFont);
+		AccountListProvider accountListProv = new AccountListProvider();
+		accountListProv.createControl(tableTree);
 
 		// フォーム
-		Group grp = new Group(composite, SWT.NONE);
-		grp.setText("口座情報");
-
-		Label lblName = new Label(grp, SWT.NONE);
-		lblName.setText("口座名：");
-		lblName.pack();
-		final Text name = new Text(grp, SWT.BORDER);
-
-		Label lblNamePh = new Label(grp, SWT.NONE);
-		lblNamePh.setText("口座名よみ：");
-		lblNamePh.pack();
-		Text namePh = new Text(grp, SWT.BORDER);
-
-		Label lblType = new Label(grp, SWT.NONE);
-		lblType.setText("口座種類：");
-		lblType.pack();
-		Combo type = new Combo(grp, SWT.READ_ONLY);
-		type.setItems(new String[] { "現金", "預金", "カード", "投資" });
-		type.pack();
-		type.select(0);
-
-		Label lblCurrency = new Label(grp, SWT.NONE);
-		lblCurrency.setText("通貨：");
-		lblCurrency.pack();
-		Combo currency = new Combo(grp, SWT.READ_ONLY);
-		currency.setItems(new String[] { "USD", "JPY", "EUD", "GBP", "RMB" });
-		currency.pack();
-		currency.select(1);
-
-		Label lblDay = new Label(grp, SWT.NONE);
-		lblDay.setText("締切日：");
-		lblDay.pack();
-		Text day = new Text(grp, SWT.BORDER);
-
-		Label lblBankName = new Label(grp, SWT.NONE);
-		lblBankName.setText("銀行名：");
-		lblBankName.pack();
-		Text bankName = new Text(grp, SWT.BORDER);
-
-		Label lblBranchName = new Label(grp, SWT.NONE);
-		lblBranchName.setText("支店名：");
-		lblBranchName.pack();
-		Text branchName = new Text(grp, SWT.BORDER);
-
-		Label lblBankNo = new Label(grp, SWT.NONE);
-		lblBankNo.setText("口座番号：");
-		lblBankNo.pack();
-		Text bankNo = new Text(grp, SWT.BORDER);
-
-		Label lblInterest = new Label(grp, SWT.NONE);
-		lblInterest.setText("利息率：");
-		lblInterest.pack();
-		Text interest = new Text(grp, SWT.BORDER | SWT.RIGHT);
-		interest.setText("00.00");
-		interest.pack();
-		Label lblInterestR = new Label(grp, SWT.NONE);
-		lblInterestR.setText("%");
-		lblInterestR.pack();
-		Combo interestPer = new Combo(grp, SWT.READ_ONLY);
-		interestPer.setItems(new String[] { "年", "月" });
-		interestPer.select(0);
-
-		Label lblStart = new Label(grp, SWT.NONE);
-		lblStart.setText("開始残高：");
-		lblStart.pack();
-		Text start = new Text(grp, SWT.BORDER);
-
-		Label lblMemo = new Label(grp, SWT.NONE);
-		lblMemo.setText("備考：");
-		lblMemo.pack();
-		final Text memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP
-				| SWT.V_SCROLL);
-
-		Button save = new Button(grp, SWT.NONE);
-		save.setText("保存");
+		AccountEditorProvider accountProv = new AccountEditorProvider();
+		Group grp = (Group)accountProv.createControl(composite);
 
 		// イベント
-		tableTree.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				TableTreeItem i = ((TableTreeItem) e.item);
-				if (i.getData() instanceof Account) {
-					Account a = (Account) i.getData();
-					name.setText(a.getName());
-					memo.setText(a.getDescription());
-				}
-			}
-		});
-		save.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				TableTreeItem i = tableTree.getSelection()[0];
-				if (i.getData() instanceof Account) {
-					Account a = (Account) i.getData();
-					a.setName(name.getText());
-					a.setDescription(memo.getText());
-
-					try {
-						AccountService s = new AccountService();
-						s.save(a);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		});
+		tableTree.addSelectionListener(new AccountListSelectionAdapter(accountProv));
+		accountProv.save.addSelectionListener(new SaveAccountSelectionAdapter(accountProv));
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
@@ -362,9 +245,9 @@ public class MainWindow {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 
-		FormData layoutData = setFormLayoutData(tableTree, 0, 0, 0, 10);
-		layoutData.height = 400;
-		layoutData.width = 175;
+		FormData fd = setFormLayoutData(tableTree, 0, 0, 0, 10);
+		fd.height = 400;
+		fd.width = 175;
 
 		setFormLayoutData(grp, 0, 0, tableTree, 20).width = 400;
 
@@ -372,51 +255,6 @@ public class MainWindow {
 		grp.setLayout(formLayout);
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
-
-		setFormLayoutData(lblName, 0, 20, 0, 20);
-		setFormLayoutData(name, lblName, 0, SWT.TOP, lblName, 5, SWT.NONE).width = 80;
-		setFormLayoutData(lblNamePh, lblName, 20, SWT.NONE, lblName, 0,
-				SWT.LEFT);
-		setFormLayoutData(namePh, lblNamePh, 0, SWT.TOP, lblNamePh, 5, SWT.NONE).width = 80;
-		setFormLayoutData(lblType, lblNamePh, 20, SWT.NONE, lblName, 0,
-				SWT.LEFT);
-		setFormLayoutData(type, lblType, 0, SWT.TOP, lblType, 5, SWT.NONE);
-		setFormLayoutData(lblCurrency, lblType, 20, SWT.NONE, lblName, 0,
-				SWT.LEFT);
-		setFormLayoutData(currency, lblCurrency, 0, SWT.TOP, lblCurrency, 5,
-				SWT.NONE);
-		setFormLayoutData(lblDay, lblCurrency, 20, SWT.NONE, lblName, 0,
-				SWT.LEFT);
-		setFormLayoutData(day, lblDay, 0, SWT.TOP, lblDay, 5, SWT.NONE).width = 80;
-
-		setFormLayoutData(lblMemo, lblDay, 20, SWT.NONE, lblName, 0, SWT.LEFT);
-		layoutData = setFormLayoutData(memo, lblMemo, 0, SWT.NONE, lblName, 0,
-				SWT.LEFT);
-		layoutData.width = 350;
-		layoutData.height = 80;
-		setFormLayoutDataRight(save, memo, 20, SWT.NONE, memo, 0, SWT.RIGHT).width = 80;
-
-		setFormLayoutData(lblBankName, name, 0, SWT.TOP, name, 50, SWT.NONE);
-		setFormLayoutData(bankName, lblBankName, 0, SWT.TOP, lblBankName, 5,
-				SWT.NONE).width = 80;
-		setFormLayoutData(lblBranchName, lblBankName, 20, SWT.NONE, name, 50,
-				SWT.NONE);
-		setFormLayoutData(branchName, lblBranchName, 0, SWT.TOP, lblBranchName,
-				5, SWT.NONE).width = 80;
-		setFormLayoutData(lblBankNo, lblBranchName, 20, SWT.NONE, name, 50,
-				SWT.NONE);
-		setFormLayoutData(bankNo, lblBankNo, 0, SWT.TOP, lblBankNo, 5, SWT.NONE).width = 80;
-		setFormLayoutData(lblInterest, lblBankNo, 20, SWT.NONE, name, 50,
-				SWT.NONE);
-		setFormLayoutData(interest, lblInterest, 0, SWT.TOP, lblInterest, 5,
-				SWT.NONE);
-		setFormLayoutData(lblInterestR, lblInterest, 0, SWT.TOP, interest, 5,
-				SWT.NONE);
-		setFormLayoutData(interestPer, lblInterestR, 0, SWT.TOP, lblInterestR,
-				5, SWT.NONE);
-		setFormLayoutData(lblStart, lblInterest, 20, SWT.NONE, lblBankName, 0,
-				SWT.LEFT);
-		setFormLayoutData(start, lblStart, 0, SWT.TOP, lblStart, 5, SWT.NONE).width = 80;
 
 		return composite;
 	}
@@ -575,60 +413,6 @@ public class MainWindow {
 				SWT.RIGHT);
 
 		return composite;
-	}
-
-	private FormData setFormLayoutData(Control c, Object top, int ot,
-			Object left, int ol) {
-		return setFormLayoutData(c, top, ot, SWT.NONE, left, ol, SWT.NONE);
-	}
-
-	/**
-	 * 
-	 * @param c
-	 * @param top
-	 * @param ot
-	 *            top offset
-	 * @param at
-	 *            top align
-	 * @param left
-	 * @param ol
-	 *            left offset
-	 * @param lt
-	 *            left align
-	 * @return
-	 */
-	private FormData setFormLayoutData(Control c, Object top, int ot, int at,
-			Object left, int ol, int lt) {
-		FormData layoutData = new FormData();
-		if (top instanceof Control) {
-			layoutData.top = new FormAttachment((Control) top, ot, at);
-		} else {
-			layoutData.top = new FormAttachment((Integer) top, ol, at);
-		}
-		if (left instanceof Control) {
-			layoutData.left = new FormAttachment((Control) left, ol, lt);
-		} else {
-			layoutData.left = new FormAttachment((Integer) left, ol, lt);
-		}
-		c.setLayoutData(layoutData);
-		return layoutData;
-	}
-
-	private FormData setFormLayoutDataRight(Control c, Object top, int ot,
-			int at, Object right, int or, int ar) {
-		FormData layoutData = new FormData();
-		if (top instanceof Control) {
-			layoutData.top = new FormAttachment((Control) top, ot, at);
-		} else {
-			layoutData.top = new FormAttachment((Integer) top, ot, at);
-		}
-		if (right instanceof Control) {
-			layoutData.right = new FormAttachment((Control) right, or, ar);
-		} else {
-			layoutData.right = new FormAttachment((Integer) right, or, ar);
-		}
-		c.setLayoutData(layoutData);
-		return layoutData;
 	}
 
 	private void createTableViewer() {
