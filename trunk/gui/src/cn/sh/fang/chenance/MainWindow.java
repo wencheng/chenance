@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -26,7 +27,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -639,7 +639,6 @@ public class MainWindow {
 				SWT.NULL);
 		editors[Column.DATE.ordinal()] = dateEditor;
 
-		// TODO get categories
 		CategoryService service = new CategoryService();
 		ComboBoxCellEditor e = new ComboBoxCellEditor(table,
 				toComboList(service.findAll()),
@@ -667,6 +666,23 @@ public class MainWindow {
 			}
 		});
 		editors[Column.CREDIT.ordinal()] = textEditor;
+		
+		editors[Column.CREDIT.ordinal()] = new DialogCellEditor(table){
+			@Override
+			protected Button createButton(Composite parent) {
+				Button b = super.createButton(parent);
+				Point p = b.getSize();
+				b.setSize(p.x, 20);
+				return b;
+			}
+
+			@Override
+			protected Object openDialogBox(Control c) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		};
+		
 		
 		// Assign the cell editors to the viewer
 		tableViewer.setCellEditors(editors);
