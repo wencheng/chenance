@@ -144,6 +144,7 @@ public class <%=classname%> extends BaseEntity {
       if (pri.contains(def)||def.isForeignKeyColumn()) {
           continue;
       }
+      if (names.containsKey(def)) continue;
       String type = StringUtils.toJavaType(def.getDataType());
       String name = StringUtils.toJavaName(def.getName());
       types.put(def,type);
