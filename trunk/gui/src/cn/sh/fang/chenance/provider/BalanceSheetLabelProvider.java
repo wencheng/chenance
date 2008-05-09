@@ -123,8 +123,8 @@ public class BalanceSheetLabelProvider
 			Button btn = this.btns.get(t);
 			if ( btn == null ) {
 				final Button b = new Button(table, SWT.PUSH);
-				//b.setText("...");
 				b.setText(btns.size()+"");
+				b.setText("...");
 				b.addMouseListener(new MouseAdapter(){
 					@Override
 					public void mouseUp(MouseEvent e) {

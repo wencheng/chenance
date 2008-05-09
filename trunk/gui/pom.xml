@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>Chenance-gui</groupId>
-	<artifactId>Chenance-gui</artifactId>
+	<groupId>cn.sh.fang.chenance</groupId>
+	<artifactId>chenance-gui</artifactId>
 	<name></name>
-	<version>0.0.1-SNAPSHOT</version>
 	<description></description>
+	<parent>
+    	<groupId>cn.sh.fang</groupId>
+    	<artifactId>chenance</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+    	<relativePath>../chenance</relativePath>
+	</parent>
 	<repositories>
 		<repository>
 			<id>ibiblio.org</id>
@@ -15,21 +20,7 @@
 			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
 			<layout>default</layout>
 		</repository>
-		<repository>
-			<id>akathist-repository</id>
-			<name>Akathist Repository</name>
-			<url>http://www.9stmaryrd.com/maven</url>
-		</repository>
 	</repositories>
-	<!-- 
-		<pluginRepositories>
-		<pluginRepository>
-		<id>akathist-repository</id>
-		<name>Akathist Repository</name>
-		<url>http://www.9stmaryrd.com/maven</url>
-		</pluginRepository>
-		</pluginRepositories>
-	-->
 	<dependencies>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -81,80 +72,10 @@
 								cn.sh.fang.chenance.MainWindow
 							</mainClass>
 							<addClasspath>true</addClasspath>
-							<addExtensions>true</addExtensions>
 							<classpathPrefix>lib</classpathPrefix>
 						</manifest>
 					</archive>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.akathist.maven.plugins.launch4j</groupId>
-				<artifactId>launch4j-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>l4j-clui</id>
-						<phase>package</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
-						<configuration>
-							<headerType>gui</headerType>
-							<outfile>target/chenance.exe</outfile>
-							<jar>
-								target/${artifactId}-${project.version}.jar
-							</jar>
-							<dontWrapJar>false</dontWrapJar>
-							<errTitle>Chenance</errTitle>
-							<classPath>
-								<mainClass>
-									cn.sh.fang.chenance.MainWindow
-								</mainClass>
-								<addDependencies>true</addDependencies>
-								<jarLocation>lib/</jarLocation>
-								<preCp>anything</preCp>
-							</classPath>
-							<jre>
-								<minVersion>1.5.0</minVersion>
-							</jre>
-							<versionInfo>
-								<fileVersion>1.2.3.4</fileVersion>
-								<txtFileVersion>
-									txt file version?
-								</txtFileVersion>
-								<fileDescription>
-									a description
-								</fileDescription>
-								<copyright>my copyright</copyright>
-								<productVersion>4.3.2.1</productVersion>
-								<txtProductVersion>
-									txt product version
-								</txtProductVersion>
-								<productName>E-N-C-C</productName>
-								<internalName>ccne</internalName>
-								<originalFilename>
-									original.exe
-								</originalFilename>
-							</versionInfo>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attached</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>assembly.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
