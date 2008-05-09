@@ -23,17 +23,16 @@
 			<plugin>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
+				<inherited>false</inherited>
 				<executions>
 					<execution>
-						<id>l4j-clui</id>
-						<phase>build</phase>
 						<goals>
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>
 							<headerType>gui</headerType>
 							<outfile>target/chenance.exe</outfile>
-							<jar>target/chenance-gui-0.0.1-SNAPSHOT.jar</jar>
+							<jar>${basedir}/../chenance-gui/target/chenance-gui-${project.version}.jar</jar>
 							<customProcName>true</customProcName>
 							<dontWrapJar>false</dontWrapJar>
 							<errTitle>Chenance</errTitle>
@@ -43,7 +42,7 @@
 								</mainClass>
 								<addDependencies>true</addDependencies>
 								<jarLocation>lib/</jarLocation>
-								<preCp>anything</preCp>
+								<preCp>chenance-data-${project.version}.jar</preCp>
 							</classPath>
 							<jre>
 								<minVersion>1.5.0</minVersion>
@@ -57,14 +56,14 @@
 									a description
 								</fileDescription>
 								<copyright>my copyright</copyright>
-								<productVersion>4.3.2.1</productVersion>
+								<productVersion>${project.version}</productVersion>
 								<txtProductVersion>
 									txt product version
 								</txtProductVersion>
-								<productName>E-N-C-C</productName>
+								<productName>Chenance</productName>
 								<internalName>ccne</internalName>
 								<originalFilename>
-									original.exe
+									chenance.exe
 								</originalFilename>
 							</versionInfo>
 						</configuration>
