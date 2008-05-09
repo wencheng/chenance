@@ -1,6 +1,6 @@
 /**
  * SQL genereted by Jiemamy
- * Create: 2008/05/08 15:13:24
+ * Create: 2008/05/09 11:55:08
  */
 
 -- define: t_account
@@ -12,7 +12,7 @@ CREATE TABLE t_account (
   bank_branch VARCHAR(20),
   bank_account_no VARCHAR(20),
   bank_url VARCHAR(255),
-  interest INT,
+  interest_rate INT,
   start_balance INT DEFAULT 0,
   current_balance INT DEFAULT 0 NOT NULL,
   currency INT DEFAULT 1
@@ -49,6 +49,20 @@ INSERT INTO t_category (id, name, description)
   VALUES (3000000, 'transfer', '');
 
 
+-- define: t_repeat_payment
+CREATE TABLE t_repeat_payment (
+  id IDENTITY NOT NULL PRIMARY KEY,
+  category_id BIGINT,
+  amount INT NOT NULL,
+  period INT NOT NULL,
+  period_unit INT NOT NULL,
+  auto_approve BOOLEAN DEFAULT false NOT NULL,
+  FOREIGN KEY (category_id)
+    REFERENCES t_category (id)
+);
+
+
+
 -- define: t_transaction
 CREATE TABLE t_transaction (
   id IDENTITY NOT NULL PRIMARY KEY,
@@ -57,11 +71,17 @@ CREATE TABLE t_transaction (
   category_id BIGINT NOT NULL,
   debit INT NOT NULL,
   credit INT NOT NULL,
-  is_repeat BOOLEAN NOT NULL,
+  is_approved BOOLEAN DEFAULT true NOT NULL,
+  repeat_payment_id BIGINT,
+  from_or_to BIGINT,
   FOREIGN KEY (category_id)
     REFERENCES t_category (id),
   FOREIGN KEY (account_id)
-    REFERENCES t_account (id)
+    REFERENCES t_account (id),
+  FOREIGN KEY (repeat_payment_id)
+    REFERENCES t_repeat_payment (id),
+  FOREIGN KEY (from_or_to)
+    REFERENCES t_transaction (id)
 );
 
 
@@ -69,21 +89,43 @@ CREATE TABLE t_transaction (
 -- define: t_investment
 CREATE TABLE t_investment (
   id IDENTITY NOT NULL PRIMARY KEY,
-  account_id BIGINT NOT NULL,
+  transaction_id BIGINT NOT NULL,
   is_buy_or_sell BOOLEAN NOT NULL,
   price INT NOT NULL,
   quantity INT NOT NULL,
   amount INT NOT NULL,
-  FOREIGN KEY (account_id)
-    REFERENCES t_account (id)
+  related_id BIGINT,
+  FOREIGN KEY (transaction_id)
+    REFERENCES t_transaction (id),
+  FOREIGN KEY (related_id)
+    REFERENCES t_investment (id)
 );
 
 
 
--- define: t_transaction_breakdown
-CREATE TABLE t_transaction_breakdown (
+-- define: t_receipt_item
+CREATE TABLE t_receipt_item (
   id IDENTITY NOT NULL PRIMARY KEY,
   transaction_id BIGINT NOT NULL,
+  item_name VARCHAR(50) NOT NULL,
+  price INT,
+  quantity INT,
+  amount INT NOT NULL,
+  FOREIGN KEY (transaction_id)
+    REFERENCES t_transaction (id)
+);
+
+
+
+-- define: t_asset
+CREATE TABLE t_asset (
+  id IDENTITY NOT NULL PRIMARY KEY,
+  transaction_id BIGINT NOT NULL,
+  item_name VARCHAR(50),
+  item_description VARCHAR(1000),
+  depreciation_rate INT,
+  depreciation_period INT,
+  depreciation_period_unit INT,
   FOREIGN KEY (transaction_id)
     REFERENCES t_transaction (id)
 );
