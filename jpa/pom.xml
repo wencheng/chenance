@@ -66,10 +66,6 @@
 				<executions>
 					<execution>
 						<id>default</id>
-						<phase>process-test-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
 						<configuration>
 							<autocommit>true</autocommit>
 							<encoding>Shift-JIS</encoding>
