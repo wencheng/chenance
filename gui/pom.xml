@@ -21,14 +21,21 @@
 			<url>http://www.9stmaryrd.com/maven</url>
 		</repository>
 	</repositories>
-	<pluginRepositories>
+	<!-- 
+		<pluginRepositories>
 		<pluginRepository>
-			<id>akathist-repository</id>
-			<name>Akathist Repository</name>
-			<url>http://www.9stmaryrd.com/maven</url>
+		<id>akathist-repository</id>
+		<name>Akathist Repository</name>
+		<url>http://www.9stmaryrd.com/maven</url>
 		</pluginRepository>
-	</pluginRepositories>
+		</pluginRepositories>
+	-->
 	<dependencies>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -74,15 +81,19 @@
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>
-							<headerType>console</headerType>
-							<outfile>target/encc.exe</outfile>
-							<jar>target/encc-1.0.jar</jar>
-							<errTitle>encc</errTitle>
+							<headerType>gui</headerType>
+							<outfile>target/chenance.exe</outfile>
+							<jar>
+								target/${artifactId}-${project.version}.jar
+							</jar>
+							<dontWrapJar>false</dontWrapJar>
+							<errTitle>Chenance</errTitle>
 							<classPath>
 								<mainClass>
-									com.akathist.encc.Clui
+									cn.sh.fang.chenance.MainWindow
 								</mainClass>
-								<addDependencies>false</addDependencies>
+								<addDependencies>true</addDependencies>
+								<jarLocation>lib/</jarLocation>
 								<preCp>anything</preCp>
 							</classPath>
 							<jre>

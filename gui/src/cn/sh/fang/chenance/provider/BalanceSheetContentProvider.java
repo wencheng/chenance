@@ -1,6 +1,7 @@
 package cn.sh.fang.chenance.provider;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,9 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 		Transaction t;
 		for (int i = 0; i < 14; i++) {
 			t = new Transaction();
+			t.setDate(new Date());
+			t.setDebit(0);
+			t.setCredit(0);
 			this.transactions.add(t);
 		}
 	};

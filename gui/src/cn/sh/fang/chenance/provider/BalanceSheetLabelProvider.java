@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -19,7 +20,6 @@ import org.eclipse.swt.widgets.Table;
 import cn.sh.fang.chenance.MainWindow;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.chenance.util.swt.ITableLabelProviderEx;
 
 
 /**
@@ -29,7 +29,7 @@ import cn.sh.fang.chenance.util.swt.ITableLabelProviderEx;
  */
 public class BalanceSheetLabelProvider 
 	extends LabelProvider
-	implements ITableLabelProviderEx {
+	implements ITableLabelProvider {
 
 	// Names of images used to represent checkboxes
 	public static final String CHECKED_IMAGE 	= "checked";
