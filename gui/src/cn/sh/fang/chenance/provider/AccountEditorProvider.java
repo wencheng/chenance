@@ -6,6 +6,7 @@ import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -161,6 +162,11 @@ public class AccountEditorProvider {
 	}
 
 	private void internalLayout() {
+		FormLayout formLayout = new FormLayout();
+		grp.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+		
 		// left side
 		setFormLayoutData(lblName, 0, 20, 0, 20);
 		setFormLayoutData(lblNamePh, lblName, 20, SWT.NONE, lblName, 0,
@@ -209,13 +215,16 @@ public class AccountEditorProvider {
 		setFormLayoutData(start, lblStart, 0, SWT.TOP, d, 5, SWT.NONE).width = 80;
 
 		
+		grp.pack();
+
 		// bottom
 		setFormLayoutData(lblMemo, lblDay, 20, SWT.NONE, lblName, 0, SWT.LEFT);
 		FormData fd = setFormLayoutData(memo, lblMemo, 0, SWT.NONE, lblName, 0,
 				SWT.LEFT);
-		fd.width = 350;
+		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
 		fd.height = 80;
 		setFormLayoutDataRight(detail, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
 		setFormLayoutDataRight(save, detail, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
+		
 	}
 }

@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -108,8 +109,15 @@ public class MainWindow {
 		SplashScreen splash= new SplashScreen("cn/sh/fang/chenance/splash.gif");
 		Display display = Display.getDefault();
 		MainWindow thisClass = new MainWindow();
-		thisClass.createSShell();
-		splash.close();
+		try {
+			thisClass.createSShell();
+		} catch (Exception e) {
+			MessageBox mb = new MessageBox(null);
+			mb.setMessage(e.getMessage());
+			mb.open();
+		} finally {
+			splash.close();
+		}
 		
 		thisClass.sShell.open();
 
@@ -276,12 +284,7 @@ public class MainWindow {
 		fd = setFormLayoutDataRight(btnAdd, tableTree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
 		fd.width = fd.height;
 		
-		setFormLayoutData(grp, 0, 0, tableTree, 20).width = 400;
-
-		formLayout = new FormLayout();
-		grp.setLayout(formLayout);
-		formLayout.marginHeight = 10;
-		formLayout.marginWidth = 10;
+		setFormLayoutData(grp, 0, 0, tableTree, 20);
 
 		return composite;
 	}
