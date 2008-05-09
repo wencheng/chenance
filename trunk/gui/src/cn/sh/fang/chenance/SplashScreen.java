@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JWindow;
@@ -58,7 +59,13 @@ public class SplashScreen extends JWindow implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		SplashScreen win = new SplashScreen("C:/Users/Wencheng/Desktop/yoGIF.gif");
+		SplashScreen win = new SplashScreen("cn/sh/fang/chenance/splash.gif");
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		win.close();
 	}
 
@@ -68,12 +75,17 @@ public class SplashScreen extends JWindow implements Runnable {
 	public void run() {
 		isAlive = true;
 		// use ImageIcon, so we don't need to use MediaTracker
-		Image image = new ImageIcon(imageFile).getImage();
+		URL url = this.getClass().getClassLoader().getResource(imageFile);
+		if ( url == null ) {
+			System.err.println("File " + imageFile
+					+ " was not found.");	
+		}
+		Image image = new ImageIcon(url).getImage();
 		int imageWidth = image.getWidth(this);
 		int imageHeight = image.getHeight(this);
 		if (imageWidth > 0 && imageHeight > 0) {
 			int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-			int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().width;
+			int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 			// a Rectangle centered on screen
 			rect = new Rectangle((screenWidth - imageWidth) / 2,
 					(screenHeight - imageHeight) / 2, imageWidth, imageHeight);
@@ -90,7 +102,7 @@ public class SplashScreen extends JWindow implements Runnable {
 			// draw the modified BufferedImage back into the same space
 			setBounds(rect);
 			// present our work :)
-			show();
+			setVisible(true);
 		} else {
 			System.err.println("File " + imageFile
 					+ " was not found or is not an image file.");
