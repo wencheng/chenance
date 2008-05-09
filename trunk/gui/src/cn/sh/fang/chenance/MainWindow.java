@@ -6,13 +6,15 @@ import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.log4j.Logger;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -29,6 +31,7 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -60,6 +63,8 @@ import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
 import cn.sh.fang.chenance.listener.AccountTabListener.AccountListSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountTabListener.AddAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountTabListener.DelAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.AccountTabListener.SaveAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
 import cn.sh.fang.chenance.listener.FileListener.FileSaveListener;
@@ -71,6 +76,7 @@ import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
+import cn.sh.fang.chenance.util.swt.ImageComboBoxCellEditor;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -160,6 +166,19 @@ public class MainWindow {
 		MenuItem menuItem2 = new MenuItem(menuBar, SWT.CASCADE);
 		menuItem2.setText(_("&Edit"));
 
+		// View
+		MenuItem viewMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+		viewMenuHeader.setText(_("&View"));
+		Menu viewMenu = new Menu(sShell, SWT.DROP_DOWN);
+		viewMenuHeader.setMenu(viewMenu);
+		MenuItem viewBsItem = new MenuItem(viewMenu, SWT.RADIO);
+		viewBsItem.setText(_("Balance Sheet"));
+//		viewBsItem.addSelectionListener(new ChangeLanguageListener(Locale.ENGLISH));
+		MenuItem viewInvItem = new MenuItem(viewMenu, SWT.RADIO);
+		viewInvItem.setText(_("Investment History"));
+		MenuItem viewAssetItem = new MenuItem(viewMenu, SWT.RADIO);
+		viewAssetItem.setText(_("Asset Management"));
+
 		// Lang
 		MenuItem langMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
 		langMenuHeader.setText(_("&Language"));
@@ -230,12 +249,20 @@ public class MainWindow {
 				| SWT.FULL_SELECTION);
 		AccountListProvider accountListProv = new AccountListProvider();
 		accountListProv.createControl(tableTree);
+		
+		// 追加ボタン
+		Button btnAdd = new Button(composite, SWT.PUSH);
+		btnAdd.setText("＋");
+		Button btnDel = new Button(composite, SWT.PUSH);
+		btnDel.setText("－");
 
 		// フォーム
 		AccountEditorProvider accountProv = new AccountEditorProvider();
 		Group grp = (Group)accountProv.createControl(composite);
 
 		// イベント
+		btnAdd.addSelectionListener(new AddAccountSelectionAdapter(tableTree));
+		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
 		tableTree.addSelectionListener(new AccountListSelectionAdapter(accountProv));
 		accountProv.save.addSelectionListener(new SaveAccountSelectionAdapter(accountProv));
 
@@ -249,6 +276,11 @@ public class MainWindow {
 		fd.height = 400;
 		fd.width = 175;
 
+		fd = setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE, tableTree, 0, SWT.RIGHT);
+		fd.width = fd.height;
+		fd = setFormLayoutDataRight(btnAdd, tableTree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
+		fd.width = fd.height;
+		
 		setFormLayoutData(grp, 0, 0, tableTree, 20).width = 400;
 
 		formLayout = new FormLayout();
@@ -454,9 +486,8 @@ public class MainWindow {
 		editors[Column.DATE.ordinal()] = dateEditor;
 
 		CategoryService service = new CategoryService();
-		ComboBoxCellEditor e = new ComboBoxCellEditor(table,
+		ImageComboBoxCellEditor e = new ImageComboBoxCellEditor(table,
 				toComboList(service.findAll()), SWT.READ_ONLY);
-		e.getLayoutData().minimumWidth = 30;
 		editors[Column.CATEGORY.ordinal()] = e;
 
 		TextCellEditor textEditor = new TextCellEditor(table);
@@ -496,15 +527,30 @@ public class MainWindow {
 		tableViewer.setInput(bs);
 	}
 
-	private String[] toComboList(List<Category> categories) {
-		String[] ret = new String[categories.size()];
+	static Image plus_img = ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/plus.gif"
+			).createImage();
+	static Image lvl1_img = ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/lvl1.gif"
+			).createImage();
+	static Image lvl2_img= ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/lvl2.gif"
+			).createImage();
+
+	private Map<String,Image> toComboList(List<Category> categories) {
+		LinkedMap ret = new LinkedMap(categories.size());
 		Category cat;
 		for (int i = 0; i < categories.size(); i++) {
 			cat = categories.get(i);
-			if (cat.getId() % 10000 == 0) {
-				ret[i] = " + " + cat.getName();
+			if (cat.getId() % 10000 != 0) {
+				ret.put("    "+cat.getName(),lvl2_img);
+			} else if (cat.getId() % 1000000 != 0) {
+				ret.put("  "+cat.getName(),lvl1_img);
 			} else {
-				ret[i] = " |--- " + cat.getName();
+				ret.put(cat.getName(),plus_img);
 			}
 		}
 		return ret;

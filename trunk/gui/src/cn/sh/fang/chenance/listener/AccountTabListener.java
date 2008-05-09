@@ -1,12 +1,17 @@
 package cn.sh.fang.chenance.listener;
 
+import static cn.sh.fang.chenance.util.UIMessageBundle._;
+
 import org.apache.log4j.Logger;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -25,6 +30,61 @@ public class AccountTabListener {
 				TableItem i = t.getItem(new Point(e.x, e.y));
 				System.out.println(i + " was d-clicked");
 			}
+		}
+	}
+	
+	public static class AddAccountSelectionAdapter extends SelectionAdapter {
+		
+		TableTree tree;
+
+		public AddAccountSelectionAdapter(TableTree t) {
+			this.tree = t;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			TableTreeItem parent = (TableTreeItem)tree.getItem(0);
+			TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
+			Account a = new Account();
+			a.setName(_("New Account"));
+			a.setDescription("");
+			ch.setText(a.getName());
+			ch.setData(a);
+			tree.setSelection(new TableTreeItem[]{ch});
+		}
+	}
+
+	public static class DelAccountSelectionAdapter extends SelectionAdapter {
+		
+		TableTree tree;
+
+		public DelAccountSelectionAdapter(TableTree t) {
+			this.tree = t;
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			if ( tree.getSelection().length <= 0 ) {
+				return;
+			}
+			MessageBox mb = new MessageBox(tree.getShell(),SWT.ICON_QUESTION|SWT.YES|SWT.NO);
+			mb.setMessage(_("ARE YOU SURE TO *PERMENANTLY DELETE* YOUR ACCOUNT?"));
+			if ( mb.open() == SWT.NO ) {
+				return;
+			}
+			mb = new MessageBox(tree.getShell(),SWT.ICON_WARNING|SWT.YES|SWT.NO);
+			mb.setMessage(_("ARE YOU *REALLY SURE*?"));
+			mb.open();
+			mb = new MessageBox(tree.getShell(),SWT.ICON_ERROR|SWT.YES|SWT.NO);
+			mb.setMessage(_("DELETION FAILED\n  All your account data maybe broken. " +
+					"Do you want to recover them?"));
+			if ( mb.open() == SWT.NO) {
+				return;
+			}
+			mb = new MessageBox(tree.getShell(),SWT.ICON_WORKING|SWT.OK);
+			mb.setMessage(_("This is a JOKE. ^-^\n" +
+					"Deleting function is still under construction."));
+			mb.open();
 		}
 	}
 
@@ -48,6 +108,7 @@ public class AccountTabListener {
 				// TODO add rest items
 				prov.save.setData(a);
 				prov.save.setEnabled(true);
+				prov.name.setFocus();
 			} else {
 				e.doit = true;
 //				prov.save.setData(null);
