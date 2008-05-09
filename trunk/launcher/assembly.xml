@@ -1,0 +1,35 @@
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<files>
+		<file>
+			<source>target/chenance.exe</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
+	</files>
+	<moduleSets>
+		<moduleSet>
+			<includes>
+				<include>cn.sh.fang.chenance:chenance-gui</include>
+				<include>cn.sh.fang.chenance:chenance-data</include>
+			</includes>
+			<binaries>
+				<outputDirectory>/</outputDirectory>
+				<unpack>false</unpack>
+				<dependencySets>
+          		<dependencySet>
+          		 <outputDirectory>lib/</outputDirectory>
+          		 </dependencySet>
+          		 </dependencySets>
+			</binaries>
+		</moduleSet>
+	</moduleSets>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+		</dependencySet>
+	</dependencySets>
+
+</assembly>

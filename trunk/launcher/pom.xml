@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cn.sh.fang</groupId>
+	<artifactId>chenance</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<modules>
+    	<module>../chenance-gui</module>
+    	<module>../chenance-data</module>
+  	</modules>
+	<repositories>
+		<repository>
+			<id>akathist-repository</id>
+			<name>Akathist Repository</name>
+			<url>http://www.9stmaryrd.com/maven</url>
+		</repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>l4j-clui</id>
+						<phase>build</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<outfile>target/chenance.exe</outfile>
+							<jar>target/chenance-gui-0.0.1-SNAPSHOT.jar</jar>
+							<customProcName>true</customProcName>
+							<dontWrapJar>false</dontWrapJar>
+							<errTitle>Chenance</errTitle>
+							<classPath>
+								<mainClass>
+									cn.sh.fang.chenance.MainWindow
+								</mainClass>
+								<addDependencies>true</addDependencies>
+								<jarLocation>lib/</jarLocation>
+								<preCp>anything</preCp>
+							</classPath>
+							<jre>
+								<minVersion>1.5.0</minVersion>
+							</jre>
+							<versionInfo>
+								<fileVersion>1.2.3.4</fileVersion>
+								<txtFileVersion>
+									txt file version?
+								</txtFileVersion>
+								<fileDescription>
+									a description
+								</fileDescription>
+								<copyright>my copyright</copyright>
+								<productVersion>4.3.2.1</productVersion>
+								<txtProductVersion>
+									txt product version
+								</txtProductVersion>
+								<productName>E-N-C-C</productName>
+								<internalName>ccne</internalName>
+								<originalFilename>
+									original.exe
+								</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-2</version>
+				<executions>
+					<execution>
+						<configuration>
+							<descriptors>
+								<descriptor>assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
