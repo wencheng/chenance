@@ -130,6 +130,9 @@ public class AccountTabListener {
 			super.widgetSelected(e);
 			LOG.debug(e);
 			Account a = (Account) prov.save.getData();
+			if ( a == null )
+				return;
+			
 			a.setName(prov.name.getText());
 			a.setDescription(prov.memo.getText());
 			// TODO add rest items

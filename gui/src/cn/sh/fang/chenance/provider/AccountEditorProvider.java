@@ -5,7 +5,6 @@ import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -23,6 +22,7 @@ public class AccountEditorProvider {
 	Label lblNamePh;
 	public Text namePh;
 	public Button save;
+	public Button detail;
 	public Text memo;
 	private Label lblType;
 	private Combo type;
@@ -122,8 +122,11 @@ public class AccountEditorProvider {
 		lblMemo.pack();
 		memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 
+		detail = new Button(grp, SWT.NONE);
+		detail.setText(_("&Options >>"));
+
 		save = new Button(grp, SWT.NONE);
-		save.setText(_("Save this account"));
+		save.setText(_("&Save this account"));
 
 		internalLayout();
 
@@ -212,6 +215,7 @@ public class AccountEditorProvider {
 				SWT.LEFT);
 		fd.width = 350;
 		fd.height = 80;
-		setFormLayoutDataRight(save, memo, 20, SWT.NONE, memo, 0, SWT.RIGHT).width = 80;
+		setFormLayoutDataRight(detail, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
+		setFormLayoutDataRight(save, detail, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
 	}
 }

@@ -105,17 +105,12 @@ public class MainWindow {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO 自動生成されたメソッド・スタブ
-		/*
-		 * Before this is run, be sure to set up the launch configuration
-		 * (Arguments->VM Arguments) for the correct SWT library path in order
-		 * to run with the SWT dlls. The dlls are located in the SWT plugin jar.
-		 * For example, on Windows the Eclipse SWT 3.1 plugin jar is:
-		 * installation_directory\plugins\org.eclipse.swt.win32_3.1.0.jar
-		 */
+		SplashScreen splash= new SplashScreen("cn/sh/fang/chenance/splash.gif");
 		Display display = Display.getDefault();
 		MainWindow thisClass = new MainWindow();
 		thisClass.createSShell();
+		splash.close();
+		
 		thisClass.sShell.open();
 
 		try {
