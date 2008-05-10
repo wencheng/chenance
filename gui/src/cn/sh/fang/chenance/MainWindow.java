@@ -114,12 +114,14 @@ public class MainWindow {
 			BaseService.createTable();
 			thisClass.createSShell();
 		} catch (Exception e) {
-			e.printStackTrace();
-//			MessageBox mb = new MessageBox(display.getActiveShell());
-//			mb.setMessage(e.getMessage());
-//			mb.open();
+			Shell shell = new Shell(display);
+			MessageBox mb = new MessageBox(shell);
+			mb.setMessage(e.getMessage());
+			mb.open();
+			return;
 		} finally {
 			splash.close();
+			display.dispose();
 		}
 
 		thisClass.sShell.open();
