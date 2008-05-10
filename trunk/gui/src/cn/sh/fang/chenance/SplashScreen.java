@@ -12,6 +12,8 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JWindow;
 
+import org.eclipse.swt.SWT;
+
 /**
  * A splash screen that produces the illusion of transparency for a top level
  * Container.
@@ -102,6 +104,7 @@ public class SplashScreen extends JWindow implements Runnable {
 			// draw the modified BufferedImage back into the same space
 			setBounds(rect);
 			// present our work :)
+			//setAlwaysOnTop(true);
 			setVisible(true);
 		} else {
 			System.err.println("File " + imageFile

@@ -67,6 +67,7 @@ import cn.sh.fang.chenance.listener.AccountTabListener.AccountListSelectionAdapt
 import cn.sh.fang.chenance.listener.AccountTabListener.AddAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.AccountTabListener.DelAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.AccountTabListener.SaveAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.FileListener.FileNewListener;
 import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
 import cn.sh.fang.chenance.listener.FileListener.FileSaveListener;
 import cn.sh.fang.chenance.provider.AccountEditorProvider;
@@ -110,15 +111,17 @@ public class MainWindow {
 		Display display = Display.getDefault();
 		MainWindow thisClass = new MainWindow();
 		try {
+			BaseService.createTable();
 			thisClass.createSShell();
 		} catch (Exception e) {
-			MessageBox mb = new MessageBox(null);
-			mb.setMessage(e.getMessage());
-			mb.open();
+			e.printStackTrace();
+//			MessageBox mb = new MessageBox(display.getActiveShell());
+//			mb.setMessage(e.getMessage());
+//			mb.open();
 		} finally {
 			splash.close();
 		}
-		
+
 		thisClass.sShell.open();
 
 		try {
@@ -158,6 +161,9 @@ public class MainWindow {
 		fileMenuHeader.setText(_("&File"));
 		Menu fileMenu = new Menu(sShell, SWT.DROP_DOWN);
 		fileMenuHeader.setMenu(fileMenu);
+		MenuItem fileNewItem = new MenuItem(fileMenu, SWT.PUSH);
+		fileNewItem.setText(_("&New"));
+		fileNewItem.addSelectionListener(new FileNewListener());
 		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
 		fileOpenItem.setText(_("&Open"));
 		fileOpenItem.addSelectionListener(new FileOpenListener());
