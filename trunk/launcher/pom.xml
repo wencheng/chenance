@@ -33,7 +33,9 @@
 						<configuration>
 							<headerType>gui</headerType>
 							<outfile>${basedir}/bin/chenance.exe</outfile>
+							<!-- 
 							<jar>chenance-gui-${version}.jar</jar>
+							 -->
 							<customProcName>true</customProcName>
 							<dontWrapJar>true</dontWrapJar>
 							<errTitle>Chenance</errTitle>
