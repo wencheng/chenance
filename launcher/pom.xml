@@ -51,17 +51,17 @@
 								<minVersion>1.5.0</minVersion>
 							</jre>
 							<versionInfo>
-								<fileVersion>1.2.3.4</fileVersion>
+								<fileVersion>0.1.0.0</fileVersion>
 								<txtFileVersion>
-									txt file version?
+									0.1.0.0
 								</txtFileVersion>
 								<fileDescription>
-									a description
+									Chenance executable launcher
 								</fileDescription>
-								<copyright>my copyright</copyright>
-								<productVersion>0.0.0.1</productVersion>
+								<copyright>Copyright (C)2008 Wencheng Fang</copyright>
+								<productVersion>0.1.0.0</productVersion>
 								<txtProductVersion>
-									txt product version
+									0.1
 								</txtProductVersion>
 								<productName>Chenance</productName>
 								<internalName>ccne</internalName>
@@ -80,7 +80,7 @@
 					<execution>
 						<configuration>
 							<descriptors>
-								<descriptor>assembly.xml</descriptor>
+								<descriptor>assembly-win32.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
