@@ -26,24 +26,27 @@
 				<inherited>false</inherited>
 				<executions>
 					<execution>
+						<phase>verify</phase>
 						<goals>
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>
 							<headerType>gui</headerType>
-							<outfile>target/chenance.exe</outfile>
-							<jar>${basedir}/../chenance-gui/target/chenance-gui-${project.version}.jar</jar>
+							<outfile>${basedir}/bin/chenance.exe</outfile>
+							<jar>chenance-gui-${version}.jar</jar>
 							<customProcName>true</customProcName>
-							<dontWrapJar>false</dontWrapJar>
+							<dontWrapJar>true</dontWrapJar>
 							<errTitle>Chenance</errTitle>
+							<!-- 
 							<classPath>
 								<mainClass>
 									cn.sh.fang.chenance.MainWindow
 								</mainClass>
 								<addDependencies>true</addDependencies>
 								<jarLocation>lib/</jarLocation>
-								<preCp>chenance-data-${project.version}.jar</preCp>
+								<preCp>anything</preCp>
 							</classPath>
+							 -->
 							<jre>
 								<minVersion>1.5.0</minVersion>
 							</jre>
@@ -56,7 +59,7 @@
 									a description
 								</fileDescription>
 								<copyright>my copyright</copyright>
-								<productVersion>${project.version}</productVersion>
+								<productVersion>0.0.0.1</productVersion>
 								<txtProductVersion>
 									txt product version
 								</txtProductVersion>
