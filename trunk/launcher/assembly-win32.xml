@@ -2,6 +2,7 @@
 	<id>win32</id>
 	<formats>
 		<format>dir</format>
+		<format>zip</format>
 	</formats>
 	<files>
 		<file>
