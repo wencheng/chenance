@@ -1,14 +1,6 @@
-#Fri May 09 10:22:31 JST 2008
+#Sat May 10 17:52:55 JST 2008
 eclipse.preferences.version=1
 encoding//schema/jet/Pojo.java.jet=UTF-8
-encoding//schema/sql/common-columns/Account.sql=UTF-8
-encoding//schema/sql/common-columns/Asset.sql=UTF-8
-encoding//schema/sql/common-columns/Category.sql=UTF-8
-encoding//schema/sql/common-columns/Investment.sql=UTF-8
-encoding//schema/sql/common-columns/ReceiptItem.sql=UTF-8
-encoding//schema/sql/common-columns/RepeatPayment.sql=UTF-8
-encoding//schema/sql/common-columns/Transaction.sql=UTF-8
-encoding//schema/sql/db.sql=Shift-JIS
 encoding//src/cn/sh/fang/chenance/data/dao/AccountService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/AssetService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/CategoryService.java=UTF-8

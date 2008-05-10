@@ -6,10 +6,10 @@
 	<name></name>
 	<description></description>
 	<parent>
-    	<groupId>cn.sh.fang</groupId>
-    	<artifactId>chenance</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    	<relativePath>../chenance</relativePath>
+		<groupId>cn.sh.fang</groupId>
+		<artifactId>chenance</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../chenance</relativePath>
 	</parent>
 	<repositories>
 		<repository>
@@ -55,7 +55,7 @@
 				<configuration>
 					<driver>org.h2.Driver</driver>
 					<url>
-						jdbc:h2:C:/Users/Wencheng/Desktop/chenance/jpa/h2db/db/
+						jdbc:h2:${user.home}/chenance/db/
 					</url>
 					<username>sa</username>
 					<password></password>
@@ -70,14 +70,20 @@
 							<autocommit>true</autocommit>
 							<encoding>Shift-JIS</encoding>
 							<srcFiles>
-								<srcFile>schema/sql/drop.sql</srcFile>
-								<srcFile>schema/sql/db.sql</srcFile>
+								<srcFile>
+									src/cn/sh/fang/chenance/data/sql/drop.sql
+								</srcFile>
+								<srcFile>
+									src/cn/sh/fang/chenance/data/sql/db.sql
+								</srcFile>
 							</srcFiles>
 							<fileset>
-								<basedir>${basedir}</basedir>
+								<basedir>
+									${basedir}/src/cn/sh/fang/chenance/data/sql
+								</basedir>
 								<includes>
 									<include>
-										schema/sql/common-columns/*.sql
+										common-columns/*.sql
 									</include>
 								</includes>
 							</fileset>
@@ -115,6 +121,12 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.0.71</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
