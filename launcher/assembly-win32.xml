@@ -1,11 +1,11 @@
 <assembly>
-	<id>bin</id>
+	<id>win32</id>
 	<formats>
 		<format>dir</format>
 	</formats>
 	<files>
 		<file>
-			<source>target/chenance.exe</source>
+			<source>bin/win32/chenance.exe</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>
@@ -19,10 +19,10 @@
 				<outputDirectory>/</outputDirectory>
 				<unpack>false</unpack>
 				<dependencySets>
-          		<dependencySet>
-          		 <outputDirectory>lib/</outputDirectory>
-          		 </dependencySet>
-          		 </dependencySets>
+					<dependencySet>
+						<outputDirectory>lib/</outputDirectory>
+					</dependencySet>
+				</dependencySets>
 			</binaries>
 		</moduleSet>
 	</moduleSets>
