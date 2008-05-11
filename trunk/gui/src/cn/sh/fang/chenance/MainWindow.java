@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -76,6 +77,7 @@ import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
+import cn.sh.fang.chenance.provider.CategoryListContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
 import cn.sh.fang.chenance.util.swt.ImageComboBoxCellEditor;
@@ -101,6 +103,8 @@ public class MainWindow {
 
 	private Table table;
 	private TableViewer tableViewer;
+	Table accountListTable;
+
 	BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
 
 	/**
@@ -118,10 +122,10 @@ public class MainWindow {
 			MessageBox mb = new MessageBox(shell);
 			mb.setMessage(e.getMessage());
 			mb.open();
+			display.dispose();
 			return;
 		} finally {
 			splash.close();
-			display.dispose();
 		}
 
 		thisClass.sShell.open();
@@ -243,15 +247,51 @@ public class MainWindow {
 		item1.setText(_("Balance"));
 		item1.setControl(getBalanceSheetTabControl(tabFolder));
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
-		item2.setText(_("Invests"));
+		item2.setText(_("Category"));
+		item2.setControl(getCategoryTabControl(tabFolder));
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		item3.setText(_("Accounts"));
 		item3.setControl(getAccountTabControl(tabFolder));
 		tabFolder.setSize(sShell.getSize());
 	}
-
-	Table accountListTable;
 	
+	private Control getCategoryTabControl(TabFolder tabFolder) {
+		Composite comp = new Composite(tabFolder, SWT.NONE);
+
+		// ツリー
+		TreeViewer treeViewer = new TreeViewer(comp);
+		treeViewer.setContentProvider(new CategoryListContentProvider());
+		treeViewer.setLabelProvider(new CategoryListLabelProvider());
+		treeViewer.setInput(getInitalInput());
+		treeViewer.expandAll();
+
+		// 追加ボタン
+		Button btnAdd = new Button(comp, SWT.PUSH);
+		btnAdd.setText("＋");
+		Button btnDel = new Button(comp, SWT.PUSH);
+		btnDel.setText("－");
+
+		btnAdd.addSelectionListener(new AddCategorySelectionAdapter(tableTree));
+		btnDel.addSelectionListener(new DelCategorySelectionAdapter(tableTree));
+
+		// レイアウト
+		FormLayout formLayout = new FormLayout();
+		comp.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+
+		FormData fd = setFormLayoutData(tableTree, 0, 0, 0, 10);
+		fd.height = 400;
+		fd.width = 175;
+
+		fd = setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE, tableTree, 0, SWT.RIGHT);
+		fd.width = fd.height;
+		fd = setFormLayoutDataRight(btnAdd, tableTree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
+		fd.width = fd.height;
+		
+		return comp;
+	}
+
 	private Control getAccountTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 

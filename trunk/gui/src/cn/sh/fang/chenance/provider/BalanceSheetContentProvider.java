@@ -133,6 +133,9 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 	 */
 	public void addTask() {
 		Transaction t = new Transaction();
+		t.setDate(new Date());
+		t.setDebit(0);
+		t.setCredit(0);
 		this.transactions.add(t);
 		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
 		while (iterator.hasNext())

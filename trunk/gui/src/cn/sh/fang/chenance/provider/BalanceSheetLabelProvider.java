@@ -103,8 +103,12 @@ public class BalanceSheetLabelProvider
 	}
 	
 	protected static String getDetailLabel(Transaction t) {
+		String ret = "";
 		// TODO implement this
-		return "定期";
+		if ( t.getRepeatPayment() != null ) {
+			ret += "定期" + ",";
+		}
+		return ret;
 	}
 
 	/**
