@@ -30,7 +30,10 @@ INSERT INTO t_account (id, name, description, bank_name)
 CREATE TABLE t_category (
   id IDENTITY NOT NULL PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
-  description VARCHAR(200)
+  description VARCHAR(200),
+  parent_id BIGINT,
+  FOREIGN KEY (parent_id)
+    REFERENCES t_category(id)
 );
 
 INSERT INTO t_category (id, name, description)

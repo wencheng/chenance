@@ -30,16 +30,15 @@ public abstract class BaseService {
 	static EntityTransaction t;
 	static String filepath = System.getProperty("user.home") + "/chenance/db";
 
-	static {
-		// TODO allow user to open their own db
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("hibernate.connection.url", "jdbc:h2:" + filepath);
-
-		factory = Persistence
-				.createEntityManagerFactory("chenance-data", props);
-	}
-
 	public BaseService() {
+		if ( factory == null ) {
+			// TODO allow user to open their own db
+			HashMap<String, String> props = new HashMap<String, String>();
+			props.put("hibernate.connection.url", "jdbc:h2:" + filepath);
+			factory = Persistence
+					.createEntityManagerFactory("chenance-data", props);
+		}
+		
 		if (em == null) {
 			em = factory.createEntityManager();
 			em.setFlushMode(FlushModeType.AUTO);

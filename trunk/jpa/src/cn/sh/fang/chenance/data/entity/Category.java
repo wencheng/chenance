@@ -57,7 +57,15 @@ public class Category extends BaseEntity {
         this.name = name;
     }
 
-    public List<Category> getChildren() {
+    public Category getParent() {
+		return parent;
+	}
+
+	public void setParent(Category parent) {
+		this.parent = parent;
+	}
+
+	public List<Category> getChildren() {
         return this.children;
     }
 
