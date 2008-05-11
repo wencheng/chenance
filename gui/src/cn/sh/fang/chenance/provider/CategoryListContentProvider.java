@@ -1,35 +1,40 @@
 package cn.sh.fang.chenance.provider;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import cn.sh.fang.chenance.data.dao.AccountService;
+import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.listener.AccountTabListener.AccountListMouseAdapter;
+import cn.sh.fang.chenance.util.swt.SWTUtil;
 
 public class CategoryListContentProvider implements ITreeContentProvider {
 
-	ArrayList<Category> cats = new ArrayList<Category>();
+	List<Category> cats;
+	private TreeViewer viewer;
 
 	public CategoryListContentProvider() {
 		this.initData();
 	}
 
 	private void initData() {
-		O
+		CategoryService service = new CategoryService();
+		cats = service.getTops();
 	}
 
 	public Table createControl(TableTree tableTree) {
@@ -74,12 +79,10 @@ public class CategoryListContentProvider implements ITreeContentProvider {
 		return table;
 	}
 
-	@Override
 	public Object[] getElements(Object arg0) {
 		return getChildren(arg0);
 	}
 
-	@Override
 	public Object[] getChildren(Object obj) {
 		if (obj instanceof Category) {
 			Category c = (Category) obj;
@@ -88,31 +91,55 @@ public class CategoryListContentProvider implements ITreeContentProvider {
 		return new Object[0];
 	}
 
-	@Override
 	public Object getParent(Object arg0) {
 		return ((Category)arg0).getParent();
 	}
 
-	@Override
 	public boolean hasChildren(Object arg0) {
 		return ((Category)arg0).getChildren() != null;
 	}
 
-	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = (TreeViewer) viewer;
-		if (oldInput != null) {
-			removeListenerFrom((Category) oldInput);
+//		if (oldInput != null) {
+//			removeListenerFrom((Category) oldInput);
+//		}
+//		if (newInput != null) {
+//			addListenerTo((Category) newInput);
+//		}
+	}
+
+	public class AddCategorySelectionAdapter extends SelectionAdapter {
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			super.widgetSelected(e);
+
+			if ( viewer.getSelection().isEmpty() ) {
+				SWTUtil.showErrorMessage(viewer.getControl().getShell(),
+						"You cannot add root category.  Please select a category.");
+				return;
+			}
+			
+			Category parent = (Category)((IStructuredSelection)viewer.getSelection()).getFirstElement();
+			Category c = new Category();
+			c.setParent(parent);
+			c.setName("New category");
+			viewer.add(parent, c);
 		}
-		if (newInput != null) {
-			addListenerTo((Category) newInput);
+	}
+	
+	public class DelCategorySelectionAdapter extends SelectionAdapter {
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			// TODO Auto-generated method stub
+			super.widgetSelected(e);
 		}
+		
 	}
 
 }

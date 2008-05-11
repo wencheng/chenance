@@ -4,6 +4,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 
 public class SWTUtil {
 
@@ -60,5 +62,13 @@ public class SWTUtil {
 		c.setLayoutData(layoutData);
 		return layoutData;
 	}
+
+	public static void showErrorMessage(Shell shell, String msg) {
+		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+		mb.setText("Chenance");
+		mb.setMessage(msg);
+		mb.open();
+	}
+
 
 }
