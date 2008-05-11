@@ -1,6 +1,15 @@
 package cn.sh.fang.chenance.data.entity;
 
-import javax.persistence.*;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 @Table(name="t_category")
 @Entity
@@ -14,6 +23,15 @@ public class Category extends BaseEntity {
 
     @Column(name="description")
     private String description;
+    
+    @ManyToOne
+    @JoinColumn(name="parent_id")
+    Category parent;
+
+    @OneToMany(mappedBy="parent")
+    @JoinColumn(name="id")
+    @OrderBy("id")
+    List<Category> children;
 
     public Integer getId() {
         return this.id;
@@ -38,5 +56,9 @@ public class Category extends BaseEntity {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    public List<Category> getChildren() {
+        return this.children;
+    }
+
 }
