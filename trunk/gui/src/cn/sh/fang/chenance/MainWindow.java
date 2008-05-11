@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
@@ -78,6 +79,7 @@ import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.CategoryListContentProvider;
+import cn.sh.fang.chenance.provider.CategoryListLabelProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
 import cn.sh.fang.chenance.util.swt.ImageComboBoxCellEditor;
@@ -111,21 +113,22 @@ public class MainWindow {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SplashScreen splash= new SplashScreen("cn/sh/fang/chenance/splash.gif");
+		//SplashScreen splash= new SplashScreen("cn/sh/fang/chenance/splash.gif");
 		Display display = Display.getDefault();
 		MainWindow thisClass = new MainWindow();
 		try {
 			BaseService.createTable();
 			thisClass.createSShell();
 		} catch (Exception e) {
-			Shell shell = new Shell(display);
-			MessageBox mb = new MessageBox(shell);
-			mb.setMessage(e.getMessage());
-			mb.open();
+			//Shell shell = new Shell(display);
+//			MessageBox mb = new MessageBox(shell);
+			//mb.setMessage(e.getMessage());
+			e.printStackTrace();
+//			mb.open();
 			display.dispose();
 			return;
 		} finally {
-			splash.close();
+			//splash.close();
 		}
 
 		thisClass.sShell.open();
@@ -260,9 +263,10 @@ public class MainWindow {
 
 		// ツリー
 		TreeViewer treeViewer = new TreeViewer(comp);
-		treeViewer.setContentProvider(new CategoryListContentProvider());
+		CategoryListContentProvider prov = new CategoryListContentProvider();
+		treeViewer.setContentProvider(prov);
 		treeViewer.setLabelProvider(new CategoryListLabelProvider());
-		treeViewer.setInput(getInitalInput());
+		treeViewer.setInput(prov);
 		treeViewer.expandAll();
 
 		// 追加ボタン
@@ -271,8 +275,8 @@ public class MainWindow {
 		Button btnDel = new Button(comp, SWT.PUSH);
 		btnDel.setText("－");
 
-		btnAdd.addSelectionListener(new AddCategorySelectionAdapter(tableTree));
-		btnDel.addSelectionListener(new DelCategorySelectionAdapter(tableTree));
+		btnAdd.addSelectionListener(prov.new AddCategorySelectionAdapter());
+		btnDel.addSelectionListener(prov.new DelCategorySelectionAdapter());
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
@@ -280,13 +284,14 @@ public class MainWindow {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 
-		FormData fd = setFormLayoutData(tableTree, 0, 0, 0, 10);
+		Tree tree = treeViewer.getTree();
+		FormData fd = setFormLayoutData(tree, 0, 0, 0, 10);
 		fd.height = 400;
 		fd.width = 175;
 
-		fd = setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE, tableTree, 0, SWT.RIGHT);
+		fd = setFormLayoutDataRight(btnDel, tree, 2, SWT.NONE, tree, 0, SWT.RIGHT);
 		fd.width = fd.height;
-		fd = setFormLayoutDataRight(btnAdd, tableTree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
+		fd = setFormLayoutDataRight(btnAdd, tree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
 		fd.width = fd.height;
 		
 		return comp;
