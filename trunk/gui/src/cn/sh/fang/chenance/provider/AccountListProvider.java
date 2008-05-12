@@ -1,5 +1,7 @@
 package cn.sh.fang.chenance.provider;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -12,39 +14,42 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
-import cn.sh.fang.chenance.listener.AccountTabListener.AccountListMouseAdapter;
+import cn.sh.fang.chenance.listener.AccountListListener.AccountListMouseAdapter;
 
 public class AccountListProvider {
+	
+	Table table;
+	
+	// Account.id <-> TableTreeItem
+	HashMap<Integer,TableTreeItem> items = null;
 
-	public AccountListProvider() {
+	private TableTree tableTree;
+
+	private TableTreeItem sum;
+
+	public AccountListProvider(TableTree tableTree) {
+		this.tableTree = tableTree;
 	}
 	
-	public Table createControl(TableTree tableTree) {
-		Table accountListTable = tableTree.getTable();
-		accountListTable.setHeaderVisible(false);
-		accountListTable.setLinesVisible(false);
-		accountListTable.addMouseListener(new AccountListMouseAdapter());
+	public Table createControl() {
+		table = tableTree.getTable();
+		table.setHeaderVisible(false);
+		table.setLinesVisible(false);
+		table.addMouseListener(new AccountListMouseAdapter());
 
-		AccountService service = new AccountService();
-		List<Account> accounts = service.findAll();
-
-		TableColumn col1 = new TableColumn(accountListTable, SWT.LEFT);
-		TableColumn col2 = new TableColumn(accountListTable, SWT.RIGHT);
+		TableColumn col1 = new TableColumn(table, SWT.LEFT);
+		TableColumn col2 = new TableColumn(table, SWT.RIGHT);
 		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
 		parent.setText(0, "口座");
 		parent.setText(1, "");
-		int balanceSum = 0;
-		for (Account a : accounts) {
-			TableTreeItem child = new TableTreeItem(parent, SWT.NONE);
-			child.setText(0, a.getName());
-			child.setText(1, a.getCurrentBalance() + "");
-			child.setData(a);
-			balanceSum += a.getCurrentBalance();
-		}
-		parent.setExpanded(true);
-		TableTreeItem sum = new TableTreeItem(tableTree, SWT.NONE);
+		items = new HashMap<Integer,TableTreeItem>();
+		sum = new TableTreeItem(tableTree, SWT.NONE);
 		sum.setText(0, "残高の合計");
-		sum.setText(1, balanceSum + "");
+
+		updateList();
+
+		parent.setExpanded(true);
+
 		col1.pack();
 		col1.setResizable(false);
 		// col1.setWidth(col1.getWidth() + 20);
@@ -58,6 +63,27 @@ public class AccountListProvider {
 		parent.setFont(newFont);
 		sum.setFont(newFont);
 		
-		return accountListTable;
+		return table;
 	}
+	
+	public void updateList() {
+		AccountService service = new AccountService();
+		List<Account> accounts = service.findAll();
+
+		TableTreeItem i;
+		int balanceSum = 0;
+		for ( Account a : accounts ) {
+			i = items.get(a.getId());
+			if ( i == null ) {
+				i = new TableTreeItem(this.tableTree.getItem(0), SWT.NONE);
+				balanceSum += a.getCurrentBalance();
+				items.put(a.getId(), i);
+			}
+			i.setText(0, a.getName());
+			i.setText(1, a.getCurrentBalance() + "");
+			i.setData(a);
+		}
+		sum.setText(1, balanceSum + "");
+	}
+	
 }

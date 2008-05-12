@@ -14,5 +14,5 @@ public interface IBalanceSheetListener {
 	 * 
 	 * @param task
 	 */
-	public void updateTask(Transaction task);
+	public void updateRecord(Transaction task);
 }

@@ -107,6 +107,9 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 				new StructuredSelection(t));
 		this.tableViewer.getTable().showSelection();
 		this.tableViewer.editElement(t, Column.CATEGORY.ordinal());
+		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
+		while (iterator.hasNext())
+			((IBalanceSheetListener) iterator.next()).addRecord(t);
 	}
 
 	public void removeRecord(Transaction t) {
@@ -123,7 +126,7 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 			((IBalanceSheetListener) iterator.next()).removeRecord(t);
 	}
 
-	public void updateTask(Transaction task) {
+	public void updateRecord(Transaction task) {
 		// TODO 自動生成されたメソッド・スタブ
 
 	}
@@ -137,9 +140,6 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 		t.setDebit(0);
 		t.setCredit(0);
 		this.transactions.add(t);
-		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
-		while (iterator.hasNext())
-			((IBalanceSheetListener) iterator.next()).addRecord(t);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 	public void taskChanged(Transaction t) {
 		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IBalanceSheetListener) iterator.next()).updateTask(t);
+			((IBalanceSheetListener) iterator.next()).updateRecord(t);
 	}
 
 	public void setTableViewer(TableViewer tableViewer) {
