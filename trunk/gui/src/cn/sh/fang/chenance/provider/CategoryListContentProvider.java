@@ -25,8 +25,10 @@ import cn.sh.fang.chenance.util.swt.SWTUtil;
 
 public class CategoryListContentProvider implements ITreeContentProvider {
 
-	List<Category> cats;
+	
+	List<Category> tops;
 	private TreeViewer viewer;
+	private Category root;
 
 	public CategoryListContentProvider() {
 		this.initData();
@@ -34,7 +36,13 @@ public class CategoryListContentProvider implements ITreeContentProvider {
 
 	private void initData() {
 		CategoryService service = new CategoryService();
-		cats = service.getTops();
+		tops = service.getTops();
+		this.root = new Category();
+		root.setChildren(tops);
+	}
+	
+	public Category getRoot() {
+		return root;
 	}
 
 	public Table createControl(TableTree tableTree) {
@@ -84,8 +92,14 @@ public class CategoryListContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object obj) {
+		if ( obj == null ) {
+			return null;
+		}
+		
 		if (obj instanceof Category) {
 			Category c = (Category) obj;
+			System.out.println(c);
+			System.out.println(c.getChildren());
 			return c.getChildren().toArray();
 		}
 		return new Object[0];
