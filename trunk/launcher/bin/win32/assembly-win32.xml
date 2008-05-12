@@ -27,10 +27,4 @@
 			</binaries>
 		</moduleSet>
 	</moduleSets>
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-		</dependencySet>
-	</dependencySets>
-
 </assembly>
