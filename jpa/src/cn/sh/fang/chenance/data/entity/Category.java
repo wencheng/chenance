@@ -1,9 +1,11 @@
 package cn.sh.fang.chenance.data.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,9 +18,13 @@ import javax.persistence.Table;
 public class Category extends BaseEntity {
 
     @Id
+    @GeneratedValue
     private Integer id;
     
-    @Column(name="name")
+    @Column(name="code")
+	private Integer code;
+
+	@Column(name="name")
     private String name;
 
     @Column(name="description")
@@ -30,7 +36,7 @@ public class Category extends BaseEntity {
 
     @OneToMany(mappedBy="parent")
     @OrderBy("id")
-    List<Category> children;
+    List<Category> children = new ArrayList<Category>();;
 
     public Integer getId() {
         return this.id;
@@ -71,4 +77,17 @@ public class Category extends BaseEntity {
 	public void setChildren(List<Category> cats) {
 		this.children = cats;
 	}
+
+	public void appendChild(Category c) {
+		this.children.add(c);
+	}
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+	
 }

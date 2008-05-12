@@ -19,7 +19,7 @@ public class AccountService extends BaseService {
     public void save(Account entity) {
         if (entity.getId() == null) {
             // new
-            entity.setInsertDatetime(new Date());
+        	entity.setInsertDatetime(new Date());
             em.persist(entity);
         } else {
             // update

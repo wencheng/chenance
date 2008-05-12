@@ -1,6 +1,6 @@
 /**
  * SQL genereted by Jiemamy
- * Create: 2008/05/12 10:47:05
+ * Create: 2008/05/12 17:52:11
  */
 
 -- define: t_account
@@ -29,6 +29,7 @@ INSERT INTO t_account (id, name, description, bank_name)
 -- define: t_category
 CREATE TABLE t_category (
   id IDENTITY NOT NULL PRIMARY KEY,
+  code BIGINT NOT NULL,
   name VARCHAR(50) NOT NULL,
   description VARCHAR(200),
   parent_id BIGINT,
@@ -36,20 +37,20 @@ CREATE TABLE t_category (
     REFERENCES t_category (id)
 );
 
-INSERT INTO t_category (id, name, description)
-  VALUES (1000000, 'debit', '');
-INSERT INTO t_category (id, name, parent_id)
-  VALUES (1010000, '食費', 1000000);
-INSERT INTO t_category (id, name, parent_id)
-  VALUES (1010100, '外食', 1010100);
-INSERT INTO t_category (id, name, description, parent_id)
-  VALUES (2000000, 'credit', '', NULL);
-INSERT INTO t_category (id, name, parent_id)
-  VALUES (2010000, '給与', 2000000);
-INSERT INTO t_category (id, name, parent_id)
-  VALUES (2010100, '会社', 2010000);
-INSERT INTO t_category (id, name, description)
-  VALUES (3000000, 'transfer', '');
+INSERT INTO t_category (id, name, description, parent_id, code)
+  VALUES (1, 'debit', '', NULL, 1000000);
+INSERT INTO t_category (id, name, parent_id, description, code)
+  VALUES (2, '食費', 1, '飲食にかかったお金', 1010000);
+INSERT INTO t_category (id, name, parent_id, description, code)
+  VALUES (3, '外食', 2, '外食の消費', 1010100);
+INSERT INTO t_category (id, name, description, parent_id, code)
+  VALUES (4, 'credit', '', NULL, 2000000);
+INSERT INTO t_category (id, name, parent_id, description, code)
+  VALUES (5, '給与', 4, '給料やボーナス', 2010000);
+INSERT INTO t_category (id, name, parent_id, description, code)
+  VALUES (6, '会社', 5, '平日出勤の会社から', 2010100);
+INSERT INTO t_category (id, name, description, code, parent_id)
+  VALUES (7, 'transfer', '', 3000000, NULL);
 
 
 -- define: t_repeat_payment
@@ -142,5 +143,9 @@ CREATE TABLE t_setting (
   value VARCHAR
 );
 
+INSERT INTO t_setting (key, value)
+  VALUES ('chenance.version', '0.0.1');
+INSERT INTO t_setting (key, value)
+  VALUES ('chenance.data.version', '1.0');
 
 
