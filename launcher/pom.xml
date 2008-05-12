@@ -8,9 +8,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
-    	<module>../chenance-gui</module>
-    	<module>../chenance-data</module>
-  	</modules>
+		<module>../gui</module>
+		<module>../data</module>
+	</modules>
 	<repositories>
 		<repository>
 			<id>akathist-repository</id>
@@ -26,41 +26,45 @@
 				<inherited>false</inherited>
 				<executions>
 					<execution>
-						<phase>verify</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>launch4j</goal>
 						</goals>
 						<configuration>
 							<headerType>gui</headerType>
-							<outfile>${basedir}/bin/chenance.exe</outfile>
-							<!-- 
-							<jar>chenance-gui-${version}.jar</jar>
-							 -->
+							<outfile>
+								${basedir}/bin/chenance.exe
+							</outfile>
+							<jar>dummy.jar</jar>
 							<customProcName>true</customProcName>
 							<dontWrapJar>true</dontWrapJar>
 							<errTitle>Chenance</errTitle>
-							<!-- 
 							<classPath>
 								<mainClass>
 									cn.sh.fang.chenance.MainWindow
 								</mainClass>
-								<addDependencies>true</addDependencies>
-								<jarLocation>lib/</jarLocation>
-								<preCp>anything</preCp>
+								<preCp>
+									chenance-gui-${version}.jar;chenance-data-${version}.jar
+								</preCp>
 							</classPath>
-							 -->
+							<singleInstance>
+								<mutexName>
+									cn.sh.fang.chenance
+								</mutexName>
+								<windowTitle></windowTitle>
+							</singleInstance>
 							<jre>
 								<minVersion>1.5.0</minVersion>
 							</jre>
 							<versionInfo>
 								<fileVersion>0.1.0.0</fileVersion>
-								<txtFileVersion>
-									0.1.0.0
-								</txtFileVersion>
+								<txtFileVersion>0.1.0.0</txtFileVersion>
 								<fileDescription>
 									Chenance executable launcher
 								</fileDescription>
-								<copyright>Copyright (C)2008 Wencheng Fang</copyright>
+								<copyright>
+									Copyright (C)2008 Wencheng Fang
+								</copyright>
 								<productVersion>0.1.0.0</productVersion>
 								<txtProductVersion>
 									0.1
@@ -82,7 +86,12 @@
 					<execution>
 						<configuration>
 							<descriptors>
-								<descriptor>assembly-win32.xml</descriptor>
+								<descriptor>
+									bin/win32/assembly.xml
+								</descriptor>
+								<descriptor>
+									bin/zip/assembly.xml
+								</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
