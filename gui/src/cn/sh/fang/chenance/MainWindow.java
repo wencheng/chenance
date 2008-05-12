@@ -4,6 +4,7 @@ import static cn.sh.fang.chenance.util.UIMessageBundle._;
 import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -120,11 +121,11 @@ public class MainWindow {
 			BaseService.createTable();
 			thisClass.createSShell();
 		} catch (Exception e) {
-			//Shell shell = new Shell(display);
-//			MessageBox mb = new MessageBox(shell);
-			//mb.setMessage(e.getMessage());
 			e.printStackTrace();
-//			mb.open();
+			Shell shell = new Shell(display);
+			MessageBox mb = new MessageBox(shell);
+			mb.setMessage(e.getMessage());
+			mb.open();
 			display.dispose();
 			return;
 		} finally {
@@ -263,10 +264,11 @@ public class MainWindow {
 
 		// ツリー
 		TreeViewer treeViewer = new TreeViewer(comp);
+		Tree tree = treeViewer.getTree();
 		CategoryListContentProvider prov = new CategoryListContentProvider();
 		treeViewer.setContentProvider(prov);
 		treeViewer.setLabelProvider(new CategoryListLabelProvider());
-		treeViewer.setInput(prov);
+		treeViewer.setInput(prov.getRoot());
 		treeViewer.expandAll();
 
 		// 追加ボタン
@@ -284,7 +286,6 @@ public class MainWindow {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 
-		Tree tree = treeViewer.getTree();
 		FormData fd = setFormLayoutData(tree, 0, 0, 0, 10);
 		fd.height = 400;
 		fd.width = 175;
