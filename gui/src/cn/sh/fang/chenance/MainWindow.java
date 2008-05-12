@@ -4,7 +4,6 @@ import static cn.sh.fang.chenance.util.UIMessageBundle._;
 import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -16,15 +15,16 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.TableTree;
-import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -65,11 +65,12 @@ import org.eclipse.swt.widgets.Tree;
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
-import cn.sh.fang.chenance.listener.AccountTabListener.AccountListSelectionAdapter;
-import cn.sh.fang.chenance.listener.AccountTabListener.AddAccountSelectionAdapter;
-import cn.sh.fang.chenance.listener.AccountTabListener.DelAccountSelectionAdapter;
-import cn.sh.fang.chenance.listener.AccountTabListener.SaveAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountListListener.AccountListSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountListListener.AddAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.AccountListListener.SaveAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.FileListener.FileNewListener;
 import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
 import cn.sh.fang.chenance.listener.FileListener.FileSaveListener;
@@ -81,6 +82,7 @@ import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.CategoryListContentProvider;
 import cn.sh.fang.chenance.provider.CategoryListLabelProvider;
+import cn.sh.fang.chenance.provider.IBalanceSheetListener;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
 import cn.sh.fang.chenance.util.swt.ImageComboBoxCellEditor;
@@ -139,7 +141,7 @@ public class MainWindow {
 				if (!display.readAndDispatch())
 					display.sleep();
 			}
-		} catch (SWTException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			BaseService.shutdown();
@@ -258,20 +260,31 @@ public class MainWindow {
 		item3.setControl(getAccountTabControl(tabFolder));
 		tabFolder.setSize(sShell.getSize());
 	}
-	
+
 	private Control getCategoryTabControl(TabFolder tabFolder) {
 		Composite comp = new Composite(tabFolder, SWT.NONE);
 
 		// ツリー
-		TreeViewer treeViewer = new TreeViewer(comp);
+		TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER);
 		Tree tree = treeViewer.getTree();
 		CategoryListContentProvider prov = new CategoryListContentProvider();
 		treeViewer.setContentProvider(prov);
 		treeViewer.setLabelProvider(new CategoryListLabelProvider());
 		treeViewer.setInput(prov.getRoot());
 		treeViewer.expandAll();
+		
+		// 編集欄
+		Label lblName = new Label(comp, SWT.NONE);
+		lblName.setText(_("Display Name:"));
+		final Text name = new Text(comp, SWT.BORDER);
+		Label lblDesc = new Label(comp, SWT.NONE);
+		lblDesc.setText(_("Description:"));
+		final Text desc = new Text(comp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		final Button btnSave= new Button(comp, SWT.PUSH);
+		btnSave.setText(_("Save"));
+		btnSave.setEnabled(false);
 
-		// 追加ボタン
+		// 追加削除ボタン
 		Button btnAdd = new Button(comp, SWT.PUSH);
 		btnAdd.setText("＋");
 		Button btnDel = new Button(comp, SWT.PUSH);
@@ -279,22 +292,49 @@ public class MainWindow {
 
 		btnAdd.addSelectionListener(prov.new AddCategorySelectionAdapter());
 		btnDel.addSelectionListener(prov.new DelCategorySelectionAdapter());
+		btnSave.addSelectionListener(prov.new SaveCategorySelectionAdapter());
+
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener(){
+			public void selectionChanged(SelectionChangedEvent e) {
+				if ( e.getSelection() != null ) {
+					Category c = (Category)((IStructuredSelection)e.getSelection()).getFirstElement();
+					
+					boolean editable = c.getParent() != null;
+					name.setEditable(editable);
+					desc.setEditable(editable);
+					btnSave.setEnabled(editable);
+
+					name.setText(c.getName());
+					desc.setText(c.getDescription());
+					
+					name.setFocus();
+					name.selectAll();
+				}
+			}
+		});
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
 		comp.setLayout(formLayout);
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
-
+ 
 		FormData fd = setFormLayoutData(tree, 0, 0, 0, 10);
 		fd.height = 400;
 		fd.width = 175;
-
 		fd = setFormLayoutDataRight(btnDel, tree, 2, SWT.NONE, tree, 0, SWT.RIGHT);
 		fd.width = fd.height;
 		fd = setFormLayoutDataRight(btnAdd, tree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
 		fd.width = fd.height;
-		
+
+		setFormLayoutData(lblName, tree, 0, SWT.TOP, tree, 20, SWT.NONE);
+		setFormLayoutData(name, tree, 0, SWT.TOP, lblName, 20, SWT.NONE).width = 100;
+		setFormLayoutData(lblDesc, lblName, 10, SWT.NONE, tree, 20, SWT.NONE);
+		fd = setFormLayoutData(desc, lblDesc, 10, SWT.NONE, lblDesc, 0, SWT.LEFT);
+		fd.width = 200;
+		fd.height = 80;
+		setFormLayoutDataRight(btnSave, desc, 10, SWT.NONE, desc, 0, SWT.RIGHT).width = 120;
+
 		return comp;
 	}
 
@@ -304,9 +344,9 @@ public class MainWindow {
 		// 概要ツリー
 		final TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
-		AccountListProvider accountListProv = new AccountListProvider();
-		accountListProv.createControl(tableTree);
-		
+		AccountListProvider accountListProv = new AccountListProvider(tableTree);
+		accountListProv.createControl();
+
 		// 追加ボタン
 		Button btnAdd = new Button(composite, SWT.PUSH);
 		btnAdd.setText("＋");
@@ -349,9 +389,9 @@ public class MainWindow {
 		// 概要ツリー
 		TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
+		AccountListProvider accountListProv = new AccountListProvider(tableTree);
+		accountListProv.createControl();
 		Table tttable = tableTree.getTable();
-		tttable.setHeaderVisible(false);
-		tttable.setLinesVisible(false);
 		tttable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
 				if (e.button == 1) {
@@ -362,36 +402,6 @@ public class MainWindow {
 			}
 		});
 
-		TableColumn col1 = new TableColumn(tttable, SWT.LEFT);
-		TableColumn col2 = new TableColumn(tttable, SWT.RIGHT);
-		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
-		parent.setText(0, "口座");
-		parent.setText(1, "");
-		TableTreeItem child = new TableTreeItem(parent, SWT.NONE);
-		child.setText(0, "生活費");
-		child.setText(1, "30,000");
-		child = new TableTreeItem(parent, SWT.NONE);
-		child.setText(0, "娯楽");
-		child.setText(1, "30,000");
-		child = new TableTreeItem(parent, SWT.NONE);
-		child.setText(0, "貯金");
-		child.setText(1, "30,000");
-		parent.setExpanded(true);
-		TableTreeItem sum = new TableTreeItem(tableTree, SWT.NONE);
-		sum.setText(0, "残高の合計");
-		sum.setText(1, "90,000");
-		col1.pack();
-		col1.setResizable(false);
-		col1.setWidth(col1.getWidth() + 20);
-		col2.pack();
-		col2.setWidth(80);
-		col2.setResizable(false);
-
-		FontData fd = parent.getFont().getFontData()[0];
-		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
-				fd.getHeight(), fd.getStyle() | SWT.BOLD));
-		parent.setFont(newFont);
-		sum.setFont(newFont);
 		/*
 		 * FontDialog fontDialog = new FontDialog(sShell);
 		 * fontDialog.setFontList((sum.getFont()).getFontData()); FontData
@@ -402,7 +412,8 @@ public class MainWindow {
 		// 日付
 		Text listDate = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
 		listDate.setText("2008/01/01");
-		newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
+		FontData fd = composite.getFont().getFontData()[0];
+		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
 				(int) (fd.getHeight() * 1.5), fd.getStyle()));
 		listDate.setFont(newFont);
 

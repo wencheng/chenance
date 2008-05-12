@@ -15,13 +15,14 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
+import cn.sh.fang.chenance.data.EntityExistsException;
 import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.provider.AccountEditorProvider;
 
-public class AccountTabListener {
+public class AccountListListener {
 
-	final static Logger LOG = Logger.getLogger(AccountTabListener.class);
+	final static Logger LOG = Logger.getLogger(AccountListListener.class);
 
 	public static class AccountListMouseAdapter extends MouseAdapter {
 		public void mouseDoubleClick(MouseEvent e) {
@@ -45,11 +46,31 @@ public class AccountTabListener {
 		public void widgetSelected(SelectionEvent e) {
 			TableTreeItem parent = (TableTreeItem)tree.getItem(0);
 			TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
-			Account a = new Account();
-			a.setName(_("New Account"));
-			a.setDescription("");
+			int i = 1;
+			AccountService as = new AccountService();
+			Account a = null;
+			while (true) { 
+				try {
+					a = new Account();
+					a.setDescription("");
+					a.setCurrentBalance(0);
+					a.setUpdater("USER");
+					a.setName(_("New Account {0}",i));
+					as.save(a);
+					break;
+				} catch (Exception e1) {
+					// TODO find some better way
+					// retry
+					if ( i < 50 ) {
+						System.out.println(""+i);
+						i++;
+					} else
+						break;
+				}
+			}
 			ch.setText(a.getName());
 			ch.setData(a);
+			tree.deselectAll();
 			tree.setSelection(new TableTreeItem[]{ch});
 		}
 	}
