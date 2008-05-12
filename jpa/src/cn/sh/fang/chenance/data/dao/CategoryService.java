@@ -43,7 +43,7 @@ public class CategoryService extends BaseService {
 
 	@SuppressWarnings("unchecked")
 	public List<Category> getTops() {
-        Query query = em.createQuery("SELECT e FROM Category e WHERE MOD(id,1000000) = 0 AND is_deleted = 0");
+        Query query = em.createQuery("SELECT e FROM Category e WHERE parent IS NULL AND is_deleted = 0");
         return query.getResultList();
 	}
 

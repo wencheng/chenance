@@ -29,7 +29,6 @@ public class Category extends BaseEntity {
     Category parent;
 
     @OneToMany(mappedBy="parent")
-    @JoinColumn(name="id")
     @OrderBy("id")
     List<Category> children;
 
@@ -69,4 +68,7 @@ public class Category extends BaseEntity {
         return this.children;
     }
 
+	public void setChildren(List<Category> cats) {
+		this.children = cats;
+	}
 }

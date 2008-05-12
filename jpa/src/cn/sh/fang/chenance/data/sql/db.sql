@@ -1,6 +1,6 @@
 /**
  * SQL genereted by Jiemamy
- * Create: 2008/05/09 11:55:08
+ * Create: 2008/05/12 10:47:05
  */
 
 -- define: t_account
@@ -33,21 +33,21 @@ CREATE TABLE t_category (
   description VARCHAR(200),
   parent_id BIGINT,
   FOREIGN KEY (parent_id)
-    REFERENCES t_category(id)
+    REFERENCES t_category (id)
 );
 
 INSERT INTO t_category (id, name, description)
   VALUES (1000000, 'debit', '');
-INSERT INTO t_category (id, name)
-  VALUES (1010000, '食費');
-INSERT INTO t_category (id, name)
-  VALUES (1010100, '外食');
-INSERT INTO t_category (id, name, description)
-  VALUES (2000000, 'credit', '');
-INSERT INTO t_category (id, name)
-  VALUES (2010000, '給与');
-INSERT INTO t_category (id, name)
-  VALUES (2010100, '会社');
+INSERT INTO t_category (id, name, parent_id)
+  VALUES (1010000, '食費', 1000000);
+INSERT INTO t_category (id, name, parent_id)
+  VALUES (1010100, '外食', 1010100);
+INSERT INTO t_category (id, name, description, parent_id)
+  VALUES (2000000, 'credit', '', NULL);
+INSERT INTO t_category (id, name, parent_id)
+  VALUES (2010000, '給与', 2000000);
+INSERT INTO t_category (id, name, parent_id)
+  VALUES (2010100, '会社', 2010000);
 INSERT INTO t_category (id, name, description)
   VALUES (3000000, 'transfer', '');
 
@@ -131,6 +131,15 @@ CREATE TABLE t_asset (
   depreciation_period_unit INT,
   FOREIGN KEY (transaction_id)
     REFERENCES t_transaction (id)
+);
+
+
+
+-- define: t_setting
+CREATE TABLE t_setting (
+  id IDENTITY NOT NULL PRIMARY KEY,
+  key VARCHAR(100) NOT NULL UNIQUE,
+  value VARCHAR
 );
 
 
