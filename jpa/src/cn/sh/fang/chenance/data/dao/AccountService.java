@@ -41,4 +41,10 @@ public class AccountService extends BaseService {
         return em.find(Account.class, id);
     }
 
+	public boolean isUsableName(String name) {
+        Query query = em.createQuery("SELECT e FROM Account e WHERE name = ? AND is_deleted = 0");
+        query.setParameter(1, name);
+        return query.getResultList().isEmpty();
+	}
+
 }
