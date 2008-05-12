@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class Account extends BaseEntity {
 
     @Id
+    @GeneratedValue
     private Integer id;
     
     @Column(name="name")
