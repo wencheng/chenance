@@ -42,7 +42,7 @@ public class AccountEditorProvider {
 	private Label lblInterestR;
 	private Combo interestPer;
 	private Label lblStart;
-	private Text start;
+	public Text start;
 	private Label lblMemo;
 
 	public AccountEditorProvider() {

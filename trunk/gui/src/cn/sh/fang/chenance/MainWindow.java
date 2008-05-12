@@ -401,7 +401,6 @@ public class MainWindow {
 				}
 			}
 		});
-
 		/*
 		 * FontDialog fontDialog = new FontDialog(sShell);
 		 * fontDialog.setFontList((sum.getFont()).getFontData()); FontData
@@ -608,9 +607,9 @@ public class MainWindow {
 		Category cat;
 		for (int i = 0; i < categories.size(); i++) {
 			cat = categories.get(i);
-			if (cat.getId() % 10000 != 0) {
+			if (cat.getCode() % 10000 != 0) {
 				ret.put("    "+cat.getName(),lvl2_img);
-			} else if (cat.getId() % 1000000 != 0) {
+			} else if (cat.getCode() % 1000000 != 0) {
 				ret.put("  "+cat.getName(),lvl1_img);
 			} else {
 				ret.put(cat.getName(),plus_img);
