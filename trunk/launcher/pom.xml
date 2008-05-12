@@ -21,9 +21,9 @@
 	<build>
 		<plugins>
 			<plugin>
+				<inherited>false</inherited>
 				<groupId>com.akathist.maven.plugins.launch4j</groupId>
 				<artifactId>launch4j-maven-plugin</artifactId>
-				<inherited>false</inherited>
 				<executions>
 					<execution>
 						<phase>deploy</phase>
@@ -87,10 +87,10 @@
 						<configuration>
 							<descriptors>
 								<descriptor>
-									bin/win32/assembly.xml
+									bin/win32/assembly-win32.xml
 								</descriptor>
 								<descriptor>
-									bin/zip/assembly.xml
+									bin/zip/assembly-zip.xml
 								</descriptor>
 							</descriptors>
 						</configuration>
