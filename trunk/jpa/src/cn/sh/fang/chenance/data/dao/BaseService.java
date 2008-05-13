@@ -2,8 +2,8 @@ package cn.sh.fang.chenance.data.dao;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,13 +16,12 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 //@Transactional(propagation=Propagation.MANDATORY)
 //@Transactional
 public abstract class BaseService {
-	
+
 	static Logger LOG = Logger.getLogger(BaseService.class);
 
 	static EntityManagerFactory factory;
@@ -31,14 +30,14 @@ public abstract class BaseService {
 	static String filepath = System.getProperty("user.home") + "/chenance/db";
 
 	public BaseService() {
-		if ( factory == null ) {
+		if (factory == null) {
 			// TODO allow user to open their own db
 			HashMap<String, String> props = new HashMap<String, String>();
 			props.put("hibernate.connection.url", "jdbc:h2:" + filepath);
-			factory = Persistence
-					.createEntityManagerFactory("chenance-data", props);
+			factory = Persistence.createEntityManagerFactory("chenance-data",
+					props);
 		}
-		
+
 		if (em == null) {
 			em = factory.createEntityManager();
 			em.setFlushMode(FlushModeType.AUTO);
@@ -48,11 +47,11 @@ public abstract class BaseService {
 	}
 
 	public static void createTable() {
-		if ( new File(filepath+".data.db").exists() ) {
+		if (new File(filepath + ".data.db").exists()) {
 			return;
 		}
 		LOG.warn("data file not exists");
-		
+
 		try {
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
@@ -62,7 +61,8 @@ public abstract class BaseService {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-			conn = DriverManager.getConnection("jdbc:h2:" + filepath + ";USER=sa");
+			conn = DriverManager.getConnection("jdbc:h2:" + filepath
+					+ ";USER=sa");
 		} catch (SQLException e) {
 			// TODO error message
 			e.printStackTrace();
@@ -75,31 +75,26 @@ public abstract class BaseService {
 			e.printStackTrace();
 		}
 
-		String basedir = "cn/sh/fang/chenance/data/sql/";
-		String[] files = new String[] {
-				"db.sql",
-				"common-columns/Account.sql",
-				"common-columns/Asset.sql",
-				"common-columns/Category.sql",
+		String basedir = "/cn/sh/fang/chenance/data/sql/";
+		String[] files = new String[] { "db.sql", "common-columns/Account.sql",
+				"common-columns/Asset.sql", "common-columns/Category.sql",
 				"common-columns/Investment.sql",
 				"common-columns/ReceiptItem.sql",
 				"common-columns/RepeatPayment.sql",
-				"common-columns/Transaction.sql",
-				};
+				"common-columns/Transaction.sql", };
 		try {
+			String sql;
 			for (String f : files) {
-				URL url = BaseService.class.getClassLoader().getResource(
-						basedir + f);
-				stmt.execute(FileUtils.readFileToString(new File(url.toURI()),"Shift-JIS"));
+				sql = readAsString(BaseService.class
+						.getResourceAsStream(basedir + f), "Shift-JIS");
+				LOG.debug(sql);
+				stmt.execute(sql);
 			}
 			conn.commit();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
@@ -112,6 +107,26 @@ public abstract class BaseService {
 				conn.close();
 			} catch (SQLException e) {
 				// TODO LOG thisp
+			}
+		}
+	}
+
+	public static String readAsString(InputStream is, String encoding)
+			throws IOException {
+		StringBuffer buf = new StringBuffer();
+		InputStreamReader in = new InputStreamReader(is,encoding);
+		try {
+			for (int c = in.read(); c != -1; c = in.read()) {
+				buf.append((char) c);
+			}
+			return buf.toString();
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			try {
+				in.close();
+			} catch (Exception e) {
+				// ignored
 			}
 		}
 	}
