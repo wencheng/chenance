@@ -90,4 +90,8 @@ public class Category extends BaseEntity {
 		this.code = code;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
