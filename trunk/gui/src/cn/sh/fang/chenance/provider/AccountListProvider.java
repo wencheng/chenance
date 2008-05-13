@@ -1,9 +1,9 @@
 package cn.sh.fang.chenance.provider;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
@@ -52,6 +52,7 @@ public class AccountListProvider {
 
 		col1.pack();
 		col1.setResizable(false);
+		col1.setToolTipText("Double-click to view the balance");
 		// col1.setWidth(col1.getWidth() + 20);
 		col2.pack();
 		col2.setWidth(80);

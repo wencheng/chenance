@@ -6,15 +6,13 @@ import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutDataRight;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.log4j.Logger;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -33,7 +31,6 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -65,7 +62,6 @@ import org.eclipse.swt.widgets.Tree;
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
 import cn.sh.fang.chenance.listener.AccountListListener.AccountListSelectionAdapter;
 import cn.sh.fang.chenance.listener.AccountListListener.AddAccountSelectionAdapter;
@@ -80,12 +76,11 @@ import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
+import cn.sh.fang.chenance.provider.CategoryComboCellEditor;
 import cn.sh.fang.chenance.provider.CategoryListContentProvider;
 import cn.sh.fang.chenance.provider.CategoryListLabelProvider;
-import cn.sh.fang.chenance.provider.IBalanceSheetListener;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
-import cn.sh.fang.chenance.util.swt.ImageComboBoxCellEditor;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI
@@ -272,6 +267,8 @@ public class MainWindow {
 		treeViewer.setLabelProvider(new CategoryListLabelProvider());
 		treeViewer.setInput(prov.getRoot());
 		treeViewer.expandAll();
+		ColumnViewerToolTipSupport.enableFor(treeViewer);
+
 		
 		// 編集欄
 		Label lblName = new Label(comp, SWT.NONE);
@@ -548,8 +545,10 @@ public class MainWindow {
 		editors[Column.DATE.ordinal()] = dateEditor;
 
 		CategoryService service = new CategoryService();
-		ImageComboBoxCellEditor e = new ImageComboBoxCellEditor(table,
-				toComboList(service.findAll()), SWT.READ_ONLY);
+		List<Category> categoryList = service.findAll();
+		tableViewer.setData("categoryList", categoryList);
+		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
+		e.setItems(categoryList);
 		editors[Column.CATEGORY.ordinal()] = e;
 
 		TextCellEditor textEditor = new TextCellEditor(table);
@@ -587,35 +586,6 @@ public class MainWindow {
 		tableViewer.setContentProvider(bs);
 		tableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
 		tableViewer.setInput(bs);
-	}
-
-	static Image plus_img = ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/plus.gif"
-			).createImage();
-	static Image lvl1_img = ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/lvl1.gif"
-			).createImage();
-	static Image lvl2_img= ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/lvl2.gif"
-			).createImage();
-
-	private Map<String,Image> toComboList(List<Category> categories) {
-		LinkedMap ret = new LinkedMap(categories.size());
-		Category cat;
-		for (int i = 0; i < categories.size(); i++) {
-			cat = categories.get(i);
-			if (cat.getCode() % 10000 != 0) {
-				ret.put("    "+cat.getName(),lvl2_img);
-			} else if (cat.getCode() % 1000000 != 0) {
-				ret.put("  "+cat.getName(),lvl1_img);
-			} else {
-				ret.put(cat.getName(),plus_img);
-			}
-		}
-		return ret;
 	}
 
 	private void arrangeWidgetsLayout() {

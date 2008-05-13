@@ -123,39 +123,4 @@ public class BalanceSheetLabelProvider
 			null;
 	}
 
-	public Button getColumnButton(Object element, int columnIndex) {
-		if (columnIndex == Column.DETAIL.ordinal()) {
-			Transaction t = (Transaction)element;
-			Button btn = this.btns.get(t);
-			if ( btn == null ) {
-				final Button b = new Button(table, SWT.PUSH);
-				b.setText(btns.size()+"");
-				b.setText("...");
-				b.addMouseListener(new MouseAdapter(){
-					@Override
-					public void mouseUp(MouseEvent e) {
-						super.mouseUp(e);
-						if ( e.button == 1 ) {
-							// TODO show detail dialog
-							System.out.println(b);
-						}
-					}
-				});
-				b.addListener(SWT.Move, new Listener(){
-					public void handleEvent(Event e) {
-						if ( e.type == SWT.Move) {
-							System.out.println(b+" moving");
-						}
-					}
-				});
-				btn = b;
-				this.btns.put(t, btn);
-			}
-			
-			return btn; 
-		} else {
-			return null;
-		}
-	}
-
 }

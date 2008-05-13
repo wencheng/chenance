@@ -76,13 +76,13 @@ import org.eclipse.swt.widgets.Widget;
  * <dd>Selection</dd>
  * </dl>
  */
-public final class ImageCombo extends Composite {
+public class ImageCombo extends Composite {
 
 	private static final boolean gtk = "gtk".equals(SWT.getPlatform());
 	private boolean dontDrop = false;
 
 	Text text;
-	Table table;
+	protected Table table;
 	int visibleItemCount = 5;
 	Shell popup;
 	Button arrow;
