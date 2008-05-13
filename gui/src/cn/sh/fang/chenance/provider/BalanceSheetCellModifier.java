@@ -1,27 +1,29 @@
 package cn.sh.fang.chenance.provider;
 
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.TableItem;
 
+import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 
 public class BalanceSheetCellModifier implements ICellModifier {
 
-	TableViewer balanceSheet;
+	TableViewer viewer;
 
 	public BalanceSheetCellModifier(TableViewer bs) {
-		this.balanceSheet = bs;
+		this.viewer = bs;
 	}
 
 	public boolean canModify(Object arg0, String arg1) {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getValue(Object element, String property) {
 		// Find the index of the column
 		Column col = Column.valueOf(property);
@@ -37,12 +39,8 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			result = t.getDate();
 			break;
 		case CATEGORY:
-			String stringValue = "";
-			String[] choices = { "opt1", "opt2", "opt3" };
-			int i = choices.length - 1;
-			while (!stringValue.equals(choices[i]) && i > 0)
-				--i;
-			result = new Integer(1);
+			List<Category> l = (List<Category>)viewer.getData("categoryList");
+			result = new Integer(l.indexOf(l.get(1)));
 			break;
 		case DEBIT:
 			result = t.getDebit() + "";
@@ -69,7 +67,6 @@ public class BalanceSheetCellModifier implements ICellModifier {
 
 		TableItem item = (TableItem) element;
 		Transaction t = (Transaction) item.getData();
-		String valueString;
 
 		switch (col) {
 		/*
@@ -79,6 +76,10 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			*/
 		case DATE:
 			t.setDate((Date) value);
+			break;
+		case CATEGORY:
+			List<Category> l = (List<Category>)viewer.getData("categoryList");
+			t.setCategory(l.get((Integer)value));
 			break;
 		case DEBIT:
 			t.setDebit(Integer.valueOf((String)value));
@@ -97,6 +98,6 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		 */
 		default:
 		}
-		balanceSheet.update(t, null);
+		viewer.update(t, null);
 	}
 }

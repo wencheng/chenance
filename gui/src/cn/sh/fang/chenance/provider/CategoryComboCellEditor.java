@@ -1,10 +1,10 @@
-package cn.sh.fang.chenance.util.swt;
+package cn.sh.fang.chenance.provider;
 
 import java.text.MessageFormat;
-import java.util.Map;
+import java.util.List;
 
-import org.aspencloud.widgets.ImageCombo;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -17,10 +17,19 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+
+import cn.sh.fang.chenance.MainWindow;
+import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.util.swt.CCombo;
 
 /**
  * <p>
@@ -33,27 +42,32 @@ import org.eclipse.swt.widgets.Control;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  */
-public class ImageComboBoxCellEditor extends CellEditor {
+public class CategoryComboCellEditor extends CellEditor {
 
-	/**
-	 * The list of items to present in the combo box.
-	 */
-	private Map<Object, Image> items;
+	private List<Category> items;
 
-	/**
-	 * The zero-based index of the selected item.
-	 */
 	int selection;
 
-	/**
-	 * The custom combo box control.
-	 */
-	ImageCombo comboBox;
+	CCombo comboBox;
 
-	/**
-	 * Default ComboBoxCellEditor style
-	 */
-	private static final int defaultStyle = SWT.NONE;
+	static Image grey_img = ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/grey.png"
+			).createImage();
+	static Image plus_img = ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/plus.gif"
+			).createImage();
+	static Image lvl1_img = ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/lvl1.gif"
+			).createImage();
+	static Image lvl2_img= ImageDescriptor.createFromFile(
+			MainWindow.class, 
+			"icons/lvl2.gif"
+			).createImage();
+
+	private static final int defaultStyle = SWT.READ_ONLY;
 
 	/**
 	 * Creates a new cell editor with no control and no st of choices.
@@ -65,62 +79,16 @@ public class ImageComboBoxCellEditor extends CellEditor {
 	 * @see ComboBoxCellEditor#setItems
 	 * @see CellEditor#dispose
 	 */
-	public ImageComboBoxCellEditor() {
-		setStyle(defaultStyle);
+	public CategoryComboCellEditor(Table parent) {
+		super(parent, defaultStyle);
 	}
 
-	/**
-	 * Creates a new cell editor with a combo containing the given list of
-	 * choices and parented under the given control. The cell editor value is
-	 * the zero-based index of the selected item. Initially, the cell editor has
-	 * no cell validator and the first item in the list is selected.
-	 *
-	 * @param parent
-	 *            the parent control
-	 * @param items
-	 *            the list of strings for the combo box
-	 */
-	public ImageComboBoxCellEditor(Composite parent, Map<Object,Image> items) {
-		this(parent, items, defaultStyle);
+	public List<Category> getItems() {
+		return this.items;
 	}
 
-	/**
-	 * Creates a new cell editor with a combo containing the given list of
-	 * choices and parented under the given control. The cell editor value is
-	 * the zero-based index of the selected item. Initially, the cell editor has
-	 * no cell validator and the first item in the list is selected.
-	 *
-	 * @param parent
-	 *            the parent control
-	 * @param items
-	 *            the list of strings for the combo box
-	 * @param style
-	 *            the style bits
-	 * @since 2.1
-	 */
-	public ImageComboBoxCellEditor(Composite parent, Map<Object,Image> items, int style) {
-		super(parent, style);
-		setItems(items);
-	}
-
-	/**
-	 * Returns the list of choices for the combo box
-	 *
-	 * @return the list of choices for the combo box
-	 */
-	public String[] getItems() {
-		return this.items.values().toArray(new String[this.items.size()]);
-	}
-
-	/**
-	 * Sets the list of choices for the combo box
-	 *
-	 * @param items
-	 *            the list of choices for the combo box
-	 */
-	public void setItems(Map<Object,Image> items) {
-		Assert.isNotNull(items);
-		this.items = items;
+	public void setItems(List<Category> list) {
+		this.items = list;
 		populateComboBoxItems();
 	}
 
@@ -129,7 +97,7 @@ public class ImageComboBoxCellEditor extends CellEditor {
 	 */
 	protected Control createControl(Composite parent) {
 
-		comboBox = new ImageCombo(parent, getStyle()|SWT.APPLICATION_MODAL);
+		comboBox = new CCombo(parent, getStyle()|SWT.APPLICATION_MODAL);
 		comboBox.setFont(parent.getFont());
 
 		populateComboBoxItems();
@@ -163,7 +131,7 @@ public class ImageComboBoxCellEditor extends CellEditor {
 
 		comboBox.addFocusListener(new FocusAdapter() {
 			public void focusLost(FocusEvent e) {
-				ImageComboBoxCellEditor.this.focusLost();
+				CategoryComboCellEditor.this.focusLost();
 			}
 		});
 		return comboBox;
@@ -238,8 +206,26 @@ public class ImageComboBoxCellEditor extends CellEditor {
 	private void populateComboBoxItems() {
 		if (comboBox != null && items != null) {
 			comboBox.removeAll();
-			for ( Object k : items.keySet() ) {
-				comboBox.add(k.toString(), items.get(k));
+			
+			FontData fd = comboBox.getFont().getFontData()[0];
+			fd.setStyle(SWT.BOLD);
+			Font boldFont =
+				new Font(comboBox.getDisplay(), fd);
+			Color grey = new Color(comboBox.getForeground().getDevice(), 0xC0, 0xC0, 0xC0);
+			
+			for ( int i = 0; i < items.size(); i++ ) {
+				Category c = items.get(i);
+				if (c.getCode() % 10000 != 0) {
+					comboBox.add(c.getName(), lvl1_img);
+				} else if (c.getCode() % 1000000 != 0) {
+					comboBox.add(c.getName(), plus_img);
+				} else {
+					comboBox.add(c.getName(), grey_img);
+					TableItem ti = comboBox.getItem(i);
+					ti.setFont(boldFont);
+					ti.setBackground(grey);
+					System.out.println(ti.getBounds().height);
+				}
 			}
 
 			setValueValid(true);
