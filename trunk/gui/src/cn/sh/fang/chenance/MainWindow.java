@@ -296,6 +296,7 @@ public class MainWindow {
 				if ( e.getSelection() != null ) {
 					Category c = (Category)((IStructuredSelection)e.getSelection()).getFirstElement();
 					
+					if ( c != null ) {
 					boolean editable = c.getParent() != null;
 					name.setEditable(editable);
 					desc.setEditable(editable);
@@ -306,6 +307,7 @@ public class MainWindow {
 					
 					name.setFocus();
 					name.selectAll();
+					}
 				}
 			}
 		});

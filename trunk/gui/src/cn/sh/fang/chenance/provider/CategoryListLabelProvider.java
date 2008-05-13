@@ -16,7 +16,11 @@ public class CategoryListLabelProvider extends CellLabelProvider {
 
 	@Override
 	public void update(ViewerCell cell) {
+		if (cell == null)
+			return;
+		
 		cell.setText(((Category)cell.getElement()).getName());
 	}
 
+	
 }

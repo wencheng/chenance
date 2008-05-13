@@ -51,10 +51,10 @@ public class AccountListProvider {
 		parent.setExpanded(true);
 
 		col1.pack();
-		col1.setResizable(false);
+		col1.setResizable(true);
 		col1.setToolTipText("Double-click to view the balance");
-		// col1.setWidth(col1.getWidth() + 20);
-		col2.pack();
+		col1.setWidth(col1.getWidth() + 20);
+//		col2.pack();
 		col2.setWidth(80);
 		col2.setResizable(false);
 
