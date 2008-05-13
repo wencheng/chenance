@@ -74,7 +74,7 @@
 									src/cn/sh/fang/chenance/data/sql/drop.sql
 								</srcFile>
 								<srcFile>
-									src/cn/sh/fang/chenance/data/sql/db-1.0.sql
+									src/cn/sh/fang/chenance/data/sql/db.sql
 								</srcFile>
 							</srcFiles>
 							<fileset>
