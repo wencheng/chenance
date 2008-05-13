@@ -12,7 +12,7 @@ public class AccountService extends BaseService {
 
     @SuppressWarnings("unchecked")
 	public List<Account> findAll() {
-        Query query = em.createQuery("SELECT e FROM Account e WHERE is_deleted = 0");
+        Query query = em.createQuery("SELECT e FROM Account e WHERE is_deleted = 0 ORDER BY id");
         return query.getResultList();
     }
 

@@ -12,7 +12,7 @@ public class CategoryService extends BaseService {
 
     @SuppressWarnings("unchecked")
 	public List<Category> findAll() {
-        Query query = em.createQuery("SELECT e FROM Category e WHERE is_deleted = 0");
+        Query query = em.createQuery("SELECT e FROM Category e WHERE is_deleted = 0 ORDER BY code");
         return query.getResultList();
     }
 
