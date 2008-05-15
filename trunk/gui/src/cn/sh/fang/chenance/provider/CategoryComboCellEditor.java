@@ -8,6 +8,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -29,6 +31,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import cn.sh.fang.chenance.MainWindow;
 import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.swt.CCombo;
 
 /**
@@ -263,12 +266,11 @@ public class CategoryComboCellEditor extends CellEditor {
 			}
 		}
 
-		fireApplyEditorValue();
 		deactivate();
+		fireApplyEditorValue();
 	}
 
 	private void openNextCellEditor() {
-		table.moveBelow(null);
 	}
 	
 	/*

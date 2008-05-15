@@ -70,6 +70,7 @@ import cn.sh.fang.chenance.listener.BsAccountListListener;
 import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
+import cn.sh.fang.chenance.listener.ActivateNextCellEditorListener;
 import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.FileListener.FileNewListener;
 import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
@@ -290,7 +291,7 @@ public class MainWindow {
 		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
 				(int) (fd.getHeight() * 1.5), fd.getStyle()));
 		listDate.setFont(newFont);
-	
+
 		Button today = new Button(composite, SWT.NONE);
 		today.setText("Today");
 	
@@ -383,6 +384,88 @@ public class MainWindow {
 				SWT.RIGHT);
 	
 		return composite;
+	}
+
+	private void createTableViewer() {
+		tableViewer = new TableViewer(table);
+		tableViewer.setUseHashlookup(true);
+	
+		tableViewer.setColumnProperties(Column.stringValues());
+	
+		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
+				tableViewer) {
+			protected boolean isEditorActivationEvent(
+					ColumnViewerEditorActivationEvent event) {
+				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
+					MouseEvent e = ((MouseEvent) event.sourceEvent);
+					return e.button == 1;
+				} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
+					ViewerCell cell = (ViewerCell) event.getSource();
+					return cell.getColumnIndex() == Column.DETAIL.ordinal();
+				} else {
+					return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+							|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+				}
+			}
+		};
+	
+		TableViewerEditor.create(tableViewer, actSupport,
+				ColumnViewerEditor.TABBING_HORIZONTAL
+						// | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+						| ColumnViewerEditor.TABBING_CYCLE_IN_ROW
+						| ColumnViewerEditor.TABBING_VERTICAL
+						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+	
+		// Create the cell editors
+		CellEditor[] editors = new CellEditor[Column.values().length];
+	
+		// editors[0] = new CheckboxCellEditor(table);
+		CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
+		editors[Column.DATE.ordinal()] = dateEditor;
+	
+		CategoryService service = new CategoryService();
+		List<Category> categoryList = service.findAll();
+		tableViewer.setData("categoryList", categoryList);
+		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
+		e.setItems(categoryList);
+		e.addListener(new ActivateNextCellEditorListener(tableViewer));
+		editors[Column.CATEGORY.ordinal()] = e;
+	
+		TextCellEditor textEditor = new TextCellEditor(table);
+		((Text) textEditor.getControl()).setTextLimit(9);
+		((Text) textEditor.getControl())
+				.addVerifyListener(new VerifyListener() {
+					public void verifyText(VerifyEvent e) {
+						e.doit = "0123456789".indexOf(e.text) >= 0;
+					}
+				});
+		editors[Column.DEBIT.ordinal()] = textEditor;
+	
+		textEditor = new TextCellEditor(table);
+		((Text) textEditor.getControl())
+				.addVerifyListener(new VerifyListener() {
+					public void verifyText(VerifyEvent e) {
+						// Here, we could use a RegExp such as the following
+						// if using JRE1.4 such as e.doit =
+						// e.text.matches("[\\-0-9]*");
+						e.doit = "0123456789".indexOf(e.text) >= 0;
+					}
+				});
+		editors[Column.CREDIT.ordinal()] = textEditor;
+	
+		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(table);
+	
+		// Assign the cell editors to the viewer
+		tableViewer.setCellEditors(editors);
+		// Set the cell modifier for the viewer
+		tableViewer.setCellModifier(new BalanceSheetCellModifier(tableViewer));
+		// Set the default sorter for the viewer
+		// tableViewer.setSorter(new ExampleTaskSorter(
+		// ExampleTaskSorter.DESCRIPTION));
+
+		tableViewer.setContentProvider(bs);
+		tableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
+		tableViewer.setInput(bs);
 	}
 
 	private Control getCategoryTabControl(TabFolder tabFolder) {
@@ -521,87 +604,6 @@ public class MainWindow {
 		setFormLayoutData(grp, 0, 0, tableTree, 20);
 
 		return composite;
-	}
-
-	private void createTableViewer() {
-		tableViewer = new TableViewer(table);
-		tableViewer.setUseHashlookup(true);
-
-		tableViewer.setColumnProperties(Column.stringValues());
-
-		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
-				tableViewer) {
-			protected boolean isEditorActivationEvent(
-					ColumnViewerEditorActivationEvent event) {
-				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-					MouseEvent e = ((MouseEvent) event.sourceEvent);
-					return e.button == 1;
-				} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
-					ViewerCell cell = (ViewerCell) event.getSource();
-					return cell.getColumnIndex() == Column.DETAIL.ordinal();
-				} else {
-					return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-							|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-				}
-			}
-		};
-
-		TableViewerEditor.create(tableViewer, actSupport,
-				ColumnViewerEditor.TABBING_HORIZONTAL
-						// | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-						| ColumnViewerEditor.TABBING_CYCLE_IN_ROW
-						| ColumnViewerEditor.TABBING_VERTICAL
-						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
-
-		// Create the cell editors
-		CellEditor[] editors = new CellEditor[Column.values().length];
-
-		// editors[0] = new CheckboxCellEditor(table);
-		CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
-		editors[Column.DATE.ordinal()] = dateEditor;
-
-		CategoryService service = new CategoryService();
-		List<Category> categoryList = service.findAll();
-		tableViewer.setData("categoryList", categoryList);
-		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
-		e.setItems(categoryList);
-		editors[Column.CATEGORY.ordinal()] = e;
-
-		TextCellEditor textEditor = new TextCellEditor(table);
-		((Text) textEditor.getControl()).setTextLimit(9);
-		((Text) textEditor.getControl())
-				.addVerifyListener(new VerifyListener() {
-					public void verifyText(VerifyEvent e) {
-						e.doit = "0123456789".indexOf(e.text) >= 0;
-					}
-				});
-		editors[Column.DEBIT.ordinal()] = textEditor;
-
-		textEditor = new TextCellEditor(table);
-		((Text) textEditor.getControl())
-				.addVerifyListener(new VerifyListener() {
-					public void verifyText(VerifyEvent e) {
-						// Here, we could use a RegExp such as the following
-						// if using JRE1.4 such as e.doit =
-						// e.text.matches("[\\-0-9]*");
-						e.doit = "0123456789".indexOf(e.text) >= 0;
-					}
-				});
-		editors[Column.CREDIT.ordinal()] = textEditor;
-
-		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(table);
-
-		// Assign the cell editors to the viewer
-		tableViewer.setCellEditors(editors);
-		// Set the cell modifier for the viewer
-		tableViewer.setCellModifier(new BalanceSheetCellModifier(tableViewer));
-		// Set the default sorter for the viewer
-		// tableViewer.setSorter(new ExampleTaskSorter(
-		// ExampleTaskSorter.DESCRIPTION));
-
-		tableViewer.setContentProvider(bs);
-		tableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
-		tableViewer.setInput(bs);
 	}
 
 	private void arrangeWidgetsLayout() {
