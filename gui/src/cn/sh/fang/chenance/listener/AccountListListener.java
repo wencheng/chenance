@@ -15,14 +15,20 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
+import cn.sh.fang.chenance.AccountEditForm;
 import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
-import cn.sh.fang.chenance.provider.AccountEditorProvider;
 import cn.sh.fang.chenance.util.swt.SWTUtil;
 
-public class AccountListListener {
+public class AccountListListener implements IItemChangeListener<Account> {
 
 	final static Logger LOG = Logger.getLogger(AccountListListener.class);
+
+	TableTree tree;
+
+	public AccountListListener(TableTree t) {
+		this.tree = t;
+	}
 
 	public static class AccountListMouseAdapter extends MouseAdapter {
 		public void mouseDoubleClick(MouseEvent e) {
@@ -33,49 +39,9 @@ public class AccountListListener {
 			}
 		}
 	}
-	
-	public static class AddAccountSelectionAdapter extends SelectionAdapter {
-		
-		TableTree tree;
 
-		public AddAccountSelectionAdapter(TableTree t) {
-			this.tree = t;
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			TableTreeItem parent = (TableTreeItem)tree.getItem(0);
-			TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
-			AccountService as = new AccountService();
-			Account a = null;
-			a = new Account();
-			a.setDescription("");
-			a.setCurrentBalance(0);
-			a.setUpdater("USER");
-			// TODO make this more clever(if i can)
-			int i;
-			for ( i = 1; i < 5000; i++ ) {
-				String name = _("New Account {0}",i);
-				if ( as.isUsableName(name) ) {
-					a.setName(name);
-					break;
-				}
-			}
-			if ( i == 50 ) {
-				SWTUtil.showErrorMessage(tree.getShell(),"What are you doing?!");
-				return;
-			}
-			as.save(a);
-
-			ch.setText(a.getName());
-			ch.setData(a);
-			tree.deselectAll();
-			tree.setSelection(new TableTreeItem[]{ch});
-		}
-	}
-	
 	public static class DelAccountSelectionAdapter extends SelectionAdapter {
-		
+
 		TableTree tree;
 
 		public DelAccountSelectionAdapter(TableTree t) {
@@ -84,92 +50,51 @@ public class AccountListListener {
 
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			if ( tree.getSelection().length <= 0 ) {
+			if (tree.getSelection().length <= 0) {
 				return;
 			}
-			MessageBox mb = new MessageBox(tree.getShell(),SWT.ICON_QUESTION|SWT.YES|SWT.NO);
-			mb.setMessage(_("ARE YOU SURE TO *PERMENANTLY DELETE* YOUR ACCOUNT?"));
-			if ( mb.open() == SWT.NO ) {
+			MessageBox mb = new MessageBox(tree.getShell(), SWT.ICON_QUESTION
+					| SWT.YES | SWT.NO);
+			mb
+					.setMessage(_("ARE YOU SURE TO *PERMENANTLY DELETE* YOUR ACCOUNT?"));
+			if (mb.open() == SWT.NO) {
 				return;
 			}
-			mb = new MessageBox(tree.getShell(),SWT.ICON_WARNING|SWT.YES|SWT.NO);
+			mb = new MessageBox(tree.getShell(), SWT.ICON_WARNING | SWT.YES
+					| SWT.NO);
 			mb.setMessage(_("ARE YOU *REALLY SURE*?"));
 			mb.open();
-			mb = new MessageBox(tree.getShell(),SWT.ICON_ERROR|SWT.YES|SWT.NO);
-			mb.setMessage(_("DELETION FAILED\n  All your account data maybe broken. " +
-					"Do you want to recover them?"));
-			if ( mb.open() == SWT.NO) {
+			mb = new MessageBox(tree.getShell(), SWT.ICON_ERROR | SWT.YES
+					| SWT.NO);
+			mb
+					.setMessage(_("DELETION FAILED\n  All your account data maybe broken. "
+							+ "Do you want to recover them?"));
+			if (mb.open() == SWT.NO) {
 				return;
 			}
-			mb = new MessageBox(tree.getShell(),SWT.ICON_WORKING|SWT.OK);
-			mb.setMessage(_("This is a JOKE. ^-^\n" +
-					"Deleting function is still under construction."));
+			mb = new MessageBox(tree.getShell(), SWT.ICON_WORKING | SWT.OK);
+			mb.setMessage(_("This is a JOKE. ^-^\n"
+					+ "Deleting function is still under construction."));
 			mb.open();
 		}
 	}
 
-	public static class AccountListSelectionAdapter extends SelectionAdapter {
+	public void itemAdded(Account item) {
+		TableTreeItem parent = (TableTreeItem) this.tree.getItem(0);
+		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
 
-		AccountEditorProvider prov;
-
-		public AccountListSelectionAdapter(AccountEditorProvider prov) {
-			this.prov = prov;
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			super.widgetSelected(e);
-			TableTreeItem i = ((TableTreeItem) e.item);
-			if (i.getData() instanceof Account) {
-				Account a = (Account) i.getData();
-
-				prov.name.setText(a.getName());
-				prov.memo.setText(a.getDescription());
-				prov.start.setText(a.getStartBalance()+"");
-				// TODO add rest items
-				prov.save.setData(a);
-				prov.save.setEnabled(true);
-				prov.name.setFocus();
-			} else {
-				e.doit = true;
-//				prov.save.setData(null);
-//				prov.save.setEnabled(false);
-			}
-		}
+		ch.setText(item.getName());
+		ch.setData(item);
+		tree.deselectAll();
+		tree.setSelection(new TableTreeItem[] { ch });
 	}
 
-	public static class SaveAccountSelectionAdapter extends SelectionAdapter {
+	public void itemRemoved(Account item) {
+		// TODO Auto-generated method stub
+	}
 
-		AccountEditorProvider prov;
-
-		public SaveAccountSelectionAdapter(AccountEditorProvider prov) {
-			this.prov = prov;
-		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			super.widgetSelected(e);
-			LOG.debug(e);
-			Account a = (Account) prov.save.getData();
-			if ( a == null )
-				return;
-			
-			a.setName(prov.name.getText());
-			a.setDescription(prov.memo.getText());
-			if ( prov.start.getText().length() == 0 ) {
-				a.setStartBalance(0);
-			} else {
-				a.setStartBalance(Integer.parseInt(prov.start.getText()));
-			}
-			// TODO add rest items
-
-			try {
-				AccountService s = new AccountService();
-				s.save(a);
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-		}
+	public void itemUpdated(Account item) {
+		tree.getSelection()[0].setText(item.getName());
 	}
 
 }

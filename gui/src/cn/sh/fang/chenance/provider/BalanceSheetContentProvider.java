@@ -2,25 +2,22 @@ package cn.sh.fang.chenance.provider;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 
 import cn.sh.fang.chenance.data.entity.Transaction;
+import cn.sh.fang.chenance.listener.IItemChangeListener;
 
 /**
  * Class that plays the role of the domain model in the TableViewerExample In
  * real life, this class would access a persistent store of some kind.
  * 
  */
-public class BalanceSheetContentProvider implements IStructuredContentProvider,
-		IBalanceSheetListener {
+public class BalanceSheetContentProvider extends BaseProvider<Transaction>
+		implements IStructuredContentProvider {
 
 	public enum Column {
 		DATE, CATEGORY, DEBIT, CREDIT, BALANCE, DETAIL, LAST;
@@ -28,7 +25,7 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 		public static String[] stringValues() {
 			Column[] v = Column.values();
 			String[] ret = new String[v.length];
-			for ( int i = 0; i < ret.length; i++ ) {
+			for (int i = 0; i < ret.length; i++) {
 				ret[i] = v[i].toString();
 			}
 			return ret;
@@ -36,8 +33,6 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 	}
 
 	private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-	private Set<IBalanceSheetListener> changeListeners = new HashSet<IBalanceSheetListener>();
-	private TableViewer tableViewer;
 
 	/**
 	 * Constructor
@@ -45,7 +40,7 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 	public BalanceSheetContentProvider() {
 		this.initData();
 	}
-	
+
 	/*
 	 * Initialize the table data. Create COUNT tasks and add them them to the
 	 * collection of tasks
@@ -64,12 +59,8 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 	/**
 	 * Return the tasks as an array of Objects
 	 */
-	public Object[] getElements(Object parent) {
+	public Object[] getElements(Object element) {
 		return this.transactions.toArray();
-	}
-
-	public void dispose() {
-		this.removeChangeListener(this);
 	}
 
 	/**
@@ -79,80 +70,43 @@ public class BalanceSheetContentProvider implements IStructuredContentProvider,
 		return this.transactions;
 	}
 
+	/*
+	 * TableViewerオブジェクトのsetInputメソッドでドメインオブジェクトが渡されたときに呼び出されるメソッドである。
+	 * 
+	 * (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
+	 */
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		if (newInput != null)
-			((BalanceSheetContentProvider) newInput).addChangeListener(this);
-		if (oldInput != null)
-			((BalanceSheetContentProvider) oldInput).removeChangeListener(this);
+//		if (newInput != null)
+//			((BalanceSheetContentProvider) newInput).addChangeListener(this);
+//		if (oldInput != null)
+//			((BalanceSheetContentProvider) oldInput).removeChangeListener(this);
 	}
 
-	/**
-	 * @param viewer
-	 */
-	public void addChangeListener(IBalanceSheetListener viewer) {
-		changeListeners.add(viewer);
-	}
-
-	/**
-	 * @param viewer
-	 */
-	public void removeChangeListener(IBalanceSheetListener viewer) {
-		changeListeners.remove(viewer);
-	}
-
-	public void addRecord(Transaction t) {
-		// TODO detail buttons would not be updated, fix it.
-		this.tableViewer.add(t);
-		this.tableViewer.setSelection(
-				new StructuredSelection(t));
-		this.tableViewer.getTable().showSelection();
-		this.tableViewer.editElement(t, Column.CATEGORY.ordinal());
-		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
-		while (iterator.hasNext())
-			((IBalanceSheetListener) iterator.next()).addRecord(t);
-	}
-
-	public void removeRecord(Transaction t) {
-		this.tableViewer.remove(t);
-	}
-
-	/**
-	 * @param task
-	 */
-	public void removeTask(Transaction t) {
-		this.transactions.remove(t);
-		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
-		while (iterator.hasNext())
-			((IBalanceSheetListener) iterator.next()).removeRecord(t);
-	}
-
-	public void updateRecord(Transaction task) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	/**
-	 * Add a new task to the collection of tasks
-	 */
-	public void addTask() {
+	@Override
+	protected Transaction doAddItem() {
 		Transaction t = new Transaction();
 		t.setDate(new Date());
 		t.setDebit(0);
 		t.setCredit(0);
 		this.transactions.add(t);
+		return t;
 	}
 
-	/**
-	 * @param task
-	 */
-	public void taskChanged(Transaction t) {
-		Iterator<IBalanceSheetListener> iterator = changeListeners.iterator();
-		while (iterator.hasNext())
-			((IBalanceSheetListener) iterator.next()).updateRecord(t);
+	@Override
+	protected Transaction doRemoveItem(Transaction t) {
+		this.transactions.remove(t);
+		return t;
 	}
 
-	public void setTableViewer(TableViewer tableViewer) {
-		this.tableViewer = tableViewer;
+	@Override
+	protected Transaction doUpdateItem(Transaction t) {
+		return t;
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

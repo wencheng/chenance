@@ -1,9 +1,10 @@
 package cn.sh.fang.chenance.provider;
 
+import static cn.sh.fang.chenance.util.UIMessageBundle._;
+
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
@@ -15,8 +16,13 @@ import org.eclipse.swt.widgets.TableColumn;
 import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.listener.AccountListListener.AccountListMouseAdapter;
+import cn.sh.fang.chenance.util.swt.SWTUtil;
 
-public class AccountListProvider {
+public class AccountListProvider extends BaseProvider<Account> {
+
+	AccountService service = new AccountService();
+
+	List<Account> accounts;
 	
 	Table table;
 	
@@ -42,10 +48,12 @@ public class AccountListProvider {
 		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
 		parent.setText(0, "口座");
 		parent.setText(1, "");
+		parent.setGrayed(true);
 		items = new HashMap<Integer,TableTreeItem>();
 		sum = new TableTreeItem(tableTree, SWT.NONE);
 		sum.setText(0, "残高の合計");
-
+		sum.setGrayed(true);
+		
 		updateList();
 
 		parent.setExpanded(true);
@@ -66,11 +74,14 @@ public class AccountListProvider {
 		
 		return table;
 	}
+
+	private void initData() {
+		this.accounts = service.findAll();
+	}
 	
 	public void updateList() {
-		AccountService service = new AccountService();
-		List<Account> accounts = service.findAll();
-
+		initData();
+		
 		TableTreeItem i;
 		int balanceSum = 0;
 		for ( Account a : accounts ) {
@@ -87,4 +98,38 @@ public class AccountListProvider {
 		sum.setText(1, balanceSum + "");
 	}
 	
+	@Override
+	protected Account doAddItem() {
+		Account a = new Account();
+		a.setDescription("");
+		a.setCurrentBalance(0);
+		a.setUpdater("USER");
+		// TODO make this more clever(if i can)
+		int i;
+		for ( i = 1; i < 5000; i++ ) {
+			String name = _("New Account {0}",i);
+			if ( this.service.isUsableName(name) ) {
+				a.setName(name);
+				break;
+			}
+		}
+		if ( i == 50 ) {
+			return null;
+		}
+		this.service.save(a);
+		return a;
+	}
+
+	@Override
+	protected Account doRemoveItem(Account t) {
+		service.remove(t.getId(), "USER");
+		accounts.remove(t);
+		return t;
+	}
+	
+	@Override
+	protected Account doUpdateItem(Account t) {
+		service.save(t);
+		return t;
+	}
 }

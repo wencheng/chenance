@@ -1,4 +1,4 @@
-package cn.sh.fang.chenance.provider;
+package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.util.UIMessageBundle._;
 import static cn.sh.fang.chenance.util.swt.SWTUtil.setFormLayoutData;
@@ -15,15 +15,15 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-public class AccountEditorProvider {
+public class AccountEditForm {
 
 	Group grp;
 	Label lblName;
 	public Text name;
 	Label lblNamePh;
 	public Text namePh;
-	public Button save;
-	public Button detail;
+	public Button btnSave;
+	public Button btnDetail;
 	public Text memo;
 	private Label lblType;
 	private Combo type;
@@ -45,7 +45,7 @@ public class AccountEditorProvider {
 	public Text start;
 	private Label lblMemo;
 
-	public AccountEditorProvider() {
+	public AccountEditForm() {
 	}
 
 	public Control createControl(Composite parent) {
@@ -123,11 +123,11 @@ public class AccountEditorProvider {
 		lblMemo.pack();
 		memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 
-		detail = new Button(grp, SWT.NONE);
-		detail.setText(_("&Options >>"));
+		btnDetail = new Button(grp, SWT.NONE);
+		btnDetail.setText(_("&Options >>"));
 
-		save = new Button(grp, SWT.NONE);
-		save.setText(_("&Save this account"));
+		btnSave = new Button(grp, SWT.NONE);
+		btnSave.setText(_("&Save this account"));
 
 		internalLayout();
 
@@ -223,8 +223,8 @@ public class AccountEditorProvider {
 				SWT.LEFT);
 		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
 		fd.height = 80;
-		setFormLayoutDataRight(detail, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
-		setFormLayoutDataRight(save, detail, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
+		setFormLayoutDataRight(btnDetail, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
+		setFormLayoutDataRight(btnSave, btnDetail, 10, SWT.NONE, memo, 0, SWT.RIGHT).width = 120;
 		
 	}
 }
