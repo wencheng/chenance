@@ -30,16 +30,6 @@ public class AccountListListener implements IItemChangeListener<Account> {
 		this.tree = t;
 	}
 
-	public static class AccountListMouseAdapter extends MouseAdapter {
-		public void mouseDoubleClick(MouseEvent e) {
-			if (e.button == 1) {
-				Table t = (Table) e.widget;
-				TableItem i = t.getItem(new Point(e.x, e.y));
-				System.out.println(i + " was d-clicked");
-			}
-		}
-	}
-
 	public static class DelAccountSelectionAdapter extends SelectionAdapter {
 
 		TableTree tree;

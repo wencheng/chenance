@@ -43,12 +43,14 @@ import cn.sh.fang.chenance.util.swt.CCombo;
  * </p>
  */
 public class CategoryComboCellEditor extends CellEditor {
-
+	
 	private List<Category> items;
 
 	int selection;
 
 	CCombo comboBox;
+
+	private Table table;
 
 	static Image grey_img = ImageDescriptor.createFromFile(
 			MainWindow.class, 
@@ -81,6 +83,7 @@ public class CategoryComboCellEditor extends CellEditor {
 	 */
 	public CategoryComboCellEditor(Table parent) {
 		super(parent, defaultStyle);
+		this.table = parent;
 	}
 
 	public List<Category> getItems() {
@@ -117,6 +120,7 @@ public class CategoryComboCellEditor extends CellEditor {
 			public void widgetSelected(SelectionEvent event) {
 				selection = comboBox.getSelectionIndex();
 				applyEditorValueAndDeactivate();
+				openNextCellEditor();
 			}
 		});
 
@@ -220,7 +224,7 @@ public class CategoryComboCellEditor extends CellEditor {
 				} else if (c.getCode() % 1000000 != 0) {
 					comboBox.add(c.getName(), plus_img);
 				} else {
-					comboBox.add(c.getName(), grey_img);
+					comboBox.add(c.getName(), null);
 					TableItem ti = comboBox.getItem(i);
 					ti.setFont(boldFont);
 					ti.setBackground(grey);
@@ -263,6 +267,10 @@ public class CategoryComboCellEditor extends CellEditor {
 		deactivate();
 	}
 
+	private void openNextCellEditor() {
+		table.moveBelow(null);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 *

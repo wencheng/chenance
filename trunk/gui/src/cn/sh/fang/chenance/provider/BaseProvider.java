@@ -1,14 +1,13 @@
 package cn.sh.fang.chenance.provider;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
 
 import cn.sh.fang.chenance.listener.IItemChangeListener;
 
 public abstract class BaseProvider<T> {
 
-	private Set<IItemChangeListener<T>> changeListeners = new HashSet<IItemChangeListener<T>>();
+	private ArrayList<IItemChangeListener<T>> changeListeners = new ArrayList<IItemChangeListener<T>>();
 
 	/**
 	 * @param viewer

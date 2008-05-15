@@ -66,6 +66,7 @@ import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.listener.AccountEditFormListener;
 import cn.sh.fang.chenance.listener.AccountListListener;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
+import cn.sh.fang.chenance.listener.BsAccountListListener;
 import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
@@ -108,8 +109,11 @@ public class MainWindow {
 	Table accountListTable;
 
 	BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
+	final AccountListProvider accountListProv = new AccountListProvider();
 
 	private CategoryEditForm categoryEditForm;
+
+	private AccountList bsAccountList;
 
 	/**
 	 * @param args
@@ -260,11 +264,132 @@ public class MainWindow {
 		tabFolder.setSize(sShell.getSize());
 	}
 
+	private Control getBalanceSheetTabControl(TabFolder tabFolder) {
+		Composite composite = new Composite(tabFolder, SWT.NONE);
+	
+		// 口座ツリー
+		TableTree tableTree = new TableTree(composite, SWT.BORDER
+				| SWT.FULL_SELECTION);
+		bsAccountList = new AccountList(tableTree, accountListProv);
+		bsAccountList.createControl();
+		Table tttable = tableTree.getTable();
+		tttable.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(MouseEvent e) {
+				if (e.button == 1) {
+					Table t = (Table) e.widget;
+					TableItem i = t.getItem(new Point(e.x, e.y));
+					System.out.println(i + " was d-clicked");
+				}
+			}
+		});
+
+		// 日付
+		Text listDate = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
+		listDate.setText("2008/01/01");
+		FontData fd = composite.getFont().getFontData()[0];
+		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
+				(int) (fd.getHeight() * 1.5), fd.getStyle()));
+		listDate.setFont(newFont);
+	
+		Button today = new Button(composite, SWT.NONE);
+		today.setText("Today");
+	
+		Button oneDay = new Button(composite, SWT.FLAT);
+		oneDay.setText("Day");
+		Button oneWeek = new Button(composite, SWT.FLAT);
+		oneWeek.setText("Week");
+		Button oneMonth = new Button(composite, SWT.FLAT);
+		oneMonth.setText("Month");
+		Button customDur = new Button(composite, SWT.FLAT);
+		customDur.setText("期間指定");
+	
+		// バランスシート
+		table = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
+				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		// カラム
+		TableColumn[] cols = new TableColumn[6];
+		for (int i = 0; i < Column.LAST.ordinal(); i++) {
+			cols[i] = new TableColumn(table, SWT.NONE);
+			cols[i].setWidth(100);
+		}
+		cols[Column.DATE.ordinal()].setText("日付");
+		cols[Column.DATE.ordinal()].setAlignment(SWT.CENTER);
+		cols[Column.CATEGORY.ordinal()].setText("費目");
+		cols[Column.CATEGORY.ordinal()].setWidth(150);
+		cols[Column.DEBIT.ordinal()].setText("支払");
+		cols[Column.DEBIT.ordinal()].setAlignment(SWT.RIGHT);
+		cols[Column.CREDIT.ordinal()].setText("預入");
+		cols[Column.CREDIT.ordinal()].setAlignment(SWT.RIGHT);
+		cols[Column.BALANCE.ordinal()].setText("残高");
+		cols[Column.DETAIL.ordinal()].setText("詳細");
+		// リスト
+		createTableViewer();
+		cols[Column.DATE.ordinal()].pack();
+		// ポップアップメニュー
+		Menu menu = new Menu(sShell, SWT.POP_UP);
+		MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText("Popup");
+		table.setMenu(menu);
+	
+		// ボタン
+		Button btnAdd = new Button(composite, SWT.NULL);
+		btnAdd.setText("追加");
+		btnAdd.addSelectionListener(new SelectionAdapter() {
+			// Add a task to the ExampleTaskList and refresh the view
+			public void widgetSelected(SelectionEvent e) {
+				bs.addItem();
+			}
+		});
+		bs.addChangeListener(new BalanceSheetTransactionListener(tableViewer));
+
+		// 残高ラベル
+		Label total = new Label(composite, SWT.RIGHT);
+		total.setText("￥0");
+		Label label = new Label(composite, SWT.NONE);
+		label.setText("残高: ");
+	
+		// レイアウト
+		FormLayout formLayout = new FormLayout();
+		composite.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+	
+		setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
+		setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20, SWT.NONE).width = 80;
+	
+		FormData layoutData = setFormLayoutData(tableTree, listDate, 10,
+				SWT.NONE, listDate, 0, SWT.LEFT);
+		layoutData.height = 400;
+		layoutData.width = 175;
+	
+		setFormLayoutDataRight(customDur, listDate, 0, SWT.TOP, table, 0,
+				SWT.RIGHT).width = 80;
+		setFormLayoutDataRight(oneMonth, listDate, 0, SWT.TOP, customDur, -20,
+				SWT.LEFT).width = 80;
+		setFormLayoutDataRight(oneWeek, listDate, 0, SWT.TOP, oneMonth, -20,
+				SWT.LEFT).width = 80;
+		setFormLayoutDataRight(oneDay, listDate, 0, SWT.TOP, oneWeek, -20,
+				SWT.LEFT).width = 80;
+	
+		setFormLayoutData(table, listDate, 10, tableTree, 20).height = 400;
+		table.setSize(tabFolder.getSize());
+	
+		setFormLayoutData(btnAdd, table, 0, SWT.TOP, table, 10, SWT.NONE).width = 80;
+		setFormLayoutDataRight(total, table, 10, SWT.NONE, table, -20,
+				SWT.RIGHT).width = 80;
+		setFormLayoutDataRight(label, table, 10, SWT.NONE, total, -100,
+				SWT.RIGHT);
+	
+		return composite;
+	}
+
 	private Control getCategoryTabControl(TabFolder tabFolder) {
 		Composite comp = new Composite(tabFolder, SWT.NONE);
 
 		// ツリー
-		TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER);
+		TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER | SWT.SINGLE);
 		Tree tree = treeViewer.getTree();
 		final CategoryListContentProvider prov = new CategoryListContentProvider();
 		treeViewer.setContentProvider(prov);
@@ -310,8 +435,8 @@ public class MainWindow {
 		});
 //		group.pack();
 
-		prov.addChangeListener(new CategoryListListener(treeViewer));
 		prov.addChangeListener(new CategoryEditFormListener(categoryEditForm));
+		prov.addChangeListener(new CategoryListListener(treeViewer));
 		
 		// レイアウト
 		formLayout = new FormLayout();
@@ -337,8 +462,8 @@ public class MainWindow {
 		// 概要ツリー
 		final TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
-		final AccountListProvider accountListProv = new AccountListProvider(tableTree);
-		accountListProv.createControl();
+		AccountList accountList = new AccountList(tableTree, accountListProv);
+		accountList.createControl();
 
 		// 追加ボタン
 		Button btnAdd = new Button(composite, SWT.PUSH);
@@ -351,8 +476,9 @@ public class MainWindow {
 		Group grp = (Group)accountForm.createControl(composite);
 
 		// イベント
-		accountListProv.addChangeListener(new AccountListListener(tableTree));
 		accountListProv.addChangeListener(new AccountEditFormListener(accountForm));
+		accountListProv.addChangeListener(new AccountListListener(tableTree));
+		accountListProv.addChangeListener(new BsAccountListListener(bsAccountList));
 		btnAdd.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -393,133 +519,6 @@ public class MainWindow {
 		fd.width = fd.height;
 		
 		setFormLayoutData(grp, 0, 0, tableTree, 20);
-
-		return composite;
-	}
-
-	private Control getBalanceSheetTabControl(TabFolder tabFolder) {
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-
-		// 概要ツリー
-		TableTree tableTree = new TableTree(composite, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		AccountListProvider accountListProv = new AccountListProvider(tableTree);
-		accountListProv.createControl();
-		Table tttable = tableTree.getTable();
-		tttable.addMouseListener(new MouseAdapter() {
-			public void mouseDoubleClick(MouseEvent e) {
-				if (e.button == 1) {
-					Table t = (Table) e.widget;
-					TableItem i = t.getItem(new Point(e.x, e.y));
-					System.out.println(i + " was d-clicked");
-				}
-			}
-		});
-		/*
-		 * FontDialog fontDialog = new FontDialog(sShell);
-		 * fontDialog.setFontList((sum.getFont()).getFontData()); FontData
-		 * fontData = fontDialog.open(); if (fontData != null) { Font newFont =
-		 * new Font(sShell.getDisplay(), fontData); sum.setFont(newFont); }
-		 */
-
-		// 日付
-		Text listDate = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
-		listDate.setText("2008/01/01");
-		FontData fd = composite.getFont().getFontData()[0];
-		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
-				(int) (fd.getHeight() * 1.5), fd.getStyle()));
-		listDate.setFont(newFont);
-
-		Button today = new Button(composite, SWT.NONE);
-		today.setText("Today");
-
-		Button oneDay = new Button(composite, SWT.FLAT);
-		oneDay.setText("Day");
-		Button oneWeek = new Button(composite, SWT.FLAT);
-		oneWeek.setText("Week");
-		Button oneMonth = new Button(composite, SWT.FLAT);
-		oneMonth.setText("Month");
-		Button customDur = new Button(composite, SWT.FLAT);
-		customDur.setText("期間指定");
-
-		// バランスシート
-		table = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		// カラム
-		TableColumn[] cols = new TableColumn[6];
-		for (int i = 0; i < Column.LAST.ordinal(); i++) {
-			cols[i] = new TableColumn(table, SWT.NONE);
-			cols[i].setWidth(100);
-		}
-		cols[Column.DATE.ordinal()].setText("日付");
-		cols[Column.DATE.ordinal()].setAlignment(SWT.CENTER);
-		cols[Column.CATEGORY.ordinal()].setText("費目");
-		cols[Column.CATEGORY.ordinal()].setWidth(150);
-		cols[Column.DEBIT.ordinal()].setText("支払");
-		cols[Column.DEBIT.ordinal()].setAlignment(SWT.RIGHT);
-		cols[Column.CREDIT.ordinal()].setText("預入");
-		cols[Column.CREDIT.ordinal()].setAlignment(SWT.RIGHT);
-		cols[Column.BALANCE.ordinal()].setText("残高");
-		cols[Column.DETAIL.ordinal()].setText("詳細");
-		// リスト
-		createTableViewer();
-		cols[Column.DATE.ordinal()].pack();
-		// ポップアップメニュー
-		Menu menu = new Menu(sShell, SWT.POP_UP);
-		MenuItem item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Popup");
-		table.setMenu(menu);
-
-		// ボタン
-		Button btnAdd = new Button(composite, SWT.NULL);
-		btnAdd.setText("追加");
-		btnAdd.addSelectionListener(new SelectionAdapter() {
-			// Add a task to the ExampleTaskList and refresh the view
-			public void widgetSelected(SelectionEvent e) {
-				bs.addItem();
-			}
-		});
-		bs.addChangeListener(new BalanceSheetTransactionListener(tableViewer));
-
-		// 残高ラベル
-		Label total = new Label(composite, SWT.RIGHT);
-		total.setText("￥0");
-		Label label = new Label(composite, SWT.NONE);
-		label.setText("残高: ");
-
-		// レイアウト
-		FormLayout formLayout = new FormLayout();
-		composite.setLayout(formLayout);
-		formLayout.marginHeight = 10;
-		formLayout.marginWidth = 10;
-
-		setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
-		setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20, SWT.NONE).width = 80;
-
-		FormData layoutData = setFormLayoutData(tableTree, listDate, 10,
-				SWT.NONE, listDate, 0, SWT.LEFT);
-		layoutData.height = 400;
-		layoutData.width = 175;
-
-		setFormLayoutDataRight(customDur, listDate, 0, SWT.TOP, table, 0,
-				SWT.RIGHT).width = 80;
-		setFormLayoutDataRight(oneMonth, listDate, 0, SWT.TOP, customDur, -20,
-				SWT.LEFT).width = 80;
-		setFormLayoutDataRight(oneWeek, listDate, 0, SWT.TOP, oneMonth, -20,
-				SWT.LEFT).width = 80;
-		setFormLayoutDataRight(oneDay, listDate, 0, SWT.TOP, oneWeek, -20,
-				SWT.LEFT).width = 80;
-
-		setFormLayoutData(table, listDate, 10, tableTree, 20).height = 400;
-		table.setSize(tabFolder.getSize());
-
-		setFormLayoutData(btnAdd, table, 0, SWT.TOP, table, 10, SWT.NONE).width = 80;
-		setFormLayoutDataRight(total, table, 10, SWT.NONE, table, -20,
-				SWT.RIGHT).width = 80;
-		setFormLayoutDataRight(label, table, 10, SWT.NONE, total, -100,
-				SWT.RIGHT);
 
 		return composite;
 	}
