@@ -22,5 +22,4 @@ public class CategoryListLabelProvider extends CellLabelProvider {
 		cell.setText(((Category)cell.getElement()).getName());
 	}
 
-	
 }

@@ -9,7 +9,11 @@ public class UIMessageBundle {
 	 static ResourceBundle res;
 
 	 static {
-		 res = ResourceBundle.getBundle("cn.sh.fang.chenance.i18n.gui", Locale.getDefault());
+		 try {
+			 res = ResourceBundle.getBundle("cn.sh.fang.chenance.i18n.gui", Locale.getDefault());
+		 } catch (java.util.MissingResourceException  e) {
+			 res = ResourceBundle.getBundle("cn.sh.fang.chenance.i18n.gui", Locale.ENGLISH);
+		 }
 	 }
 	 
 	 public static String _(String key) {

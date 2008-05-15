@@ -61,16 +61,18 @@ import org.eclipse.swt.widgets.Tree;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
+import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.listener.AccountEditFormListener;
+import cn.sh.fang.chenance.listener.AccountListListener;
+import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
+import cn.sh.fang.chenance.listener.CategoryEditFormListener;
+import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
-import cn.sh.fang.chenance.listener.AccountListListener.AccountListSelectionAdapter;
-import cn.sh.fang.chenance.listener.AccountListListener.AddAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
-import cn.sh.fang.chenance.listener.AccountListListener.SaveAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.FileListener.FileNewListener;
 import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
 import cn.sh.fang.chenance.listener.FileListener.FileSaveListener;
-import cn.sh.fang.chenance.provider.AccountEditorProvider;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
@@ -106,6 +108,8 @@ public class MainWindow {
 	Table accountListTable;
 
 	BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
+
+	private CategoryEditForm categoryEditForm;
 
 	/**
 	 * @param args
@@ -262,24 +266,12 @@ public class MainWindow {
 		// ツリー
 		TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER);
 		Tree tree = treeViewer.getTree();
-		CategoryListContentProvider prov = new CategoryListContentProvider();
+		final CategoryListContentProvider prov = new CategoryListContentProvider();
 		treeViewer.setContentProvider(prov);
 		treeViewer.setLabelProvider(new CategoryListLabelProvider());
 		treeViewer.setInput(prov.getRoot());
 		treeViewer.expandAll();
 		ColumnViewerToolTipSupport.enableFor(treeViewer);
-
-		
-		// 編集欄
-		Label lblName = new Label(comp, SWT.NONE);
-		lblName.setText(_("Display Name:"));
-		final Text name = new Text(comp, SWT.BORDER);
-		Label lblDesc = new Label(comp, SWT.NONE);
-		lblDesc.setText(_("Description:"));
-		final Text desc = new Text(comp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		final Button btnSave= new Button(comp, SWT.PUSH);
-		btnSave.setText(_("Save"));
-		btnSave.setEnabled(false);
 
 		// 追加削除ボタン
 		Button btnAdd = new Button(comp, SWT.PUSH);
@@ -289,31 +281,40 @@ public class MainWindow {
 
 		btnAdd.addSelectionListener(prov.new AddCategorySelectionAdapter());
 		btnDel.addSelectionListener(prov.new DelCategorySelectionAdapter());
-		btnSave.addSelectionListener(prov.new SaveCategorySelectionAdapter());
-
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener(){
 			public void selectionChanged(SelectionChangedEvent e) {
-				if ( e.getSelection() != null ) {
-					Category c = (Category)((IStructuredSelection)e.getSelection()).getFirstElement();
-					
-					if ( c != null ) {
-					boolean editable = c.getParent() != null;
-					name.setEditable(editable);
-					desc.setEditable(editable);
-					btnSave.setEnabled(editable);
-
-					name.setText(c.getName());
-					desc.setText(c.getDescription());
-					
-					name.setFocus();
-					name.selectAll();
+				if (e.getSelection() != null) {
+					Category c = (Category) ((IStructuredSelection) e.getSelection())
+							.getFirstElement();
+					if (c != null) {
+						prov.itemChanged(c);
 					}
 				}
 			}
 		});
 
-		// レイアウト
+		// 編集フォーム
+		Group group = new Group(comp, SWT.NONE);
+		group.setText(_("Cagetory Info"));
 		FormLayout formLayout = new FormLayout();
+		group.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+		categoryEditForm = new CategoryEditForm(group, comp.getStyle());
+		categoryEditForm.btnSave.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				prov.itemChanged((Category)e.widget.getData());
+			}
+		});
+//		group.pack();
+
+		prov.addChangeListener(new CategoryListListener(treeViewer));
+		prov.addChangeListener(new CategoryEditFormListener(categoryEditForm));
+		
+		// レイアウト
+		formLayout = new FormLayout();
 		comp.setLayout(formLayout);
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
@@ -325,14 +326,7 @@ public class MainWindow {
 		fd.width = fd.height;
 		fd = setFormLayoutDataRight(btnAdd, tree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
 		fd.width = fd.height;
-
-		setFormLayoutData(lblName, tree, 0, SWT.TOP, tree, 20, SWT.NONE);
-		setFormLayoutData(name, tree, 0, SWT.TOP, lblName, 20, SWT.NONE).width = 100;
-		setFormLayoutData(lblDesc, lblName, 10, SWT.NONE, tree, 20, SWT.NONE);
-		fd = setFormLayoutData(desc, lblDesc, 10, SWT.NONE, lblDesc, 0, SWT.LEFT);
-		fd.width = 200;
-		fd.height = 80;
-		setFormLayoutDataRight(btnSave, desc, 10, SWT.NONE, desc, 0, SWT.RIGHT).width = 120;
+		setFormLayoutData(group, tree, 0, SWT.TOP, tree, 20, SWT.NONE);
 
 		return comp;
 	}
@@ -343,7 +337,7 @@ public class MainWindow {
 		// 概要ツリー
 		final TableTree tableTree = new TableTree(composite, SWT.BORDER
 				| SWT.FULL_SELECTION);
-		AccountListProvider accountListProv = new AccountListProvider(tableTree);
+		final AccountListProvider accountListProv = new AccountListProvider(tableTree);
 		accountListProv.createControl();
 
 		// 追加ボタン
@@ -353,14 +347,35 @@ public class MainWindow {
 		btnDel.setText("－");
 
 		// フォーム
-		AccountEditorProvider accountProv = new AccountEditorProvider();
-		Group grp = (Group)accountProv.createControl(composite);
+		AccountEditForm accountForm = new AccountEditForm();
+		Group grp = (Group)accountForm.createControl(composite);
 
 		// イベント
-		btnAdd.addSelectionListener(new AddAccountSelectionAdapter(tableTree));
+		accountListProv.addChangeListener(new AccountListListener(tableTree));
+		accountListProv.addChangeListener(new AccountEditFormListener(accountForm));
+		btnAdd.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				accountListProv.addItem();
+			}
+		});
 		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
-		tableTree.addSelectionListener(new AccountListSelectionAdapter(accountProv));
-		accountProv.save.addSelectionListener(new SaveAccountSelectionAdapter(accountProv));
+		tableTree.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (e.item.getData() instanceof Account) {
+					accountListProv.itemChanged((Account) e.item.getData());
+				} else {
+					e.doit = true;
+				}
+			}
+		});
+		accountForm.btnSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				accountListProv.itemChanged((Account)e.widget.getData());
+			}
+		});
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
@@ -463,9 +478,10 @@ public class MainWindow {
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 			// Add a task to the ExampleTaskList and refresh the view
 			public void widgetSelected(SelectionEvent e) {
-				bs.addTask();
+				bs.addItem();
 			}
 		});
+		bs.addChangeListener(new BalanceSheetTransactionListener(tableViewer));
 
 		// 残高ラベル
 		Label total = new Label(composite, SWT.RIGHT);
@@ -510,7 +526,6 @@ public class MainWindow {
 
 	private void createTableViewer() {
 		tableViewer = new TableViewer(table);
-		bs.setTableViewer(tableViewer);
 		tableViewer.setUseHashlookup(true);
 
 		tableViewer.setColumnProperties(Column.stringValues());
