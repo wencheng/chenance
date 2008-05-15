@@ -4,13 +4,8 @@
 	<groupId>cn.sh.fang.chenance</groupId>
 	<artifactId>chenance-data</artifactId>
 	<name></name>
+	<version>1.0</version>
 	<description></description>
-	<parent>
-		<groupId>cn.sh.fang</groupId>
-		<artifactId>chenance</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../chenance</relativePath>
-	</parent>
 	<repositories>
 		<repository>
 			<id>ibiblio.org</id>
@@ -74,7 +69,7 @@
 									src/cn/sh/fang/chenance/data/sql/drop.sql
 								</srcFile>
 								<srcFile>
-									src/cn/sh/fang/chenance/data/sql/db.sql
+									src/cn/sh/fang/chenance/data/sql/db-${version}.sql
 								</srcFile>
 							</srcFiles>
 							<fileset>
