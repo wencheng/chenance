@@ -21,6 +21,7 @@ public class CategoryService extends BaseService {
             // new
             entity.setInsertDatetime(new Date());
             em.persist(entity);
+            em.flush();
         } else {
             // update
             em.merge(entity);
