@@ -399,7 +399,7 @@ public class MainWindow {
 			protected boolean isEditorActivationEvent(
 					ColumnViewerEditorActivationEvent event) {
 				ViewerCell cell = (ViewerCell) event.getSource();
-				Transaction t = (Transaction)((TableItem)cell.getItem()).getData();
+//				Transaction t = (Transaction)((TableItem)cell.getItem()).getData();
 
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
 					MouseEvent e = ((MouseEvent) event.sourceEvent);

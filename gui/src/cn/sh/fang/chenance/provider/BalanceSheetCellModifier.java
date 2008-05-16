@@ -37,6 +37,8 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		Object result = null;
 		Transaction t = (Transaction) element;
 		LOG.debug(t);
+		LOG.debug(col);
+		LOG.debug(t.getDebit());
 
 		switch (col) {
 		//case Column.DATE:
