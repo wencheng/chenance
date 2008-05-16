@@ -102,11 +102,13 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 	public void activate(ColumnViewerEditorActivationEvent e) {
 		super.activate(e);
 
-        MouseEvent me = (MouseEvent)e.sourceEvent;
 
         if ( popup.isVisible() == false ) {
         	Table table = (Table)parent;
-        	TableItem ti = table.getItem(new Point(me.x,me.y));
+//          MouseEvent me = (MouseEvent)e.sourceEvent;
+//        	TableItem ti = table.getItem(new Point(me.x,me.y));
+        	TableItem ti = 	table.getSelection()[0];
+        	
         	Rectangle tiRect = ti.getBounds();
         	System.out.println("item "+tiRect);
         	Point p = table.toDisplay(tiRect.x,tiRect.y);

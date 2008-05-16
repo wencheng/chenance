@@ -63,14 +63,16 @@ import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.AccountEditFormListener;
 import cn.sh.fang.chenance.listener.AccountListListener;
+import cn.sh.fang.chenance.listener.ActivateNextCellEditorListener;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
 import cn.sh.fang.chenance.listener.BsAccountListListener;
 import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
-import cn.sh.fang.chenance.listener.ActivateNextCellEditorListener;
+import cn.sh.fang.chenance.listener.NumberVerifyListener;
 import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.FileListener.FileNewListener;
 import cn.sh.fang.chenance.listener.FileListener.FileOpenListener;
@@ -396,11 +398,13 @@ public class MainWindow {
 				tableViewer) {
 			protected boolean isEditorActivationEvent(
 					ColumnViewerEditorActivationEvent event) {
+				ViewerCell cell = (ViewerCell) event.getSource();
+				Transaction t = (Transaction)((TableItem)cell.getItem()).getData();
+
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
 					MouseEvent e = ((MouseEvent) event.sourceEvent);
 					return e.button == 1;
 				} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
-					ViewerCell cell = (ViewerCell) event.getSource();
 					return cell.getColumnIndex() == Column.DETAIL.ordinal();
 				} else {
 					return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
@@ -408,14 +412,14 @@ public class MainWindow {
 				}
 			}
 		};
-	
+
 		TableViewerEditor.create(tableViewer, actSupport,
 				ColumnViewerEditor.TABBING_HORIZONTAL
 						// | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
 						| ColumnViewerEditor.TABBING_CYCLE_IN_ROW
 						| ColumnViewerEditor.TABBING_VERTICAL
 						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
-	
+		
 		// Create the cell editors
 		CellEditor[] editors = new CellEditor[Column.values().length];
 	
@@ -431,27 +435,17 @@ public class MainWindow {
 		e.addListener(new ActivateNextCellEditorListener(tableViewer));
 		editors[Column.CATEGORY.ordinal()] = e;
 	
-		TextCellEditor textEditor = new TextCellEditor(table);
-		((Text) textEditor.getControl()).setTextLimit(9);
-		((Text) textEditor.getControl())
-				.addVerifyListener(new VerifyListener() {
-					public void verifyText(VerifyEvent e) {
-						e.doit = "0123456789".indexOf(e.text) >= 0;
-					}
-				});
-		editors[Column.DEBIT.ordinal()] = textEditor;
-	
-		textEditor = new TextCellEditor(table);
-		((Text) textEditor.getControl())
-				.addVerifyListener(new VerifyListener() {
-					public void verifyText(VerifyEvent e) {
-						// Here, we could use a RegExp such as the following
-						// if using JRE1.4 such as e.doit =
-						// e.text.matches("[\\-0-9]*");
-						e.doit = "0123456789".indexOf(e.text) >= 0;
-					}
-				});
-		editors[Column.CREDIT.ordinal()] = textEditor;
+		TextCellEditor debitEditor = new TextCellEditor(table);
+		((Text) debitEditor.getControl()).setTextLimit(9);
+		((Text) debitEditor.getControl())
+				.addVerifyListener(new NumberVerifyListener());
+		editors[Column.DEBIT.ordinal()] = debitEditor;
+
+		TextCellEditor creditEditor = new TextCellEditor(table);
+		((Text) creditEditor.getControl()).setTextLimit(9);
+		((Text) creditEditor.getControl())
+				.addVerifyListener(new NumberVerifyListener());
+		editors[Column.CREDIT.ordinal()] = creditEditor;
 	
 		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(table);
 	

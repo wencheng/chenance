@@ -78,6 +78,15 @@ public class BalanceSheetLabelProvider
 		String result = "";
 		Transaction t = (Transaction) element;
 		Column col = Column.values()[columnIndex];
+
+		if ( t.getDate() == null ) {
+			if ( col == Column.DATE ) {
+				return "<Add new>";
+			} else {
+				return "";
+			}
+		}
+		
 		switch (col) {
 			case DATE:
 				result = new SimpleDateFormat("yyyy/MM/dd").format(t.getDate());
