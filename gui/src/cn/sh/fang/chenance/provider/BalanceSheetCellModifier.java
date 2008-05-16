@@ -3,6 +3,7 @@ package cn.sh.fang.chenance.provider;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
@@ -12,6 +13,8 @@ import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 
 public class BalanceSheetCellModifier implements ICellModifier {
+	
+	final static Logger LOG = Logger.getLogger(BalanceSheetCellModifier.class);
 
 	TableViewer viewer;
 
@@ -19,7 +22,10 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		this.viewer = bs;
 	}
 
-	public boolean canModify(Object arg0, String arg1) {
+	public boolean canModify(Object o, String prop) {
+		if ( ((Transaction)o).getDate() == null ) {
+			return false;
+		}		
 		return true;
 	}
 
@@ -30,6 +36,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 
 		Object result = null;
 		Transaction t = (Transaction) element;
+		LOG.debug(t);
 
 		switch (col) {
 		//case Column.DATE:
@@ -64,6 +71,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 	public void modify(Object element, String property, Object value) {
 		// Find the index of the column
 		Column col = Column.valueOf(property);
+		LOG.debug("modified column: " + col);
 
 		TableItem item = (TableItem) element;
 		Transaction t = (Transaction) item.getData();

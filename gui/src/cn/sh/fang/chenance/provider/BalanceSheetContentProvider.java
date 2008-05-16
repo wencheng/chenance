@@ -47,13 +47,18 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	 */
 	private void initData() {
 		Transaction t;
-		for (int i = 0; i < 14; i++) {
+		for (int i = 0; i < 5; i++) {
 			t = new Transaction();
+			t.setId(i);
 			t.setDate(new Date());
-			t.setDebit(0);
+			t.setDebit(i*1000);
 			t.setCredit(0);
 			this.transactions.add(t);
 		}
+		
+		// for adding
+		t = new Transaction();
+		this.transactions.add(t);
 	};
 
 	/**
