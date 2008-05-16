@@ -83,7 +83,7 @@ public class BalanceSheetLabelProvider
 				result = new SimpleDateFormat("yyyy/MM/dd").format(t.getDate());
 				break;
 			case CATEGORY:
-				result = t.getCategory() != null ? t.getCategory().getName() : "";
+				result = t.getCategory() != null ? t.getCategory().getDisplayName() : "";
 				break;
 			case DEBIT:
 				NumberFormat exValue = NumberFormat.getCurrencyInstance();

@@ -40,7 +40,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			break;
 		case CATEGORY:
 			List<Category> l = (List<Category>)viewer.getData("categoryList");
-			result = new Integer(l.indexOf(l.get(1)));
+			result = new Integer(l.indexOf(t.getCategory()));
 			break;
 		case DEBIT:
 			result = t.getDebit() + "";
@@ -78,8 +78,10 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			t.setDate((Date) value);
 			break;
 		case CATEGORY:
+			int i = (Integer)value;
+			if ( i < 0 ) break;
 			List<Category> l = (List<Category>)viewer.getData("categoryList");
-			t.setCategory(l.get((Integer)value));
+			t.setCategory(l.get(i));
 			break;
 		case DEBIT:
 			t.setDebit(Integer.valueOf((String)value));

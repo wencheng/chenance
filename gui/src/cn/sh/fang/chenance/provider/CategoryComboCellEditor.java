@@ -8,8 +8,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -26,6 +24,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -45,8 +45,8 @@ import cn.sh.fang.chenance.util.swt.CCombo;
  * This class may be instantiated; it is not intended to be subclassed.
  * </p>
  */
-public class CategoryComboCellEditor extends CellEditor {
-	
+public class CategoryComboCellEditor extends CellEditor implements Listener {
+
 	private List<Category> items;
 
 	int selection;
@@ -55,29 +55,23 @@ public class CategoryComboCellEditor extends CellEditor {
 
 	private Table table;
 
-	static Image grey_img = ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/grey.png"
-			).createImage();
-	static Image plus_img = ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/plus.gif"
-			).createImage();
-	static Image lvl1_img = ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/lvl1.gif"
-			).createImage();
-	static Image lvl2_img= ImageDescriptor.createFromFile(
-			MainWindow.class, 
-			"icons/lvl2.gif"
-			).createImage();
+	private int clientAreaWidth;
+
+	static Image grey_img = ImageDescriptor.createFromFile(MainWindow.class,
+			"icons/grey.png").createImage();
+	static Image plus_img = ImageDescriptor.createFromFile(MainWindow.class,
+			"icons/plus.gif").createImage();
+	static Image lvl1_img = ImageDescriptor.createFromFile(MainWindow.class,
+			"icons/lvl1.gif").createImage();
+	static Image lvl2_img = ImageDescriptor.createFromFile(MainWindow.class,
+			"icons/lvl2.gif").createImage();
 
 	private static final int defaultStyle = SWT.READ_ONLY;
 
 	/**
 	 * Creates a new cell editor with no control and no st of choices.
 	 * Initially, the cell editor has no cell validator.
-	 *
+	 * 
 	 * @since 2.1
 	 * @see CellEditor#setStyle
 	 * @see CellEditor#create
@@ -103,7 +97,7 @@ public class CategoryComboCellEditor extends CellEditor {
 	 */
 	protected Control createControl(Composite parent) {
 
-		comboBox = new CCombo(parent, getStyle()|SWT.APPLICATION_MODAL);
+		comboBox = new CCombo(parent, getStyle() | SWT.APPLICATION_MODAL);
 		comboBox.setFont(parent.getFont());
 
 		populateComboBoxItems();
@@ -121,9 +115,11 @@ public class CategoryComboCellEditor extends CellEditor {
 			}
 
 			public void widgetSelected(SelectionEvent event) {
+				if ( ((Category)comboBox.getItem(comboBox.getSelectionIndex()).getData()).isRoot() ) {
+					return;
+				}
 				selection = comboBox.getSelectionIndex();
 				applyEditorValueAndDeactivate();
-				openNextCellEditor();
 			}
 		});
 
@@ -141,6 +137,11 @@ public class CategoryComboCellEditor extends CellEditor {
 				CategoryComboCellEditor.this.focusLost();
 			}
 		});
+
+		comboBox.getTable().addListener(SWT.MeasureItem, this);
+		comboBox.getTable().addListener(SWT.EraseItem, this);
+		comboBox.getTable().addListener(SWT.PaintItem, this);
+
 		return comboBox;
 	}
 
@@ -153,7 +154,7 @@ public class CategoryComboCellEditor extends CellEditor {
 	 * The <code>ComboBoxCellEditor</code> implementation of this
 	 * <code>CellEditor</code> framework method returns the zero-based index
 	 * of the current selection.
-	 *
+	 * 
 	 * @return the zero-based index of the current selection wrapped as an
 	 *         <code>Integer</code>
 	 */
@@ -196,7 +197,7 @@ public class CategoryComboCellEditor extends CellEditor {
 	 * The <code>ComboBoxCellEditor</code> implementation of this
 	 * <code>CellEditor</code> framework method accepts a zero-based index of
 	 * a selection.
-	 *
+	 * 
 	 * @param value
 	 *            the zero-based index of the selection wrapped as an
 	 *            <code>Integer</code>
@@ -213,25 +214,32 @@ public class CategoryComboCellEditor extends CellEditor {
 	private void populateComboBoxItems() {
 		if (comboBox != null && items != null) {
 			comboBox.removeAll();
-			
+
 			FontData fd = comboBox.getFont().getFontData()[0];
 			fd.setStyle(SWT.BOLD);
-			Font boldFont =
-				new Font(comboBox.getDisplay(), fd);
-			Color grey = new Color(comboBox.getForeground().getDevice(), 0xC0, 0xC0, 0xC0);
-			
-			for ( int i = 0; i < items.size(); i++ ) {
+			Font boldFont = new Font(comboBox.getDisplay(), fd);
+
+			for (int i = 0; i < items.size(); i++) {
 				Category c = items.get(i);
 				if (c.getCode() % 10000 != 0) {
-					comboBox.add(c.getName(), lvl1_img);
-				} else if (c.getCode() % 1000000 != 0) {
-					comboBox.add(c.getName(), plus_img);
+					comboBox.add(c.getDisplayName(),
+							null);
 				} else {
-					comboBox.add(c.getName(), null);
-					TableItem ti = comboBox.getItem(i);
+					comboBox.add(c.getDisplayName(), null);
+				}
+				// } else if (c.getCode() % 1000000 != 0) {
+				// comboBox.add(c.getName(), plus_img);
+				// } else {
+				// comboBox.add(c.getName(), null);
+				// TableItem ti = comboBox.getItem(i);
+				// ti.setFont(boldFont);
+				// //ti.setBackground(grey);
+				// }
+				TableItem ti = comboBox.getItem(i);
+				ti.setData(c);
+
+				if (c.isRoot()) {
 					ti.setFont(boldFont);
-					ti.setBackground(grey);
-					System.out.println(ti.getBounds().height);
 				}
 			}
 
@@ -270,12 +278,9 @@ public class CategoryComboCellEditor extends CellEditor {
 		fireApplyEditorValue();
 	}
 
-	private void openNextCellEditor() {
-	}
-	
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.eclipse.jface.viewers.CellEditor#focusLost()
 	 */
 	protected void focusLost() {
@@ -286,7 +291,7 @@ public class CategoryComboCellEditor extends CellEditor {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.eclipse.jface.viewers.CellEditor#keyReleaseOccured(org.eclipse.swt.events.KeyEvent)
 	 */
 	protected void keyReleaseOccured(KeyEvent keyEvent) {
@@ -295,5 +300,75 @@ public class CategoryComboCellEditor extends CellEditor {
 		} else if (keyEvent.character == '\t') { // tab key
 			applyEditorValueAndDeactivate();
 		}
+	}
+
+	public void handleEvent(Event e) {
+		if (e.type == SWT.MeasureItem) {
+			Table ctable = comboBox.getTable();
+			if ( this.clientAreaWidth != ctable.getClientArea().width ) {
+				this.clientAreaWidth = ctable.getClientArea().width;
+			}
+			e.width = this.clientAreaWidth - 4;
+
+//			if (((Category) e.item.getData()).isRoot()) {
+//				e.height = (int) (e.gc.getFontMetrics().getHeight() * 1.5);
+//			} else {
+				e.height = e.gc.getFontMetrics().getHeight();
+//			}
+		}
+
+		if (e.type == SWT.EraseItem) {
+			GC gc = e.gc;
+			int clientWidth = Math.max(
+					comboBox.getTable().getClientArea().width, this.table
+							.getColumn(Column.CATEGORY.ordinal()).getWidth());
+			Color grey = new Color(comboBox.getForeground().getDevice(), 0xC0,
+					0xC0, 0xC0);
+
+			e.detail &= ~SWT.HOT;
+			if ((e.detail & SWT.HOT) == 0) {
+				e.detail &= ~SWT.HOT;
+			}
+
+			if ((e.detail & SWT.SELECTED) == 0) {
+				if (((Category) e.item.getData()).isRoot()) {
+					gc.setBackground(grey);
+					gc.fillRectangle(0, e.y, clientWidth, e.height);
+				}
+				return; /* item not selected */
+			}
+
+			Color oldForeground = gc.getForeground();
+			Color oldBackground = gc.getBackground();
+			gc.setForeground(comboBox.getDisplay()
+					.getSystemColor(SWT.COLOR_DARK_MAGENTA));
+			gc.setBackground(comboBox.getDisplay().getSystemColor(
+					SWT.COLOR_MAGENTA));
+			gc.fillGradientRectangle(0, e.y, clientWidth, e.height, false);
+			gc.setForeground(oldForeground);
+			gc.setBackground(oldBackground);
+			e.detail &= ~SWT.SELECTED;
+		}
+
+		if (e.type == SWT.PaintItem) {
+			// TableItem item = (TableItem)e.item;
+			// Image trailingImage = (Image)item.getData();
+			Image trailingImage = plus_img;
+			if (trailingImage != null) {
+				int x = e.x + e.width + 8;
+				int itemHeight = table.getItemHeight();
+				int imageHeight = trailingImage.getBounds().height;
+				int y = e.y + (itemHeight - imageHeight) / 2;
+				e.gc.drawImage(trailingImage, x, y);
+			}
+		}
+	}
+
+	public int getVisibleItemCount() {
+		return comboBox.getVisibleItemCount();
+	}
+
+	public void setVisibleItemCount(int count) {
+		comboBox.setVisibleItemCount(count);
 	}
 }
