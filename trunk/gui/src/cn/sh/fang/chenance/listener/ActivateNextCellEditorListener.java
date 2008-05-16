@@ -13,17 +13,14 @@ public class ActivateNextCellEditorListener implements ICellEditorListener {
 		this.v = v;
 	}
 
-	@Override
 	public void applyEditorValue() {
 		v.editElement(((StructuredSelection) v.getSelection())
 				.getFirstElement(), Column.DEBIT.ordinal());
 	}
 
-	@Override
 	public void cancelEditor() {
 	}
 
-	@Override
 	public void editorValueChanged(boolean arg0, boolean arg1) {
 	}
 }

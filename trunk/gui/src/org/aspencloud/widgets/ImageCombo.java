@@ -83,7 +83,7 @@ public class ImageCombo extends Composite {
 
 	Text text;
 	protected Table table;
-	int visibleItemCount = 5;
+	int visibleItemCount = 10;
 	Shell popup;
 	Button arrow;
 	boolean hasFocus;
@@ -536,6 +536,9 @@ public class ImageCombo extends Composite {
 				visibleItemCount, itemCount);
 		int itemHeight = table.getItemHeight() * itemCount;
 		Point listSize = table.computeSize(SWT.DEFAULT, itemHeight, false);
+		if ( table.getVerticalBar().isVisible() == false ) {
+			listSize.x -= table.getVerticalBar().getSize().x;
+		}
 		table.setBounds(1, 1, Math.max(size.x - 2, listSize.x), listSize.y);
 
 		int index = table.getSelectionIndex();
