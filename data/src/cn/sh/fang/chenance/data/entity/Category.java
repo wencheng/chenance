@@ -94,4 +94,16 @@ public class Category extends BaseEntity {
 	public String toString() {
 		return getName();
 	}
+
+	public boolean isRoot() {
+		return getCode() % 1000000 == 0;
+	}
+
+	public String getDisplayName() {
+		if ( parent != null && parent.isRoot() == false ) {
+			return parent.getDisplayName() + " : " + name; 
+		} else {
+			return name;
+		}
+	}
 }
