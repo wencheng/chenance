@@ -62,7 +62,7 @@ import cn.sh.fang.chenance.util.SWTUtil;
 
 public class SWTTest {
 
-	static String filepath = System.getProperty("user.home") + "/chenance/db";
+	public static String filepath = System.getProperty("user.home") + "/chenance/db";
 
 	public static EntityManagerFactory factory;
 
@@ -112,7 +112,7 @@ public class SWTTest {
 	}
 
 	public static void shutdown() {
-		factory.close();
+//		factory.close();
 	}
 
 	/**

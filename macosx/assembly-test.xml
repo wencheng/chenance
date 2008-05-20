@@ -3,12 +3,14 @@
 	<formats>
 		<format>dir</format>
 	</formats>
+	<!-- 
 	<files>
 		<file>
 			<source>../../data/target/chenance-data-1.0.jar</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>
+	 -->
 	<dependencySets>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
