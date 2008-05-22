@@ -7,9 +7,10 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -25,6 +26,7 @@ public class CategoryEditForm {
 	Label lblDesc;
 	public Text desc;
 	public Button btnSave;
+	private Canvas descCanvas;
 
 	public CategoryEditForm(Composite parent, int style) {
 		createControl(parent);
@@ -36,40 +38,43 @@ public class CategoryEditForm {
 		name = new Text(parent, SWT.BORDER);
 		lblDesc = new Label(parent, SWT.NONE);
 		lblDesc.setText(_("Description:"));
-		desc = new Text(parent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		descCanvas = new Canvas(parent, SWT.RESIZE);
+		desc = new Text(descCanvas, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		btnSave= new Button(parent, SWT.PUSH);
 		btnSave.setText(_("Save"));
 		btnSave.setEnabled(false);
 
+		descCanvas.setLayout(new FillLayout());
 		setFormLayoutData(lblName, 0, 0, 0, 10);
 		setFormLayoutData(name, lblName, 0, SWT.TOP, lblName, 20, SWT.NONE).width = 100;
 		setFormLayoutData(lblDesc, lblName, 20, SWT.NONE, lblName, 0, SWT.LEFT);
-		FormData fd = setFormLayoutData(desc, lblDesc, 10, SWT.NONE, lblDesc, 0, SWT.LEFT);
+		FormData fd = setFormLayoutData(descCanvas, lblDesc, 10, SWT.NONE, lblDesc, 0, SWT.LEFT);
 		fd.width = 200;
 		fd.height = 80;
-		setFormLayoutDataRight(btnSave, desc, 10, SWT.NONE, desc, 0, SWT.RIGHT).width = 120;
+		setFormLayoutDataRight(btnSave, descCanvas, 10, SWT.NONE, descCanvas, 0, SWT.RIGHT).width = 120;
 
+//		desc.addMouseMoveListener(new MouseMoveListener() {
+//			public void mouseMove(MouseEvent e) {
+//				if ( (desc.getSize().y - 6 - e.y) <= 8 ) {
+//					System.out.println("Text: set");
+//					desc.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
+////					parent.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
+//				} else {
+//					System.out.println("Text: unset");
+//					desc.setCursor(null);
+//					parent.setCursor(null);
+//				}
+//			}
+//		});
 		desc.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				if ( (desc.getSize().y - 6 - e.y) <= 8 ) {
-					System.out.println("Text: set");
-					desc.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
-//					parent.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
-				} else {
-					System.out.println("Text: unset");
-					desc.setCursor(null);
-					parent.setCursor(null);
-				}
-			}
-		});
-		parent.addMouseMoveListener(new MouseMoveListener() {
-			public void mouseMove(MouseEvent e) {
-				if ( Math.abs(e.y - desc.getBounds().y - desc.getSize().y ) <= 3 ) {
+				System.out.println(e);
+				if ( Math.abs(e.y - desc.getBounds().y - desc.getSize().y ) <= 13 ) {
 					System.out.println("Group: set");
-					parent.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
+					desc.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
 				} else {
 					System.out.println("Group: unset");
-					parent.setCursor(null);
+					desc.setCursor(null);
 				}
 			}
 		});
