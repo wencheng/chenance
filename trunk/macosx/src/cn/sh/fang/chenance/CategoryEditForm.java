@@ -5,6 +5,9 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -27,7 +30,7 @@ public class CategoryEditForm {
 		createControl(parent);
 	}
 
-	private void createControl(Composite parent) {
+	private void createControl(final Composite parent) {
 		lblName = new Label(parent, SWT.NONE);
 		lblName.setText(_("Display Name:"));
 		name = new Text(parent, SWT.BORDER);
@@ -45,6 +48,32 @@ public class CategoryEditForm {
 		fd.width = 200;
 		fd.height = 80;
 		setFormLayoutDataRight(btnSave, desc, 10, SWT.NONE, desc, 0, SWT.RIGHT).width = 120;
+
+		desc.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent e) {
+				if ( (desc.getSize().y - 6 - e.y) <= 8 ) {
+					System.out.println("Text: set");
+					desc.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
+//					parent.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
+				} else {
+					System.out.println("Text: unset");
+					desc.setCursor(null);
+					parent.setCursor(null);
+				}
+			}
+		});
+		parent.addMouseMoveListener(new MouseMoveListener() {
+			public void mouseMove(MouseEvent e) {
+				if ( Math.abs(e.y - desc.getBounds().y - desc.getSize().y ) <= 3 ) {
+					System.out.println("Group: set");
+					parent.setCursor(desc.getDisplay().getSystemCursor(SWT.CURSOR_SIZENS));
+				} else {
+					System.out.println("Group: unset");
+					parent.setCursor(null);
+				}
+			}
+		});
+
 	}
 	
 	class CategoryEditFormListener implements IItemChangeListener<Category> {
