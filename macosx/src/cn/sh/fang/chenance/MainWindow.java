@@ -311,6 +311,7 @@ public class MainWindow {
 	
 		Button oneDay = new Button(composite, SWT.RADIO);
 		oneDay.setText(_("Day"));
+		oneDay.setSelection(true);
 		Button oneWeek = new Button(composite, SWT.RADIO);
 		oneWeek.setText(_("Week"));
 		Button oneMonth = new Button(composite, SWT.RADIO);

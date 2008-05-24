@@ -113,7 +113,7 @@ public class BalanceSheetLabelProvider
 	
 	protected static String getDetailLabel(Transaction t) {
 		if ( t == null ) return "";
-		
+
 		String ret = "";
 		// TODO implement this
 		if ( t.getRepeatPayment() != null ) {
