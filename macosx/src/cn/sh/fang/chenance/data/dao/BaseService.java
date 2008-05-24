@@ -12,7 +12,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
-import cn.sh.fang.chenance.SWTTest;
+import cn.sh.fang.chenance.MainWindow;
 
 
 public abstract class BaseService {
@@ -33,7 +33,7 @@ public abstract class BaseService {
 
 	public BaseService() {
 		if (em == null) {
-			em = SWTTest.factory.createEntityManager();
+			em = MainWindow.factory.createEntityManager();
 //			em = factory.createEntityManager();
 			em.setFlushMode(FlushModeType.AUTO);
 			t = em.getTransaction();
