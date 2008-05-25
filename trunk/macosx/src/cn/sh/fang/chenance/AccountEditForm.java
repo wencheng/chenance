@@ -7,10 +7,13 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.ExpandBar;
+import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -23,7 +26,6 @@ public class AccountEditForm {
 	Label lblNamePh;
 	public Text namePh;
 	public Button btnSave;
-	public Button btnDetail;
 	public Text memo;
 	private Label lblType;
 	private Combo type;
@@ -44,6 +46,7 @@ public class AccountEditForm {
 	private Label lblStart;
 	public Text start;
 	private Label lblMemo;
+	private ExpandBar bar;
 
 	public AccountEditForm() {
 	}
@@ -123,12 +126,28 @@ public class AccountEditForm {
 		lblMemo.pack();
 		memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 
-		btnDetail = new Button(grp, SWT.NONE);
-		btnDetail.setText(_("&Options >>"));
-
 		btnSave = new Button(grp, SWT.NONE);
 		btnSave.setText(_("&Save this account"));
-
+		
+		bar = new ExpandBar(grp, SWT.V_SCROLL);
+		Composite composite = new Composite(bar, SWT.NONE);
+	    GridLayout layout = new GridLayout();
+	    layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
+	    layout.verticalSpacing = 10;
+	    composite.setLayout(layout);
+	    Button button = new Button(composite, SWT.PUSH);
+	    button.setText("SWT.PUSH");
+	    button = new Button(composite, SWT.RADIO);
+	    button.setText("SWT.RADIO");
+	    button = new Button(composite, SWT.CHECK);
+	    button.setText("SWT.CHECK");
+	    button = new Button(composite, SWT.TOGGLE);
+	    button.setText("SWT.TOGGLE");
+	    ExpandItem item0 = new ExpandItem(bar, SWT.NONE, 0);
+	    item0.setText(_("Options"));
+	    item0.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+	    item0.setControl(composite);
+	    
 		internalLayout();
 
 		return grp;
@@ -214,17 +233,18 @@ public class AccountEditForm {
 				5, SWT.NONE);
 		setFormLayoutData(start, lblStart, 0, SWT.TOP, d, 5, SWT.NONE).width = 80;
 
-		
-		grp.pack();
-
 		// bottom
 		setFormLayoutData(lblMemo, lblDay, 20, SWT.NONE, lblName, 0, SWT.LEFT);
 		FormData fd = setFormLayoutData(memo, lblMemo, 0, SWT.NONE, lblName, 0,
 				SWT.LEFT);
 		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
 		fd.height = 80;
-		setFormLayoutDataRight(btnDetail, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT);
-		setFormLayoutDataRight(btnSave, btnDetail, 10, SWT.NONE, memo, 0, SWT.RIGHT);
+		setFormLayoutDataRight(btnSave, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT);
 		
+		fd = setFormLayoutData(bar, btnSave, 10, SWT.NONE, memo, 0, SWT.LEFT);
+		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
+		fd.height = 100;
+		
+		grp.pack();
 	}
 }

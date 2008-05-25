@@ -6,19 +6,11 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
-import cn.sh.fang.chenance.AccountEditForm;
-import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
-import cn.sh.fang.chenance.util.SWTUtil;
 
 public class AccountListListener implements IItemChangeListener<Account> {
 
