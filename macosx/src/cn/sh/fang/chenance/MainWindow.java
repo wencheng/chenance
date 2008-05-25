@@ -1,5 +1,6 @@
 package cn.sh.fang.chenance;
 
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
@@ -24,6 +25,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
+import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -50,21 +52,25 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 
+import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.AccountEditFormListener;
 import cn.sh.fang.chenance.listener.AccountListListener;
+import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
 import cn.sh.fang.chenance.listener.BsAccountListListener;
 import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
+import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
+import cn.sh.fang.chenance.listener.BsAccountListListener.AccountListSelectionAdapter;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
@@ -79,7 +85,8 @@ import cn.sh.fang.chenance.util.SWTUtil;
 
 public class MainWindow {
 
-	public static String filepath = System.getProperty("user.home") + "/chenance/db";
+	public static String filepath = System.getProperty("user.home")
+			+ "/chenance/db";
 
 	public static EntityManagerFactory factory;
 
@@ -97,14 +104,14 @@ public class MainWindow {
 	private Table table;
 
 	private AccountListProvider accountListProv = new AccountListProvider();
-	
+
 	BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
 
 	private CategoryEditForm categoryEditForm;
 
 	private AccountList bsAccountList;
 
-	private TableViewer tableViewer;
+	private TableViewer bsTableViewer;
 
 	public static void main(String[] args) throws InterruptedException {
 		// TODO find a swt splash
@@ -133,7 +140,8 @@ public class MainWindow {
 	}
 
 	public static void shutdown() {
-//		factory.close();
+		BaseService.commit();
+		factory.close();
 	}
 
 	/**
@@ -274,41 +282,20 @@ public class MainWindow {
 		item2.setControl(getCategoryTabControl(tabFolder));
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		item3.setText(_("Accounts"));
-		 item3.setControl(getAccountTabControl(tabFolder));
+		item3.setControl(getAccountTabControl(tabFolder));
 		tabFolder.setSize(sShell.getSize());
 	}
 
 	private Control getBalanceSheetTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
-	
+
+		// カレンダー
+		DateTime listDate = new DateTime(composite, SWT.CALENDAR | SWT.SHORT);
+
 		// 口座ツリー
-		TableTree tableTree = new TableTree(composite, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		bsAccountList = new AccountList(tableTree, accountListProv);
-		bsAccountList.createControl();
-		Table tttable = tableTree.getTable();
-		tttable.addMouseListener(new MouseAdapter() {
-			public void mouseDoubleClick(MouseEvent e) {
-				if (e.button == 1) {
-					Table t = (Table) e.widget;
-					TableItem i = t.getItem(new Point(e.x, e.y));
-					System.out.println(i + " was d-clicked");
-				}
-			}
-		});
-	
-		// 日付
-		DateTime listDate = new DateTime (composite, SWT.CALENDAR|SWT.SHORT);
-//		Text listDate = new Text(composite, SWT.READ_ONLY | SWT.BORDER);
-//		listDate.setText("2008/01/01");
-//		FontData fd = composite.getFont().getFontData()[0];
-//		Font newFont = new Font(sShell.getDisplay(), new FontData(fd.getName(),
-//				(int) (fd.getHeight() * 1.5), fd.getStyle()));
-//		listDate.setFont(newFont);
-	
-		Button today = new Button(composite, SWT.NONE);
-		today.setText("Today");
-	
+		bsAccountList = new AccountList(accountListProv);
+		TableTree tableTree = bsAccountList.createControl(composite);
+
 		Button oneDay = new Button(composite, SWT.RADIO);
 		oneDay.setText(_("Day"));
 		oneDay.setSelection(true);
@@ -318,7 +305,7 @@ public class MainWindow {
 		oneMonth.setText(_("Month"));
 		Button oneYear = new Button(composite, SWT.RADIO);
 		oneYear.setText(_("Year"));
-	
+
 		// バランスシート
 		table = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
@@ -339,6 +326,7 @@ public class MainWindow {
 		cols[3].setText("預入");
 		cols[3].setAlignment(SWT.RIGHT);
 		cols[4].setText("残高");
+		cols[4].setAlignment(SWT.RIGHT);
 		cols[5].setText("詳細");
 		// リスト
 		createTableViewer();
@@ -348,65 +336,156 @@ public class MainWindow {
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Popup");
 		table.setMenu(menu);
-	
-//		btnAdd.addSelectionListener(new SelectionAdapter() {
-//			// Add a task to the ExampleTaskList and refresh the view
-//			public void widgetSelected(SelectionEvent e) {
-//				// bs.addItem();
-//			}
-//		});
-//		bs.addChangeListener(new BalanceSheetTransactionListener(tableViewer));
-	
+		// <Add New>
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				if (e.button == 1) {
+					Transaction t = (Transaction) table.getSelection()[0]
+							.getData();
+					if (t.getDate() == null) {
+						bs.addItem();
+						return;
+					}
+				}
+				super.mouseDoubleClick(e);
+			}
+		});
+		// default account selection
+		// TODO select account last saved
+		bsAccountList.getTableTree().addSelectionListener(
+				new AccountListSelectionAdapter(bs, this.bsTableViewer));
+		bsAccountList.selectAccount(0);
+
 		// 残高ラベル
 		Label total = new Label(composite, SWT.RIGHT);
 		total.setText("￥0");
 		Label label = new Label(composite, SWT.NONE);
 		label.setText("残高: ");
-	
+
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
 		composite.setLayout(formLayout);
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
-	
-//		SWTUtil.setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
-		SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
-				SWT.NONE).width = 80;
-	
+
+		// SWTUtil.setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
+		// SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
+		// SWT.NONE).width = 80;
+
 		FormData layoutData = SWTUtil.setFormLayoutData(tableTree, listDate,
 				10, SWT.NONE, listDate, 0, SWT.LEFT);
 		layoutData.height = 300;
-//		layoutData.width = listDate.getSize().x;
-	
-		SWTUtil.setFormLayoutData(table, listDate, 0, SWT.TOP, listDate, 20, SWT.NONE).height = 400;
+		// layoutData.width = listDate.getSize().x;
+
+		SWTUtil.setFormLayoutData(table, listDate, 0, SWT.TOP, listDate, 20,
+				SWT.NONE).height = 400;
 		table.setSize(tabFolder.getSize());
-	
-		SWTUtil.setFormLayoutData(oneDay, table, 0, SWT.TOP, table,
-				10, SWT.NONE).width = 80;
-		SWTUtil.setFormLayoutData(oneWeek, oneDay, 10, SWT.NONE, oneDay,
-				0, SWT.LEFT).width = 80;
-		SWTUtil.setFormLayoutData(oneMonth, oneWeek, 10, SWT.NONE, oneWeek,
-				0, SWT.LEFT).width = 80;
-		SWTUtil.setFormLayoutData(oneYear, oneMonth, 10, SWT.NONE, oneMonth,
-				0, SWT.LEFT).width = 80;
+
+		SWTUtil.setFormLayoutData(oneDay, table, 0, SWT.TOP, table, 10,
+				SWT.NONE).width = 80;
+		SWTUtil.setFormLayoutData(oneWeek, oneDay, 10, SWT.NONE, oneDay, 0,
+				SWT.LEFT).width = 80;
+		SWTUtil.setFormLayoutData(oneMonth, oneWeek, 10, SWT.NONE, oneWeek, 0,
+				SWT.LEFT).width = 80;
+		SWTUtil.setFormLayoutData(oneYear, oneMonth, 10, SWT.NONE, oneMonth, 0,
+				SWT.LEFT).width = 80;
 
 		SWTUtil.setFormLayoutDataRight(total, table, 10, SWT.NONE, table, -20,
 				SWT.RIGHT).width = 80;
 		SWTUtil.setFormLayoutDataRight(label, table, 10, SWT.NONE, total, -100,
 				SWT.RIGHT);
-	
+
 		return composite;
+	}
+
+	private void createTableViewer() {
+		bsTableViewer = new TableViewer(table);
+		bsTableViewer.setUseHashlookup(true);
+
+		bsTableViewer.setColumnProperties(Column.stringValues());
+
+		ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
+				bsTableViewer) {
+			protected boolean isEditorActivationEvent(
+					ColumnViewerEditorActivationEvent event) {
+				ViewerCell cell = (ViewerCell) event.getSource();
+				// Transaction t =
+				// (Transaction)((TableItem)cell.getItem()).getData();
+
+				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
+					MouseEvent e = ((MouseEvent) event.sourceEvent);
+					return e.button == 1;
+				} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
+					return cell.getColumnIndex() == Column.DETAIL.ordinal();
+				} else {
+					return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
+							|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
+				}
+			}
+		};
+
+		TableViewerEditor.create(bsTableViewer, actSupport,
+				ColumnViewerEditor.TABBING_HORIZONTAL
+						// | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+						| ColumnViewerEditor.TABBING_CYCLE_IN_ROW
+						| ColumnViewerEditor.TABBING_VERTICAL
+						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+
+		// Create the cell editors
+		CellEditor[] editors = new CellEditor[Column.values().length];
+		
+		// editors[0] = new CheckboxCellEditor(table);
+		CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
+		editors[Column.DATE.ordinal()] = dateEditor;
+
+		CategoryService service = new CategoryService();
+		List<Category> categoryList = service.findAll();
+		bsTableViewer.setData("categoryList", categoryList);
+		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
+		e.setItems(categoryList);
+		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
+		editors[Column.CATEGORY.ordinal()] = e;
+
+		TextCellEditor debitEditor = new TextCellEditor(table);
+		((Text) debitEditor.getControl()).setTextLimit(9);
+		((Text) debitEditor.getControl())
+				.addVerifyListener(new NumberVerifyListener());
+		editors[Column.DEBIT.ordinal()] = debitEditor;
+
+		TextCellEditor creditEditor = new TextCellEditor(table);
+		((Text) creditEditor.getControl()).setTextLimit(9);
+		((Text) creditEditor.getControl())
+				.addVerifyListener(new NumberVerifyListener());
+		editors[Column.CREDIT.ordinal()] = creditEditor;
+
+		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(
+				table);
+
+		// Assign the cell editors to the viewer
+		bsTableViewer.setCellEditors(editors);
+		// Set the cell modifier for the viewer
+		bsTableViewer.setCellModifier(new BalanceSheetCellModifier(
+				bsTableViewer));
+		// Set the default sorter for the viewer
+		// tableViewer.setSorter(new ExampleTaskSorter(
+		// ExampleTaskSorter.DESCRIPTION));
+
+		bsTableViewer.setContentProvider(bs);
+		bsTableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
+		bsTableViewer.setInput(bs);
+
+		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
+				bsTableViewer);
+		bs.addChangeListener(bstl);
 	}
 
 	private Control getAccountTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
 
 		// 概要ツリー
-		final TableTree tableTree = new TableTree(composite, SWT.BORDER
-				| SWT.FULL_SELECTION);
-		 AccountList accountList = new AccountList(tableTree,
-		 this.accountListProv );
-		 accountList.createControl();
+		AccountList accountList = new AccountList(this.accountListProv);
+		final TableTree tableTree = accountList.createControl(composite);
 
 		// 追加ボタン
 		Button btnAdd = new Button(composite, SWT.PUSH);
@@ -415,37 +494,38 @@ public class MainWindow {
 		btnDel.setText("－");
 
 		// フォーム
-		 AccountEditForm accountForm = new AccountEditForm();
-		 Group grp = (Group)accountForm.createControl(composite);
+		AccountEditForm accountForm = new AccountEditForm();
+		Group grp = (Group) accountForm.createControl(composite);
 
 		// イベント
-		accountListProv.addChangeListener(new AccountEditFormListener(accountForm));
+		accountListProv.addChangeListener(new AccountEditFormListener(
+				accountForm));
 		accountListProv.addChangeListener(new AccountListListener(tableTree));
-		accountListProv.addChangeListener(new BsAccountListListener(bsAccountList));
+		accountListProv.addChangeListener(new BsAccountListListener(
+				bsAccountList));
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				 accountListProv.addItem();
+				accountListProv.addItem();
 			}
 		});
-		// btnDel.addSelectionListener(new
-		// DelAccountSelectionAdapter(tableTree));
+		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
 		tableTree.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (e.item.getData() instanceof Account) {
-					 accountListProv.itemChanged((Account) e.item.getData());
+					accountListProv.itemChanged((Account) e.item.getData());
 				} else {
 					e.doit = true;
 				}
 			}
 		});
-		 accountForm.btnSave.addSelectionListener(new SelectionAdapter() {
-		 @Override
-		 public void widgetSelected(SelectionEvent e) {
-			 accountListProv.itemChanged((Account)e.widget.getData());
-		 }
-		 });
+		accountForm.btnSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				accountListProv.itemChanged((Account) e.widget.getData());
+			}
+		});
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
@@ -455,7 +535,7 @@ public class MainWindow {
 
 		FormData fd = SWTUtil.setFormLayoutData(tableTree, 0, 0, 0, 10);
 		fd.height = 400;
-//		fd.width = 175;
+		// fd.width = 175;
 
 		fd = SWTUtil.setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE,
 				tableTree, 0, SWT.RIGHT);
@@ -470,152 +550,76 @@ public class MainWindow {
 	}
 
 	private Control getCategoryTabControl(TabFolder tabFolder) {
-			Composite comp = new Composite(tabFolder, SWT.NONE);
-	
-			// ツリー
-			TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER | SWT.SINGLE);
-			Tree tree = treeViewer.getTree();
-			final CategoryListContentProvider prov = new CategoryListContentProvider();
-			treeViewer.setContentProvider(prov);
-			treeViewer.setLabelProvider(new CategoryListLabelProvider());
-			treeViewer.setInput(prov.getRoot());
-			treeViewer.expandAll();
-			ColumnViewerToolTipSupport.enableFor(treeViewer);
-	
-			// 追加削除ボタン
-			Button btnAdd = new Button(comp, SWT.PUSH);
-			btnAdd.setText("＋");
-			Button btnDel = new Button(comp, SWT.PUSH);
-			btnDel.setText("－");
-	
-			btnAdd.addSelectionListener(prov.new AddCategorySelectionAdapter());
-			btnDel.addSelectionListener(prov.new DelCategorySelectionAdapter());
-			treeViewer.addSelectionChangedListener(new ISelectionChangedListener(){
-				public void selectionChanged(SelectionChangedEvent e) {
-					if (e.getSelection() != null) {
-						Category c = (Category) ((IStructuredSelection) e.getSelection())
-								.getFirstElement();
-						if (c != null) {
-							prov.itemChanged(c);
-						}
+		Composite comp = new Composite(tabFolder, SWT.NONE);
+
+		// ツリー
+		TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER | SWT.SINGLE);
+		Tree tree = treeViewer.getTree();
+		final CategoryListContentProvider prov = new CategoryListContentProvider();
+		treeViewer.setContentProvider(prov);
+		treeViewer.setLabelProvider(new CategoryListLabelProvider());
+		treeViewer.setInput(prov.getRoot());
+		treeViewer.expandAll();
+		ColumnViewerToolTipSupport.enableFor(treeViewer);
+
+		// 追加削除ボタン
+		Button btnAdd = new Button(comp, SWT.PUSH);
+		btnAdd.setText("＋");
+		Button btnDel = new Button(comp, SWT.PUSH);
+		btnDel.setText("－");
+
+		btnAdd.addSelectionListener(prov.new AddCategorySelectionAdapter());
+		btnDel.addSelectionListener(prov.new DelCategorySelectionAdapter());
+		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent e) {
+				if (e.getSelection() != null) {
+					Category c = (Category) ((IStructuredSelection) e
+							.getSelection()).getFirstElement();
+					if (c != null) {
+						prov.itemChanged(c);
 					}
 				}
-			});
-	
-			// 編集フォーム
-			Group group = new Group(comp, SWT.RESIZE);
-			group.setText(_("Cagetory Info"));
-			FormLayout formLayout = new FormLayout();
-			group.setLayout(formLayout);
-			formLayout.marginHeight = 10;
-			formLayout.marginWidth = 10;
-			categoryEditForm = new CategoryEditForm(group, comp.getStyle());
-			categoryEditForm.btnSave.addSelectionListener(new SelectionAdapter(){
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					super.widgetSelected(e);
-					prov.itemChanged((Category)e.widget.getData());
-				}
-			});
-	//		group.pack();
-	
-			prov.addChangeListener(new CategoryEditFormListener(categoryEditForm));
-			prov.addChangeListener(new CategoryListListener(treeViewer));
-			
-			// レイアウト
-			formLayout = new FormLayout();
-			comp.setLayout(formLayout);
-			formLayout.marginHeight = 10;
-			formLayout.marginWidth = 10;
-	 
-			FormData fd = setFormLayoutData(tree, 0, 0, 0, 10);
-			fd.height = 400;
-			fd.width = 175;
-			fd = setFormLayoutDataRight(btnDel, tree, 2, SWT.NONE, tree, 0, SWT.RIGHT);
-			fd.width = fd.height;
-			fd = setFormLayoutDataRight(btnAdd, tree, 2, SWT.NONE, btnDel, 0, SWT.NONE);
-			fd.width = fd.height;
-			setFormLayoutData(group, tree, 0, SWT.TOP, tree, 20, SWT.NONE);
-	
-			return comp;
-		}
+			}
+		});
 
-	private void createTableViewer() {
-			tableViewer = new TableViewer(table);
-			tableViewer.setUseHashlookup(true);
-		
-			tableViewer.setColumnProperties(Column.stringValues());
-		
-			ColumnViewerEditorActivationStrategy actSupport = new ColumnViewerEditorActivationStrategy(
-					tableViewer) {
-				protected boolean isEditorActivationEvent(
-						ColumnViewerEditorActivationEvent event) {
-					ViewerCell cell = (ViewerCell) event.getSource();
-	//				Transaction t = (Transaction)((TableItem)cell.getItem()).getData();
-	
-					if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
-						MouseEvent e = ((MouseEvent) event.sourceEvent);
-						return e.button == 1;
-					} else if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_CLICK_SELECTION) {
-						return cell.getColumnIndex() == Column.DETAIL.ordinal();
-					} else {
-						return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-								|| event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-					}
-				}
-			};
-	
-			TableViewerEditor.create(tableViewer, actSupport,
-					ColumnViewerEditor.TABBING_HORIZONTAL
-							// | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
-							| ColumnViewerEditor.TABBING_CYCLE_IN_ROW
-							| ColumnViewerEditor.TABBING_VERTICAL
-							| ColumnViewerEditor.KEYBOARD_ACTIVATION);
-			
-			// Create the cell editors
-			CellEditor[] editors = new CellEditor[Column.values().length];
-		
-			// editors[0] = new CheckboxCellEditor(table);
-			CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
-			editors[Column.DATE.ordinal()] = dateEditor;
-		
-			CategoryService service = new CategoryService();
-			List<Category> categoryList = service.findAll();
-			tableViewer.setData("categoryList", categoryList);
-			CategoryComboCellEditor e = new CategoryComboCellEditor(table);
-			e.setItems(categoryList);
-//			e.addListener(new ActivateNextCellEditorListener(tableViewer));
-			editors[Column.CATEGORY.ordinal()] = e;
-		
-			TextCellEditor debitEditor = new TextCellEditor(table);
-			((Text) debitEditor.getControl()).setTextLimit(9);
-			((Text) debitEditor.getControl())
-					.addVerifyListener(new NumberVerifyListener());
-			editors[Column.DEBIT.ordinal()] = debitEditor;
-	
-			TextCellEditor creditEditor = new TextCellEditor(table);
-			((Text) creditEditor.getControl()).setTextLimit(9);
-			((Text) creditEditor.getControl())
-					.addVerifyListener(new NumberVerifyListener());
-			editors[Column.CREDIT.ordinal()] = creditEditor;
-		
-			editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(table);
-		
-			// Assign the cell editors to the viewer
-			tableViewer.setCellEditors(editors);
-			// Set the cell modifier for the viewer
-			tableViewer.setCellModifier(new BalanceSheetCellModifier(tableViewer));
-			// Set the default sorter for the viewer
-			// tableViewer.setSorter(new ExampleTaskSorter(
-			// ExampleTaskSorter.DESCRIPTION));
-	
-			tableViewer.setContentProvider(bs);
-			tableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
-			tableViewer.setInput(bs);
-		}
+		// 編集フォーム
+		Group group = new Group(comp, SWT.RESIZE);
+		group.setText(_("Cagetory Info"));
+		FormLayout formLayout = new FormLayout();
+		group.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+		categoryEditForm = new CategoryEditForm(group, comp.getStyle());
+		categoryEditForm.btnSave.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				prov.itemChanged((Category) e.widget.getData());
+			}
+		});
+		// group.pack();
 
-	public static String _(String s) {
-		return s;
+		prov.addChangeListener(new CategoryEditFormListener(categoryEditForm));
+		prov.addChangeListener(new CategoryListListener(treeViewer));
+
+		// レイアウト
+		formLayout = new FormLayout();
+		comp.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+
+		FormData fd = setFormLayoutData(tree, 0, 0, 0, 10);
+		fd.height = 400;
+		fd.width = 175;
+		fd = setFormLayoutDataRight(btnDel, tree, 2, SWT.NONE, tree, 0,
+				SWT.RIGHT);
+		fd.width = fd.height;
+		fd = setFormLayoutDataRight(btnAdd, tree, 2, SWT.NONE, btnDel, 0,
+				SWT.NONE);
+		fd.width = fd.height;
+		setFormLayoutData(group, tree, 0, SWT.TOP, tree, 20, SWT.NONE);
+
+		return comp;
 	}
 
 }

@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
+import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
@@ -17,6 +18,8 @@ public class BalanceSheetCellModifier implements ICellModifier {
 	final static Logger LOG = Logger.getLogger(BalanceSheetCellModifier.class);
 
 	TableViewer viewer;
+	
+	TransactionService ts = new TransactionService(); 
 
 	public BalanceSheetCellModifier(TableViewer bs) {
 		this.viewer = bs;
@@ -110,6 +113,8 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		 */
 		default:
 		}
+
+		ts.save(t);
 		viewer.update(t, null);
 	}
 }

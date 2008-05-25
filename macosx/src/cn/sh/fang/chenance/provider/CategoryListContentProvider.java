@@ -131,19 +131,6 @@ public class CategoryListContentProvider extends BaseProvider<Category>
 		}
 	}
 
-	public class SaveCategorySelectionAdapter extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			super.widgetSelected(e);
-
-			Category c = (Category) ((IStructuredSelection) viewer
-					.getSelection()).getFirstElement();
-			// c.setName(name);
-			// c.setDescription(description);
-			new CategoryService().save(c);
-		}
-	}
-
 	@Override
 	protected Category doAddItem() {
 		Category parent = (Category)((IStructuredSelection) viewer
