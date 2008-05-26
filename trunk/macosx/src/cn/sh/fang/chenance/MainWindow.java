@@ -6,6 +6,7 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -125,7 +126,7 @@ public class MainWindow {
 		}
 
 		swt.sShell.open();
-
+		
 		try {
 			while (!swt.sShell.isDisposed()) {
 				if (!display.readAndDispatch())
