@@ -26,7 +26,7 @@ public class BsAccountListListener implements IItemChangeListener<Account> {
 		this.list = t;
 	}
 
-	public void itemAdded(Account item) {
+	public void onAdded(Account item) {
 		TableTreeItem parent = (TableTreeItem) this.list.getItem(0);
 		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
 
@@ -34,11 +34,11 @@ public class BsAccountListListener implements IItemChangeListener<Account> {
 		ch.setData(item);
 	}
 
-	public void itemRemoved(Account item) {
+	public void onRemoved(Account item) {
 		// not supported
 	}
 
-	public void itemUpdated(Account item) {
+	public void onUpdated(Account item) {
 		this.list.updateList();
 	}
 
@@ -66,6 +66,11 @@ public class BsAccountListListener implements IItemChangeListener<Account> {
 			bs.setAccount(a);
 			tv.refresh();
 		}
+	}
+
+	public void onLoaded(Account item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
