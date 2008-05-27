@@ -1,7 +1,5 @@
 package cn.sh.fang.chenance.listener;
 
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
@@ -20,7 +18,7 @@ public class BalanceSheetTransactionListener implements
 		this.viewer = tableViewer;
 	}
 	
-	public void itemAdded(Transaction t) {
+	public void onAdded(Transaction t) {
 		// TODO detail buttons would not be updated, fix it.
 		this.viewer.insert(t, this.viewer.getTable().getItemCount()-1);
 		this.viewer.setSelection(new StructuredSelection(t));
@@ -28,12 +26,17 @@ public class BalanceSheetTransactionListener implements
 		this.viewer.editElement(t, Column.CATEGORY.ordinal());
 	}
 
-	public void itemRemoved(Transaction t) {
+	public void onRemoved(Transaction t) {
 		this.viewer.remove(t);
 	}
 
-	public void itemUpdated(Transaction t) {
+	public void onUpdated(Transaction t) {
 		ts.save(t);
+	}
+
+	public void onLoaded(Transaction item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

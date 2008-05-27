@@ -61,7 +61,7 @@ public class AccountListListener implements IItemChangeListener<Account> {
 		}
 	}
 
-	public void itemAdded(Account item) {
+	public void onAdded(Account item) {
 		TableTreeItem parent = (TableTreeItem) this.tree.getItem(0);
 		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
 
@@ -71,12 +71,17 @@ public class AccountListListener implements IItemChangeListener<Account> {
 		tree.setSelection(new TableTreeItem[] { ch });
 	}
 
-	public void itemRemoved(Account item) {
+	public void onRemoved(Account item) {
 		// TODO Auto-generated method stub
 	}
 
-	public void itemUpdated(Account item) {
+	public void onUpdated(Account item) {
 		tree.getSelection()[0].setText(item.getName());
+	}
+
+	public void onLoaded(Account item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

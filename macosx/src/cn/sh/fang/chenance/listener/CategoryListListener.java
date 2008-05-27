@@ -14,7 +14,7 @@ public class CategoryListListener implements IItemChangeListener<Category> {
 		this.tree = tree;
 	}
 
-	public void itemAdded(Category item) {
+	public void onAdded(Category item) {
 		Category parent = (Category) ((IStructuredSelection) tree
 				.getSelection()).getFirstElement();
 
@@ -24,12 +24,17 @@ public class CategoryListListener implements IItemChangeListener<Category> {
 		tree.setSelection(new StructuredSelection(item), true);
 	}
 
-	public void itemRemoved(Category item) {
+	public void onRemoved(Category item) {
 		tree.remove(item);
 	}
 
-	public void itemUpdated(Category item) {
+	public void onUpdated(Category item) {
 		tree.refresh(item);
+	}
+
+	public void onLoaded(Category item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

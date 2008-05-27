@@ -27,7 +27,7 @@ public abstract class BaseProvider<T> {
 		T t = doAddItem();
 		Iterator<IItemChangeListener<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IItemChangeListener<T>) iterator.next()).itemAdded(t);
+			((IItemChangeListener<T>) iterator.next()).onAdded(t);
 	}
 
 	/**
@@ -37,14 +37,14 @@ public abstract class BaseProvider<T> {
 		doUpdateItem(t);
 		Iterator<IItemChangeListener<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IItemChangeListener<T>) iterator.next()).itemUpdated(t);
+			((IItemChangeListener<T>) iterator.next()).onUpdated(t);
 	}
 
 	public void removeItem(T t) {
 		doRemoveItem(t);
 		Iterator<IItemChangeListener<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IItemChangeListener<T>) iterator.next()).itemRemoved(t);
+			((IItemChangeListener<T>) iterator.next()).onRemoved(t);
 	}
 
 	protected abstract T doAddItem();
