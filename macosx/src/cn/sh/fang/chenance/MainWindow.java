@@ -6,11 +6,11 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -26,7 +27,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
-import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -85,6 +85,8 @@ import cn.sh.fang.chenance.util.CalendarCellEditor;
 import cn.sh.fang.chenance.util.SWTUtil;
 
 public class MainWindow {
+	
+	static Logger LOG = Logger.getLogger( MainWindow.class );
 
 	public static String filepath = System.getProperty("user.home")
 			+ "/chenance/db";
@@ -434,7 +436,7 @@ public class MainWindow {
 						| ColumnViewerEditor.KEYBOARD_ACTIVATION);
 
 		// Create the cell editors
-		CellEditor[] editors = new CellEditor[Column.values().length];
+		final CellEditor[] editors = new CellEditor[Column.values().length];
 		
 		// editors[0] = new CheckboxCellEditor(table);
 		CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
@@ -462,6 +464,19 @@ public class MainWindow {
 
 		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(
 				table);
+
+		table.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Object obj = ((StructuredSelection)bsTableViewer.getSelection()).getFirstElement();
+				
+				// Clean up detail column editor
+				CellEditor oldEditor = editors[Column.DETAIL.ordinal()];
+				if ( oldEditor.isActivated() && oldEditor.getValue() != obj ) {
+					oldEditor.deactivate();
+				}
+			}
+		});
 
 		// Assign the cell editors to the viewer
 		bsTableViewer.setCellEditors(editors);
