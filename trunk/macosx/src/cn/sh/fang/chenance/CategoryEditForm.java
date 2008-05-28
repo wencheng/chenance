@@ -18,8 +18,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.listener.IItemChangeListener;
-import cn.sh.fang.chenance.listener.ItemChangeAdapter;
+import cn.sh.fang.chenance.listener.IDataAdapter;
+import cn.sh.fang.chenance.listener.AbstractDataAdapter;
 
 // 編集欄
 public class CategoryEditForm implements Listener {
@@ -65,7 +65,7 @@ public class CategoryEditForm implements Listener {
 		desc.addListener(SWT.MouseUp, this);
 	}
 	
-	class CategoryEditFormListener extends ItemChangeAdapter<Category> {
+	class CategoryEditFormListener extends AbstractDataAdapter<Category> {
 
 		public void onAdded(Category item) {
 			name.setText(item.getName());

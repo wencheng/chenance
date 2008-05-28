@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 
 import cn.sh.fang.chenance.data.entity.Category;
 
-public class CategoryListListener implements IItemChangeListener<Category> {
+public class CategoryListListener implements IDataAdapter<Category> {
 
 	private TreeViewer tree;
 

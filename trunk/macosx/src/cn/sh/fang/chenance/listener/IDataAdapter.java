@@ -1,7 +1,7 @@
 package cn.sh.fang.chenance.listener;
 
 
-public interface IItemChangeListener<T> {
+public interface IDataAdapter<T> {
 	
 	public void onAdded(T item);
 	

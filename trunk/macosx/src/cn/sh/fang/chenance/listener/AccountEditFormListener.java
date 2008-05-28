@@ -3,7 +3,7 @@ package cn.sh.fang.chenance.listener;
 import cn.sh.fang.chenance.AccountEditForm;
 import cn.sh.fang.chenance.data.entity.Account;
 
-public class AccountEditFormListener extends ItemChangeAdapter<Account> {
+public class AccountEditFormListener extends AbstractDataAdapter<Account> {
 	
 	AccountEditForm form;
 	

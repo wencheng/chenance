@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.MessageBox;
 
 import cn.sh.fang.chenance.data.entity.Account;
 
-public class AccountListListener implements IItemChangeListener<Account> {
+public class AccountListListener implements IDataAdapter<Account> {
 
 	final static Logger LOG = Logger.getLogger(AccountListListener.class);
 

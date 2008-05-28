@@ -3,10 +3,10 @@ package cn.sh.fang.chenance.util;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Point;
@@ -24,6 +24,8 @@ import org.vafada.swtcalendar.SWTCalendarEvent;
 import org.vafada.swtcalendar.SWTCalendarListener;
 
 public class CalendarCellEditor extends CellEditor implements Listener {
+	
+	static Logger LOG = Logger.getLogger(CalendarCellEditor.class);
 
 	Composite popup;
 	SWTCalendar cal;
@@ -92,7 +94,6 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 	public void handleEvent(Event e) {
 		if ( e.widget == cal ) {
 			Rectangle rect = cal.getBounds();
-			System.out.println(rect);
         	cal.setBounds(0,0,222,171);
         	popup.setVisible(true);
 		}
@@ -110,9 +111,9 @@ public class CalendarCellEditor extends CellEditor implements Listener {
         	TableItem ti = 	table.getSelection()[0];
         	
         	Rectangle tiRect = ti.getBounds();
-        	System.out.println("item "+tiRect);
+        	LOG.debug("item "+tiRect);
         	Point p = table.toDisplay(tiRect.x,tiRect.y);
-        	System.out.println("p "+p);
+        	LOG.debug("p "+p);
         	popup.setBounds(p.x+tiRect.width,p.y+tiRect.height,222,171);
         	cal.setBounds(0,0,222,171);
         	popup.setVisible(true);

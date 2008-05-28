@@ -8,7 +8,7 @@ import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 
 public class BalanceSheetTransactionListener implements
-		IItemChangeListener<Transaction> {
+		IDataAdapter<Transaction> {
 
 	private TableViewer viewer;
 	
