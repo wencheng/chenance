@@ -70,18 +70,20 @@ public class TransactionDetailDialog extends Dialog {
 
 	@Override
 	protected void okPressed() {
-		RepeatPayment r = null;
-		if ( chkRepeat.getSelection() && t.getRepeatPayment() == null ) {
-			r = new RepeatPayment();
-			t.setRepeatPayment( r );
+		if ( chkRepeat.getSelection() ) {
+			RepeatPayment r = null;
+			if ( t.getRepeatPayment() == null ) {
+				r = new RepeatPayment();
+				t.setRepeatPayment( r );
+			}
+			r.setPeriod( 0 );
+			r.setPeriodUnit( 0 );
+			r.setUpdater( "USER" );
+			r.setAmount( t.getDebit() );
+			r.setAutoApprove( chkAutoApprove.getSelection() );
+			new RepeatPaymentService().save( r );
 		}
-		r.setPeriod( 0 );
-		r.setPeriodUnit( 0 );
-		r.setUpdater( "USER" );
-		r.setAmount( t.getDebit() );
-		r.setAutoApprove( chkAutoApprove.getSelection() );
-		new RepeatPaymentService().save( r );
-
+		
 		super.okPressed();
 	}
 
