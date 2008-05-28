@@ -1,6 +1,6 @@
 package cn.sh.fang.chenance.listener;
 
-public class ItemChangeAdapter<T> implements IItemChangeListener<T> {
+public class AbstractDataAdapter<T> implements IDataAdapter<T> {
 
 	public void onAdded(T item) {
 	}

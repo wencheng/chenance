@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.Viewer;
 import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Transaction;
-import cn.sh.fang.chenance.listener.IItemChangeListener;
+import cn.sh.fang.chenance.listener.IDataAdapter;
 
 /**
  * Class that plays the role of the domain model in the TableViewerExample In
@@ -66,8 +66,6 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	 * Return the tasks as an array of Objects
 	 */
 	public Object[] getElements(Object element) {
-		System.out.println("getElements");
-		
 		return this.transactions.toArray();
 	}
 

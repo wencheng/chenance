@@ -3,7 +3,7 @@ package cn.sh.fang.chenance.listener;
 import cn.sh.fang.chenance.CategoryEditForm;
 import cn.sh.fang.chenance.data.entity.Category;
 
-public class CategoryEditFormListener implements IItemChangeListener<Category> {
+public class CategoryEditFormListener implements IDataAdapter<Category> {
 	
 	CategoryEditForm form;
 	

@@ -16,7 +16,7 @@ import cn.sh.fang.chenance.AccountList;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 
-public class BsAccountListListener implements IItemChangeListener<Account> {
+public class BsAccountListListener implements IDataAdapter<Account> {
 
 	final static Logger LOG = Logger.getLogger(BsAccountListListener.class);
 
@@ -62,7 +62,6 @@ public class BsAccountListListener implements IItemChangeListener<Account> {
 			super.widgetSelected(e);
 			
 			Account a = (Account)t.getSelection()[0].getData();
-			System.out.println("refreshing " + a);
 			bs.setAccount(a);
 			tv.refresh();
 		}

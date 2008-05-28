@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class RepeatPayment extends BaseEntity {
 
     @Id
+    @GeneratedValue
     private Integer id;
     
     @ManyToOne(fetch=FetchType.LAZY, targetEntity=Category.class)
