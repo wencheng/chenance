@@ -1,0 +1,33 @@
+<assembly>
+	<id>macosx</id>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<formats>
+		<format>dir</format>
+	</formats>
+	<fileSets>
+    	<fileSet>
+      		<directory>macosx</directory>
+      		<outputDirectory>Chenance.app/Contents/</outputDirectory>
+      		<includes>
+      			<include>**/**</include>
+      		</includes>
+    	</fileSet>
+  	</fileSets>
+  	<files>
+  		<file>
+			<source>macosx/MacOS/chenance</source>
+			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
+			<fileMode>0755</fileMode>
+  		</file>
+  		<file>
+			<source>target/${artifactId}-${version}.jar</source>
+			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
+			<destName>chenance.jar</destName>
+  		</file>
+  	</files>
+	<dependencySets>
+    	<dependencySet>
+      		<outputDirectory>Chenance.app/Contents/MacOS/lib</outputDirectory>
+    	</dependencySet>
+  	</dependencySets>
+</assembly>
