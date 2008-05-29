@@ -127,6 +127,7 @@ public class MainWindow {
 		} finally {
 		}
 
+		swt.sShell.setAlpha( 200 );
 		swt.sShell.open();
 		
 		try {
@@ -173,13 +174,13 @@ public class MainWindow {
 		fileMenuHeader.setMenu(fileMenu);
 		MenuItem fileNewItem = new MenuItem(fileMenu, SWT.PUSH);
 		fileNewItem.setText(_("&New"));
-		// fileNewItem.addSelectionListener(new FileNewListener());
+//		fileNewItem.addSelectionListener(new FileNewListener());
 		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
 		fileOpenItem.setText(_("&Open"));
-		// fileOpenItem.addSelectionListener(new FileOpenListener());
+//		fileOpenItem.addSelectionListener(new FileOpenListener());
 		MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
 		fileSaveItem.setText(_("&Save"));
-		// fileSaveItem.addSelectionListener(new FileSaveListener());
+//		fileSaveItem.addSelectionListener(new FileSaveListener());
 
 		// Edit
 		MenuItem menuItem2 = new MenuItem(menuBar, SWT.CASCADE);

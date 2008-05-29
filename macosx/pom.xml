@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.sh.fang.chenance</groupId>
 	<artifactId>chenance-gui</artifactId>
-	<version>aaa</version>
+	<version>0.1</version>
 	<name></name>
 	<description></description>
 	<repositories>
@@ -85,9 +85,9 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>SWTTest</mainClass>
+							<mainClass>cn.sh.fang.chenance.MainWindow</mainClass>
 							<addClasspath>true</addClasspath>
-							<classpathPrefix>./</classpathPrefix>
+							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
 					</archive>
 				</configuration>
@@ -102,9 +102,7 @@
 					<execution>
 						<configuration>
 							<descriptors>
-								<descriptor>
-									assembly-test.xml
-								</descriptor>
+								<descriptor>assembly-macosx.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
