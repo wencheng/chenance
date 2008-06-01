@@ -1,28 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleExecutable</key>
-		<string>chenance</string>
-	<key>CFBundleGetInfoString</key>
+	<dict>
+		<key>CFBundleGetInfoString</key>
 		<string>Chenance 0.1 for Mac OS X</string>
-	<key>CFBundleIconFile</key>
-		<string>chenance.icns</string>
-	<key>CFBundleIdentifier</key>
+		<key>CFBundleIdentifier</key>
 		<string>cn.sh.fang.Chenance</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-	<key>CFBundleName</key>
-		<string>Chenance</string>
-	<key>CFBundlePackageType</key>
+
+		<key>CFBundleIconFile</key>
+		<string>icon.icns</string>
+
+		<key>Java</key>
+		<dict>
+			<key>MainClass</key>
+			<string>SmartSVN</string>
+			<key>JVMVersion</key>
+			<string>1.5+</string>
+			<key>ClassPath</key>
+			<array>
+				<string>$JAVAROOT/chenance.jar</string>
+				<string>$JAVAROOT/swt/swt.jar</string>
+			</array>
+			<key>Properties</key>
+			<dict>
+				<!-- 
+				<key>apple.laf.useScreenMenuBar</key>
+				<string>true</string>
+				<key>sun.io.useCanonCaches</key>
+				<string>false</string>
+				 -->
+				<key>java.library.path</key>
+				<string>$JAVAROOT/swt</string>
+			</dict>
+			<key>VMOptions</key>
+			<array>
+				<string>-Xmx64m</string>
+				<string>-XstartOnFirstThread</string>
+			</array>
+		</dict>
+
+		<key>CFBundlePackageType</key>
 		<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-		<string>1.0</string>
-	<key>CFBundleSignature</key>
-		<string>?????</string>
-	<key>CFBundleVersion</key>
-		<string>1.0</string>
-	<key>NSPrincipalClass</key>
+		<key>CFBundleName</key>
+		<string>SmartSVN</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleExecutable</key>
+		<string>JavaApplicationStub</string>
+		<!-- 
+		<key>CFBundleExecutable</key>
+		<string>chenance</string>
+		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
-</dict>
+		 -->
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>Copyright (c) 2008, Wencheng FANG</string>
+		<key>CFBundleGetInfoString</key>
+		<string>
+			Chenance 0.1 - Copyright (c) 2008 by Wencheng FANG
+		</string>
+		<key>CFBundleShortVersionString</key>
+		<string>0.1</string>
+		<key>CFBundleVersion</key>
+		<string>0.1</string>
+	</dict>
+
 </plist>
