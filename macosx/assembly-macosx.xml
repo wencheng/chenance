@@ -14,20 +14,22 @@
     	</fileSet>
   	</fileSets>
   	<files>
+  		<!--
   		<file>
 			<source>macosx/MacOS/chenance</source>
 			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
   		</file>
+  		-->
   		<file>
 			<source>target/${artifactId}-${version}.jar</source>
-			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
+			<outputDirectory>Chenance.app/Contents/MacOS/Java</outputDirectory>
 			<destName>chenance.jar</destName>
   		</file>
   	</files>
 	<dependencySets>
     	<dependencySet>
-      		<outputDirectory>Chenance.app/Contents/MacOS/lib</outputDirectory>
+      		<outputDirectory>Chenance.app/Contents/MacOS/Java/lib</outputDirectory>
     	</dependencySet>
   	</dependencySets>
 </assembly>
