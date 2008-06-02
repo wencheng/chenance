@@ -4,29 +4,28 @@ package cn.sh.fang.chenance.data.dao;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
-import javax.persistence.Persistence;
+
+import org.apache.log4j.Logger;
 
 import cn.sh.fang.chenance.MainWindow;
 
 
 public abstract class BaseService {
 
-//	static Logger LOG = Logger.getLogger(BaseService.class);
+	static Logger LOG = Logger.getLogger(BaseService.class);
 
 	static protected EntityManager em;
 	static EntityTransaction t;
 	
 //	public static EntityManagerFactory factory;
-//
+
 //	static {
 //		HashMap<String, String> props = new HashMap<String, String>();
-//		props.put("hibernate.connection.url", "jdbc:h2:" + SWTTest.filepath);
+//		props.put("hibernate.connection.url", "jdbc:h2:" + MainWindow.filepath);
 //		factory = Persistence
 //				.createEntityManagerFactory("chenance-data", props);
 //	}

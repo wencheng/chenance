@@ -94,6 +94,7 @@ public class MainWindow {
 	public static EntityManagerFactory factory;
 
 	static {
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
 		HashMap<String, String> props = new HashMap<String, String>();
 		props.put("hibernate.connection.url", "jdbc:h2:" + filepath);
 		factory = Persistence
@@ -145,7 +146,7 @@ public class MainWindow {
 
 	public static void shutdown() {
 		BaseService.commit();
-		factory.close();
+//		factory.close();
 	}
 
 	/**
