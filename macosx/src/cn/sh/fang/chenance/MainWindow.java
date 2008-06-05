@@ -88,18 +88,7 @@ public class MainWindow {
 	
 	static Logger LOG = Logger.getLogger( MainWindow.class );
 
-	public static String filepath = System.getProperty("user.home")
-			+ "/chenance/db";
-
 	public static EntityManagerFactory factory;
-
-	static {
-		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("hibernate.connection.url", "jdbc:h2:" + filepath);
-		factory = Persistence
-				.createEntityManagerFactory("chenance-data", props);
-	}
 
 	private Shell sShell = null; // @jve:decl-index=0:visual-constraint="91,5"
 	private CoolBar coolBar;
@@ -107,18 +96,32 @@ public class MainWindow {
 	private TabFolder tabFolder;
 	private Table table;
 
-	private AccountListProvider accountListProv = new AccountListProvider();
+	private AccountListProvider accountListProv;
 
-	BalanceSheetContentProvider bs = new BalanceSheetContentProvider();
+	BalanceSheetContentProvider bs;
 
 	private CategoryEditForm categoryEditForm;
 
 	private AccountList bsAccountList;
 
 	private TableViewer bsTableViewer;
+	
+	public MainWindow() {
+		accountListProv = new AccountListProvider();
+		bs = new BalanceSheetContentProvider();
+	}
 
 	public static void main(String[] args) throws InterruptedException {
 		// TODO find a swt splash
+		
+		// set factory here due to a bug in max os x 
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("hibernate.connection.url", "jdbc:h2:" + BaseService.filepath);
+		factory = Persistence
+				.createEntityManagerFactory("chenance-data", props);
+		BaseService.setFacotory( factory );
+
 		final Display display;
 		MainWindow swt;
 		try {
