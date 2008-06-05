@@ -8,13 +8,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
-import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 
@@ -27,17 +25,9 @@ public abstract class BaseService {
 	static EntityManagerFactory factory;
 	static protected EntityManager em;
 	static EntityTransaction t;
-	static String filepath = System.getProperty("user.home") + "/chenance/db";
-
+	public static String filepath = System.getProperty("user.home") + "/chenance/db";
+	
 	public BaseService() {
-		if (factory == null) {
-			// TODO allow user to open their own db
-			HashMap<String, String> props = new HashMap<String, String>();
-			props.put("hibernate.connection.url", "jdbc:h2:" + filepath);
-			factory = Persistence.createEntityManagerFactory("chenance-data",
-					props);
-		}
-
 		if (em == null) {
 			em = factory.createEntityManager();
 			em.setFlushMode(FlushModeType.AUTO);
@@ -146,5 +136,9 @@ public abstract class BaseService {
 
 	public static void commit() {
 		t.commit();
+	}
+
+	public static void setFacotory(EntityManagerFactory factory2) {
+		BaseService.factory = factory2;
 	}
 }
