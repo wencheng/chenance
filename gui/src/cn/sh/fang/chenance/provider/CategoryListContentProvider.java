@@ -1,6 +1,6 @@
 package cn.sh.fang.chenance.provider;
 
-import static cn.sh.fang.chenance.util.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import cn.sh.fang.chenance.ChenanceDataException;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.util.swt.SWTUtil;
+import cn.sh.fang.chenance.util.SWTUtil;
 
 public class CategoryListContentProvider extends BaseProvider<Category>
 		implements ITreeContentProvider {
@@ -128,19 +128,6 @@ public class CategoryListContentProvider extends BaseProvider<Category>
 		public void widgetSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub
 			super.widgetSelected(e);
-		}
-	}
-
-	public class SaveCategorySelectionAdapter extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			super.widgetSelected(e);
-
-			Category c = (Category) ((IStructuredSelection) viewer
-					.getSelection()).getFirstElement();
-			// c.setName(name);
-			// c.setDescription(description);
-			new CategoryService().save(c);
 		}
 	}
 

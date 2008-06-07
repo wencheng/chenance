@@ -1,26 +1,18 @@
 package cn.sh.fang.chenance.listener;
 
-import static cn.sh.fang.chenance.util.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
-import cn.sh.fang.chenance.AccountEditForm;
-import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
-import cn.sh.fang.chenance.util.swt.SWTUtil;
 
-public class AccountListListener implements IItemChangeListener<Account> {
+public class AccountListListener implements IDataAdapter<Account> {
 
 	final static Logger LOG = Logger.getLogger(AccountListListener.class);
 
@@ -69,7 +61,7 @@ public class AccountListListener implements IItemChangeListener<Account> {
 		}
 	}
 
-	public void itemAdded(Account item) {
+	public void onAdded(Account item) {
 		TableTreeItem parent = (TableTreeItem) this.tree.getItem(0);
 		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
 
@@ -79,12 +71,17 @@ public class AccountListListener implements IItemChangeListener<Account> {
 		tree.setSelection(new TableTreeItem[] { ch });
 	}
 
-	public void itemRemoved(Account item) {
+	public void onRemoved(Account item) {
 		// TODO Auto-generated method stub
 	}
 
-	public void itemUpdated(Account item) {
+	public void onUpdated(Account item) {
 		tree.getSelection()[0].setText(item.getName());
+	}
+
+	public void onLoaded(Account item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

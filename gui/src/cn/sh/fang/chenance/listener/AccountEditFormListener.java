@@ -3,7 +3,7 @@ package cn.sh.fang.chenance.listener;
 import cn.sh.fang.chenance.AccountEditForm;
 import cn.sh.fang.chenance.data.entity.Account;
 
-public class AccountEditFormListener implements IItemChangeListener<Account> {
+public class AccountEditFormListener extends AbstractDataAdapter<Account> {
 	
 	AccountEditForm form;
 	
@@ -11,7 +11,7 @@ public class AccountEditFormListener implements IItemChangeListener<Account> {
 		this.form = form;
 	}
 
-	public void itemAdded(Account item) {
+	public void onAdded(Account item) {
 		form.btnSave.setEnabled(true);
 
 		form.name.setText(item.getName());
@@ -22,13 +22,13 @@ public class AccountEditFormListener implements IItemChangeListener<Account> {
 		form.name.selectAll();
 	}
 
-	public void itemRemoved(Account item) {
+	public void onRemoved(Account item) {
 		form.name.setText("");
 		form.memo.setText("");
 		form.btnSave.setEnabled(false);
 	}
 
-	public void itemUpdated(Account item) {
+	public void onUpdated(Account item) {
 		form.btnSave.setEnabled(true);
 
 		if ( item == form.btnSave.getData() ) {

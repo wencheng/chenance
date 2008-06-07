@@ -3,7 +3,7 @@ package cn.sh.fang.chenance.listener;
 import cn.sh.fang.chenance.CategoryEditForm;
 import cn.sh.fang.chenance.data.entity.Category;
 
-public class CategoryEditFormListener implements IItemChangeListener<Category> {
+public class CategoryEditFormListener implements IDataAdapter<Category> {
 	
 	CategoryEditForm form;
 	
@@ -11,7 +11,7 @@ public class CategoryEditFormListener implements IItemChangeListener<Category> {
 		this.form = form;
 	}
 
-	public void itemAdded(Category item) {
+	public void onAdded(Category item) {
 		form.name.setEditable(true);
 		form.desc.setEditable(true);
 		form.btnSave.setEnabled(true);
@@ -24,13 +24,13 @@ public class CategoryEditFormListener implements IItemChangeListener<Category> {
 		form.name.selectAll();
 	}
 
-	public void itemRemoved(Category item) {
+	public void onRemoved(Category item) {
 		form.name.setText("");
 		form.desc.setText("");
 		form.btnSave.setEnabled(false);
 	}
 
-	public void itemUpdated(Category item) {
+	public void onUpdated(Category item) {
 		boolean editable = item.getParent() != null;
 		form.name.setEditable(editable);
 		form.desc.setEditable(editable);
@@ -45,6 +45,11 @@ public class CategoryEditFormListener implements IItemChangeListener<Category> {
 			form.desc.setText(item.getDescription());
 			form.btnSave.setData(item);
 		}
+	}
+
+	public void onLoaded(Category item) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

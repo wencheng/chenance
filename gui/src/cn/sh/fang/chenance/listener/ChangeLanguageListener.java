@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
-import cn.sh.fang.chenance.util.UIMessageBundle;
+import cn.sh.fang.chenance.i18n.UIMessageBundle;
 
 public class ChangeLanguageListener extends SelectionAdapter {
 	

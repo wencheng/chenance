@@ -1,6 +1,6 @@
 package cn.sh.fang.chenance;
 
-import static cn.sh.fang.chenance.util.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.HashMap;
 
@@ -9,11 +9,12 @@ import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import cn.sh.fang.chenance.data.entity.Account;
-import cn.sh.fang.chenance.listener.BsAccountListListener.AccountListMouseAdapter;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 
 public class AccountList {
@@ -27,16 +28,16 @@ public class AccountList {
 
 	private TableTree tableTree;
 
-	public AccountList(TableTree tableTree, AccountListProvider prov) {
-		this.tableTree = tableTree;
+	public AccountList(AccountListProvider prov) {
 		this.prov = prov;
 	}
 
-	public Table createControl() {
+	public TableTree createControl(Composite composite) {
+		tableTree = new TableTree(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
 		Table table = tableTree.getTable();
 		table.setHeaderVisible(false);
 		table.setLinesVisible(false);
-		table.addMouseListener(new AccountListMouseAdapter());
+//		table.addMouseListener(new AccountListMouseAdapter());
 
 		TableColumn col1 = new TableColumn(table, SWT.LEFT);
 		TableColumn col2 = new TableColumn(table, SWT.RIGHT);
@@ -48,7 +49,7 @@ public class AccountList {
 		sum = new TableTreeItem(tableTree, SWT.NONE);
 		sum.setText(0, _("Balance Total"));
 		sum.setGrayed(true);
-		
+
 		updateList();
 
 		parent.setExpanded(true);
@@ -67,7 +68,7 @@ public class AccountList {
 		parent.setFont(newFont);
 		sum.setFont(newFont);
 		
-		return table;
+		return tableTree;
 	}
 
 	public void updateList() {
@@ -90,4 +91,22 @@ public class AccountList {
 	public TableTreeItem getItem(int i) {
 		return this.tableTree.getItem(i);
 	}
+
+	public TableTree getTableTree() {
+		return tableTree;
+	}
+	
+	/**
+	 * 
+	 * @param i index in the tree
+	 */
+	public void selectAccount(int i) {
+		if ( i < 0 || i > items.size() - 1 ) {
+			return;
+		}
+
+		this.tableTree.setSelection(new TableTreeItem[]{this.tableTree.getItem(0).getItem(i)});
+		this.tableTree.notifyListeners(SWT.Selection, new Event());
+	}
+	
 }
