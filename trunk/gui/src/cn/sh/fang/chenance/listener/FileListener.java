@@ -1,6 +1,6 @@
 package cn.sh.fang.chenance.listener;
 
-import static cn.sh.fang.chenance.util.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

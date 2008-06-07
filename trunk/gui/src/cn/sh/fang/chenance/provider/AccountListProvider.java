@@ -1,6 +1,6 @@
 package cn.sh.fang.chenance.provider;
 
-import static cn.sh.fang.chenance.util.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.List;
 

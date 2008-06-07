@@ -18,6 +18,11 @@
 	</repositories>
 	<dependencies>
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.2.1.ga</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
@@ -47,17 +52,20 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>org.eclipse.swt.win32.win32</groupId>
 			<artifactId>x86</artifactId>
 			<version>3.3.0-v3346</version>
 			<scope>runtime</scope>
 		</dependency>
+		 -->
+		<!-- -Dapple.laf.useScreenMenuBar=true -->
 		<!-- 
 		<dependency>
-			<groupId>cn.sh.fang.chenance</groupId>
-			<artifactId>chenance-data</artifactId>
-			<version>${version}</version>
+			<groupId>org.eclipse.swt.carbon</groupId>
+			<artifactId>macosx</artifactId>
+			<version>3.3.0-v3346</version>
 			<scope>runtime</scope>
 		</dependency>
 		 -->

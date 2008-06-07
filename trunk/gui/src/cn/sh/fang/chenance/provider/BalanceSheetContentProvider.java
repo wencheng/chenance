@@ -8,8 +8,10 @@ import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+import cn.sh.fang.chenance.data.dao.TransactionService;
+import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Transaction;
-import cn.sh.fang.chenance.listener.IItemChangeListener;
+import cn.sh.fang.chenance.listener.IDataAdapter;
 
 /**
  * Class that plays the role of the domain model in the TableViewerExample In
@@ -32,7 +34,11 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		}
 	}
 
-	private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+	private Account account = null;
+
+	private List<Transaction> transactions = new ArrayList<Transaction>();
+	
+	static final Transaction EMPTY = new Transaction();
 
 	/**
 	 * Constructor
@@ -46,20 +52,15 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	 * collection of tasks
 	 */
 	private void initData() {
-		Transaction t;
-		for (int i = 0; i < 5; i++) {
-			t = new Transaction();
-			t.setId(i);
-			t.setDate(new Date());
-			t.setDebit(i*1000);
-			t.setCredit(0);
-			this.transactions.add(t);
-		}
-		
-		// for adding
-		t = new Transaction();
-		this.transactions.add(t);
+		this.transactions.add(EMPTY);
 	};
+	
+	public void setAccount(Account account) {
+		TransactionService ts = new TransactionService();
+		this.transactions = ts.find(account);
+		this.transactions.add(EMPTY);
+		this.account = account;
+	}
 
 	/**
 	 * Return the tasks as an array of Objects
@@ -94,6 +95,9 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		t.setDate(new Date());
 		t.setDebit(0);
 		t.setCredit(0);
+		t.setAccount(this.account);
+		t.setIsApproved(true);
+		t.setUpdater("USER");
 		this.transactions.add(t);
 		return t;
 	}

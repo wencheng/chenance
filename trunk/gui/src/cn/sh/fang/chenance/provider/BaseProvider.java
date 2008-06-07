@@ -3,31 +3,31 @@ package cn.sh.fang.chenance.provider;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import cn.sh.fang.chenance.listener.IItemChangeListener;
+import cn.sh.fang.chenance.listener.IDataAdapter;
 
 public abstract class BaseProvider<T> {
 
-	private ArrayList<IItemChangeListener<T>> changeListeners = new ArrayList<IItemChangeListener<T>>();
+	private ArrayList<IDataAdapter<T>> changeListeners = new ArrayList<IDataAdapter<T>>();
 
 	/**
 	 * @param viewer
 	 */
-	public void addChangeListener(IItemChangeListener<T> viewer) {
+	public void addChangeListener(IDataAdapter<T> viewer) {
 		changeListeners.add(viewer);
 	}
 
 	/**
 	 * @param viewer
 	 */
-	public void removeChangeListener(IItemChangeListener<T> viewer) {
+	public void removeChangeListener(IDataAdapter<T> viewer) {
 		changeListeners.remove(viewer);
 	}
 
 	public void addItem() {
 		T t = doAddItem();
-		Iterator<IItemChangeListener<T>> iterator = changeListeners.iterator();
+		Iterator<IDataAdapter<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IItemChangeListener<T>) iterator.next()).itemAdded(t);
+			((IDataAdapter<T>) iterator.next()).onAdded(t);
 	}
 
 	/**
@@ -35,16 +35,16 @@ public abstract class BaseProvider<T> {
 	 */
 	public void itemChanged(T t) {
 		doUpdateItem(t);
-		Iterator<IItemChangeListener<T>> iterator = changeListeners.iterator();
+		Iterator<IDataAdapter<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IItemChangeListener<T>) iterator.next()).itemUpdated(t);
+			((IDataAdapter<T>) iterator.next()).onUpdated(t);
 	}
 
 	public void removeItem(T t) {
 		doRemoveItem(t);
-		Iterator<IItemChangeListener<T>> iterator = changeListeners.iterator();
+		Iterator<IDataAdapter<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
-			((IItemChangeListener<T>) iterator.next()).itemRemoved(t);
+			((IDataAdapter<T>) iterator.next()).onRemoved(t);
 	}
 
 	protected abstract T doAddItem();

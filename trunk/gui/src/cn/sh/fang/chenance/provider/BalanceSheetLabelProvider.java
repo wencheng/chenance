@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Table;
 import cn.sh.fang.chenance.MainWindow;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 
 /**
@@ -81,7 +82,7 @@ public class BalanceSheetLabelProvider
 
 		if ( t.getDate() == null ) {
 			if ( col == Column.DATE ) {
-				return "<Add new>";
+				return "<" + _("Add New") + ">";
 			} else {
 				return "";
 			}
@@ -113,7 +114,7 @@ public class BalanceSheetLabelProvider
 	
 	protected static String getDetailLabel(Transaction t) {
 		if ( t == null ) return "";
-		
+
 		String ret = "";
 		// TODO implement this
 		if ( t.getRepeatPayment() != null ) {
