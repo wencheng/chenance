@@ -1,11 +1,20 @@
 package cn.sh.fang.chenance;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Region;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
-public class Splash {
+public class Splash implements MouseListener, MouseMoveListener {
 
 	private Display display;
 
@@ -14,6 +23,10 @@ public class Splash {
 	private Thread t;
 
 	private Boolean isRunning = false;
+
+	private boolean isMoving;
+
+	private Point point;
 
 	public Splash(Display display) {
 		this.display = display;
@@ -52,7 +65,9 @@ public class Splash {
 				e.gc.drawImage(image, 0, 0);
 			}
 		});
-		
+
+		shell.addMouseListener(this);
+		shell.addMouseMoveListener(this);
 	}
 	
 	public void close() {
@@ -109,6 +124,26 @@ public class Splash {
 		});
 
 		display.dispose();
+	}
+
+	public void mouseDoubleClick(MouseEvent arg0) {
+		// do nothing
+	}
+
+	public void mouseDown(MouseEvent e) {
+		isMoving = true;
+		point = new Point( e.x, e.y );
+	}
+
+	public void mouseUp(MouseEvent e) {
+		isMoving = false;
+	}
+
+	public void mouseMove(MouseEvent e) {
+		if ( isMoving ) {
+			Point p = shell.getLocation();
+			shell.setLocation( p.x+e.x-point.x, p.y+e.y-point.y );
+		}
 	}
 
 }
