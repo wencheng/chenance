@@ -4,11 +4,9 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.CellEditor;
@@ -105,33 +103,41 @@ public class MainWindow {
 	private AccountList bsAccountList;
 
 	private TableViewer bsTableViewer;
-	
+
+	private Display display;
+
 	static {
 		// set factory here due to a bug in max os x 
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
+		System.out.println ( System.getProperty("os.name") ); 
 		BaseService.init();
 	}
-	
-	public MainWindow() {
+
+	public MainWindow(Display display) {
+		this.display = display;
+	}
+
+	private void init() {
 		accountListProv = new AccountListProvider();
 		bs = new BalanceSheetContentProvider();
 	}
 
 	public static void main(String[] args) throws InterruptedException {
 		// TODO find a swt splash
-		
-		final Display display;
-		MainWindow swt;
-		try {
-			display = new Display();
-			swt = new MainWindow();
-			swt.createSShell();
-		} finally {
-		}
 
-		swt.sShell.setAlpha( 200 );
+		final Display display = new Display();
+		final Splash s = new Splash( display );
+		final MainWindow swt = new MainWindow( display );
+		s.run( new Runnable() {
+			public void run() {
+				swt.init();
+				swt.createSShell();
+				s.close();
+			}
+		});
+
+//		swt.sShell.setAlpha( 200 );
 		swt.sShell.open();
-		
 		try {
 			while (!swt.sShell.isDisposed()) {
 				if (!display.readAndDispatch())
@@ -154,7 +160,7 @@ public class MainWindow {
 	 * This method initializes sShell
 	 */
 	private void createSShell() {
-		sShell = new Shell();
+		sShell = new Shell(display);
 		sShell.setText("Chenance - Personal Finance Manager");
 		sShell.setSize(1000, 400);
 
