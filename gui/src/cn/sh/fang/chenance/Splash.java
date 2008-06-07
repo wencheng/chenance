@@ -64,7 +64,7 @@ public class Splash {
 		}
 	}
 	
-	private void run(Runnable runnable) {
+	public void run(Runnable runnable) {
 		isRunning = true;
 		
 		init();
@@ -75,15 +75,16 @@ public class Splash {
 		
 		shell.setVisible(true);
 
-		t = new Thread( runnable );
-		t.start();
-
-//		while ( t.isAlive() ) {
-		while ( isRunning ) {
-			if ( !display.readAndDispatch() ) {
-				display.sleep();
-			}
-		}
+//		t = new Thread( runnable );
+//		t.start();
+//		while ( isRunning && t.isAlive() ) {
+//			if ( !display.readAndDispatch() ) {
+//				display.sleep();
+//			}
+//		}
+		
+		runnable.run();
+		
 		shell.setVisible( false );
 
 	}
