@@ -106,6 +106,12 @@ public class MainWindow {
 
 	private TableViewer bsTableViewer;
 	
+	static {
+		// set factory here due to a bug in max os x 
+		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
+		BaseService.init();
+	}
+	
 	public MainWindow() {
 		accountListProv = new AccountListProvider();
 		bs = new BalanceSheetContentProvider();
@@ -114,14 +120,6 @@ public class MainWindow {
 	public static void main(String[] args) throws InterruptedException {
 		// TODO find a swt splash
 		
-		// set factory here due to a bug in max os x 
-		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("hibernate.connection.url", "jdbc:h2:" + BaseService.filepath);
-		factory = Persistence
-				.createEntityManagerFactory("chenance-data", props);
-		BaseService.setFacotory( factory );
-
 		final Display display;
 		MainWindow swt;
 		try {

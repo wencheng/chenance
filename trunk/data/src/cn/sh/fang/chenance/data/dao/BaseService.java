@@ -8,11 +8,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
+import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 
@@ -138,7 +140,10 @@ public abstract class BaseService {
 		t.commit();
 	}
 
-	public static void setFacotory(EntityManagerFactory factory2) {
-		BaseService.factory = factory2;
+	public static void init() {
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("hibernate.connection.url", "jdbc:h2:" + BaseService.filepath);
+		factory = Persistence
+				.createEntityManagerFactory("chenance-data", props);
 	}
 }
