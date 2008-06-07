@@ -132,12 +132,12 @@ public class MainWindow {
 			public void run() {
 				swt.init();
 				swt.createSShell();
+				swt.sShell.open();
 				s.close();
 			}
 		});
 
 //		swt.sShell.setAlpha( 200 );
-		swt.sShell.open();
 		try {
 			while (!swt.sShell.isDisposed()) {
 				if (!display.readAndDispatch())
