@@ -3,9 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.sh.fang.chenance</groupId>
 	<artifactId>chenance-gui</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name></name>
 	<description></description>
+	<parent>
+    	<groupId>cn.sh.fang</groupId>
+    	<artifactId>chenance</artifactId>
+    	<version>0.1</version>
+    	<relativePath>../chenance</relativePath>
+	</parent>
 	<repositories>
 		<repository>
 			<id>ibiblio.org</id>

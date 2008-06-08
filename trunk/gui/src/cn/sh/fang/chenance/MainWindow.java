@@ -6,8 +6,6 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import java.util.List;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -85,8 +83,8 @@ import cn.sh.fang.chenance.util.SWTUtil;
 public class MainWindow {
 	
 	static Logger LOG = Logger.getLogger( MainWindow.class );
-
-	public static EntityManagerFactory factory;
+	
+	static boolean MAC_OS_X; 
 
 	private Shell sShell = null; // @jve:decl-index=0:visual-constraint="91,5"
 	private CoolBar coolBar;
@@ -109,8 +107,10 @@ public class MainWindow {
 	static {
 		// set factory here due to a bug in max os x 
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
-		System.out.println ( System.getProperty("os.name") ); 
-		BaseService.init();
+		MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
+		if ( MAC_OS_X ) {
+			BaseService.init();
+		}
 	}
 
 	public MainWindow(Display display) {
@@ -122,14 +122,16 @@ public class MainWindow {
 		bs = new BalanceSheetContentProvider();
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		// TODO find a swt splash
-
+	public static void main(String[] args) {
 		final Display display = new Display();
 		final Splash s = new Splash( display );
 		final MainWindow swt = new MainWindow( display );
 		s.run( new Runnable() {
 			public void run() {
+				if ( ! MAC_OS_X ) {
+					BaseService.init();
+				}
+
 				swt.init();
 				swt.createSShell();
 				swt.sShell.open();
@@ -152,8 +154,7 @@ public class MainWindow {
 	}
 
 	public static void shutdown() {
-		BaseService.commit();
-//		factory.close();
+		BaseService.shutdown();
 	}
 
 	/**

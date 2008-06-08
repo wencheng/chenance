@@ -34,7 +34,8 @@ public class Splash implements MouseListener, MouseMoveListener {
 	
 	private void init() {
 		shell = new Shell( display, SWT.NO_TRIM );
-		final Image image = new Image( null, "src/cn/sh/fang/chenance/splash.gif" );
+		final Image image = new Image( null, 
+				this.getClass().getClassLoader().getResourceAsStream( "cn/sh/fang/chenance/splash.gif" ));
 
 		//define a region 
 		Region region = new Region();
