@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.sh.fang</groupId>
 	<artifactId>chenance</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>../gui</module>
@@ -65,9 +65,9 @@
 								<copyright>
 									Copyright (C)2008 Wencheng Fang
 								</copyright>
-								<productVersion>0.1.0.0</productVersion>
+								<productVersion>${version}.0.0</productVersion>
 								<txtProductVersion>
-									0.1
+									${version}
 								</txtProductVersion>
 								<productName>Chenance</productName>
 								<internalName>ccne</internalName>
@@ -90,9 +90,12 @@
 								<descriptor>
 									bin/win32/assembly-win32.xml
 								</descriptor>
-								 -->
 								<descriptor>
 									bin/zip/assembly-zip.xml
+								</descriptor>
+								 -->
+								<descriptor>
+									bin/assembly-macosx.xml
 								</descriptor>
 							</descriptors>
 						</configuration>

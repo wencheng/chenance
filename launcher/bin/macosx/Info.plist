@@ -7,37 +7,7 @@
 		<key>CFBundleIdentifier</key>
 		<string>cn.sh.fang.Chenance</string>
 		<key>CFBundleIconFile</key>
-		<string>icon.icns</string>
-		<key>Java</key>
-		<dict>
-			<key>MainClass</key>
-			<string>cn.sh.fang.chenance.MainWindow</string>
-			<key>JVMVersion</key>
-			<string>1.5+</string>
-			<key>ClassPath</key>
-			<array>
-				<string>$JAVAROOT/chenance.jar</string>
-				<string>$JAVAROOT/chenance-data-1.0.jar</string>
-				<string>$JAVAROOT/swt/swt.jar</string>
-			</array>
-			<key>Properties</key>
-			<dict>
-				<!-- 
-				<key>apple.laf.useScreenMenuBar</key>
-				<string>true</string>
-				<key>sun.io.useCanonCaches</key>
-				<string>false</string>
-				 -->
-				<key>java.library.path</key>
-				<string>$JAVAROOT/swt</string>
-			</dict>
-			<key>VMOptions</key>
-			<array>
-				<string>-Xmx64m</string>
-				<string>-XstartOnFirstThread</string>
-			</array>
-		</dict>
-
+		<string>chenance.icns</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleName</key>
@@ -45,13 +15,9 @@
 		<key>CFBundleSignature</key>
 		<string>????</string>
 		<key>CFBundleExecutable</key>
-		<string>JavaApplicationStub</string>
-		<!-- 
-		<key>CFBundleExecutable</key>
 		<string>chenance</string>
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
-		 -->
 		<key>CFBundleDevelopmentRegion</key>
 		<string>English</string>
 		<key>CFBundleInfoDictionaryVersion</key>

@@ -6,6 +6,12 @@
 	<name></name>
 	<version>1.0</version>
 	<description></description>
+	<parent>
+    	<groupId>cn.sh.fang</groupId>
+    	<artifactId>chenance</artifactId>
+    	<version>0.1</version>
+    	<relativePath>../chenance</relativePath>
+	</parent>
 	<repositories>
 		<repository>
 			<id>ibiblio.org</id>
