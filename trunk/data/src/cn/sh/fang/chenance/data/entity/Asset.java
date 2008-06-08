@@ -7,6 +7,7 @@ import javax.persistence.*;
 public class Asset extends BaseEntity {
 
     @Id
+    @GeneratedValue
     private Integer id;
     
     @ManyToOne(fetch=FetchType.LAZY, targetEntity=Transaction.class)

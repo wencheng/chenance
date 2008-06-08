@@ -95,6 +95,7 @@ public class <%=classname%> extends BaseEntity {
     /** <%=def.getLogicalName()%> */
 <%  } %>
     @Id
+    @GeneratedValue
     private <%=types.get(def)%> <%=names.get(def)%>;
     
 <%
