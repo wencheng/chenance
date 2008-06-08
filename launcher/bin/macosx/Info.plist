@@ -6,19 +6,18 @@
 		<string>Chenance 0.1 for Mac OS X</string>
 		<key>CFBundleIdentifier</key>
 		<string>cn.sh.fang.Chenance</string>
-
 		<key>CFBundleIconFile</key>
 		<string>icon.icns</string>
-
 		<key>Java</key>
 		<dict>
 			<key>MainClass</key>
-			<string>SmartSVN</string>
+			<string>cn.sh.fang.chenance.MainWindow</string>
 			<key>JVMVersion</key>
 			<string>1.5+</string>
 			<key>ClassPath</key>
 			<array>
 				<string>$JAVAROOT/chenance.jar</string>
+				<string>$JAVAROOT/chenance-data-1.0.jar</string>
 				<string>$JAVAROOT/swt/swt.jar</string>
 			</array>
 			<key>Properties</key>
@@ -42,7 +41,7 @@
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleName</key>
-		<string>SmartSVN</string>
+		<string>Chenance</string>
 		<key>CFBundleSignature</key>
 		<string>????</string>
 		<key>CFBundleExecutable</key>
