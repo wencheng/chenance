@@ -44,7 +44,11 @@ public class Splash implements MouseListener, MouseMoveListener {
 		ImageData id = image.getImageData();
 		for (int y = 0; y < bounds.height; y++) {
 			for (int x = 0; x < bounds.width; x++) {
-				if ( id.getPixel(x, y) != 16777215 ) {
+//				System.out.println(id.getPixel(x, y));
+				// mac why? 0xffffff = 16777215
+//				if ( id.getPixel(x, y) != 16777215 ) {
+				// win
+				if ( id.getPixel(x, y) != 255 ) {
 					pixel.x = x;
 					pixel.y = y;
 					region.add(pixel);
