@@ -139,7 +139,7 @@ public class MainWindow {
 			}
 		});
 
-//		swt.sShell.setAlpha( 200 );
+//		swt.sShell.setAlpha( 220 );
 		try {
 			while (!swt.sShell.isDisposed()) {
 				if (!display.readAndDispatch())

@@ -57,11 +57,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>${swt.os-specific-group-id}</groupId>
 			<artifactId>${swt.os-specific-dep}</artifactId>
 			<version>${swt.version}</version>
 		</dependency>
+		 -->
 		<!-- -Dapple.laf.useScreenMenuBar=true -->
 		<!-- 
 		<dependency>
