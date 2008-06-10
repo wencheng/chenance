@@ -1,3 +1,4 @@
+DROP TABLE t_loan;
 DROP TABLE t_receipt_item;
 DROP TABLE t_investment;
 DROP TABLE t_asset;

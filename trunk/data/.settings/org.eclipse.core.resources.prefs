@@ -1,4 +1,4 @@
-#Tue May 13 22:38:58 JST 2008
+#Wed Jun 11 00:45:21 JST 2008
 eclipse.preferences.version=1
 encoding//schema/jet/Pojo.java.jet=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/AccountService.java=UTF-8
@@ -12,6 +12,7 @@ encoding//src/cn/sh/fang/chenance/data/entity/Account.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Asset.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Category.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Investment.java=UTF-8
+encoding//src/cn/sh/fang/chenance/data/entity/Loan.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/ReceiptItem.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/RepeatPayment.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Transaction.java=UTF-8

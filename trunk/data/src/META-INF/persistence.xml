@@ -17,6 +17,8 @@
 		<class>
 		cn.sh.fang.chenance.data.entity.Investment</class>
 		<class>
+		cn.sh.fang.chenance.data.entity.Loan</class>
+		<class>
 		cn.sh.fang.chenance.data.entity.ReceiptItem</class>
 		<class>
 		cn.sh.fang.chenance.data.entity.RepeatPayment</class>
