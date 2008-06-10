@@ -136,6 +136,16 @@ CREATE TABLE t_asset (
 
 
 
+CREATE TABLE t_loan (
+  id IDENTITY NOT NULL PRIMARY KEY,
+  transaction_id BIGINT NOT NULL,
+  interest INT,
+  interest_rate INT,
+  FOREIGN KEY (transaction_id)
+    REFERENCES t_transaction (id)
+);
+
+
 -- define: t_setting
 CREATE TABLE t_setting (
   id IDENTITY NOT NULL PRIMARY KEY,
@@ -147,5 +157,4 @@ INSERT INTO t_setting (key, value)
   VALUES ('chenance.version', '0.0.1');
 INSERT INTO t_setting (key, value)
   VALUES ('chenance.data.version', '1.0');
-
 

@@ -73,6 +73,7 @@ public abstract class BaseService {
 				"common-columns/Investment.sql",
 				"common-columns/ReceiptItem.sql",
 				"common-columns/RepeatPayment.sql",
+				"common-columns/Loan.sql",
 				"common-columns/Transaction.sql", };
 		try {
 			String sql;
@@ -141,6 +142,8 @@ public abstract class BaseService {
 	}
 
 	public static void init() {
+		createTable();
+		
 		HashMap<String, String> props = new HashMap<String, String>();
 		props.put("hibernate.connection.url", "jdbc:h2:" + BaseService.filepath);
 		factory = Persistence
