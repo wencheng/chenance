@@ -92,7 +92,7 @@ public class UIMessageBundle {
 		try {
 			Method m = w.getClass().getMethod( "setText", new Class[]{ String.class } );
 			widgets.put( w, s );
-			m.invoke( s, new Object[]{ _( s ) } );
+			m.invoke( w, new Object[]{ _( s ) } );
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
