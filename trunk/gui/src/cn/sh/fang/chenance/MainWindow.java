@@ -1,10 +1,12 @@
 package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.CellEditor;
@@ -65,6 +67,7 @@ import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
 import cn.sh.fang.chenance.listener.BsAccountListListener;
 import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
+import cn.sh.fang.chenance.listener.ChangeLanguageListener;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
 import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
 import cn.sh.fang.chenance.listener.BsAccountListListener.AccountListSelectionAdapter;
@@ -211,21 +214,18 @@ public class MainWindow {
 
 		// Lang
 		MenuItem langMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-		langMenuHeader.setText(_("&Language"));
+		setText( langMenuHeader, "&Language" );
 		Menu langMenu = new Menu(sShell, SWT.DROP_DOWN);
 		langMenuHeader.setMenu(langMenu);
 		MenuItem langEnItem = new MenuItem(langMenu, SWT.RADIO);
 		langEnItem.setText(_("English"));
-		// langEnItem.addSelectionListener(new
-		// ChangeLanguageListener(Locale.ENGLISH));
+		langEnItem.addSelectionListener(new ChangeLanguageListener(Locale.ENGLISH));
 		MenuItem langJaItem = new MenuItem(langMenu, SWT.RADIO);
 		langJaItem.setText(_("日本語"));
-		// langJaItem.addSelectionListener(new
-		// ChangeLanguageListener(Locale.JAPANESE));
+		langJaItem.addSelectionListener(new ChangeLanguageListener(Locale.JAPANESE));
 		MenuItem langZhItem = new MenuItem(langMenu, SWT.RADIO);
 		langZhItem.setText(_("简体中文"));
-		// langZhItem.addSelectionListener(new
-		// ChangeLanguageListener(Locale.CHINESE));
+		langZhItem.addSelectionListener(new ChangeLanguageListener(Locale.CHINESE));
 
 		// Help
 		MenuItem menuItem4 = new MenuItem(menuBar, SWT.CASCADE);
