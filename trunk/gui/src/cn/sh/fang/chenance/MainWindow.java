@@ -229,7 +229,7 @@ public class MainWindow {
 
 		// Help
 		MenuItem menuItem4 = new MenuItem(menuBar, SWT.CASCADE);
-		menuItem4.setText(_("&Help"));
+		setText( menuItem4, "&Help" );
 	}
 
 	/**

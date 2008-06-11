@@ -5,6 +5,8 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ExpandAdapter;
+import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,6 +14,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ExpandBar;
 import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Group;
@@ -129,12 +132,24 @@ public class AccountEditForm {
 		btnSave = new Button(grp, SWT.NONE);
 		btnSave.setText(_("&Save this account"));
 		
+		createOptionControl();
+
+		internalLayout();
+
+		return grp;
+	}
+
+	private void createOptionControl() {
 		bar = new ExpandBar(grp, SWT.V_SCROLL);
+		bar.setBackgroundMode(SWT.INHERIT_FORCE);
+
 		Composite composite = new Composite(bar, SWT.NONE);
 	    GridLayout layout = new GridLayout();
-	    layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
+	    layout.marginLeft = layout.marginTop = layout.marginRight 
+	    = layout.marginBottom = 0;
 	    layout.verticalSpacing = 10;
 	    composite.setLayout(layout);
+	    
 	    Button button = new Button(composite, SWT.PUSH);
 	    button.setText("SWT.PUSH");
 	    button = new Button(composite, SWT.RADIO);
@@ -143,14 +158,33 @@ public class AccountEditForm {
 	    button.setText("SWT.CHECK");
 	    button = new Button(composite, SWT.TOGGLE);
 	    button.setText("SWT.TOGGLE");
+
 	    ExpandItem item0 = new ExpandItem(bar, SWT.NONE, 0);
 	    item0.setText(_("Options"));
 	    item0.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 	    item0.setControl(composite);
-	    
-		internalLayout();
 
-		return grp;
+        bar.addExpandListener(new ExpandAdapter(){
+            @Override
+            public void itemCollapsed(ExpandEvent e) {
+                Display.getCurrent().asyncExec(new Runnable(){
+                    public void run() {
+                    	grp.pack();
+                    	grp.layout();
+                    }
+                });
+            }
+ 
+            @Override
+            public void itemExpanded(ExpandEvent e) {
+                Display.getCurrent().asyncExec(new Runnable(){
+                    public void run() {
+                        grp.pack();
+                        grp.layout();
+                    }
+                });
+            }
+        });
 	}
 
 	int maxWidth, totalHeight;
@@ -243,7 +277,7 @@ public class AccountEditForm {
 		
 		fd = setFormLayoutData(bar, btnSave, 10, SWT.NONE, memo, 0, SWT.LEFT);
 		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
-		fd.height = 100;
+//		fd.height = 10;
 		
 		grp.pack();
 	}
