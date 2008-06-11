@@ -1,12 +1,17 @@
 package cn.sh.fang.chenance;
 
+import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
+import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
 import cn.sh.fang.chenance.data.dao.RepeatPaymentService;
@@ -18,6 +23,10 @@ public class TransactionDetailDialog extends Dialog {
 	private Transaction t;
 	private Button chkRepeat;
 	private Button chkAutoApprove;
+	private Button btnAdd;
+	private Group grp1;
+	private Composite parent;
+	private Group grp2;
 
 	public TransactionDetailDialog(Shell shell, Transaction t) {
 		super(shell);
@@ -36,18 +45,47 @@ public class TransactionDetailDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		this.chkRepeat = new Button(parent, SWT.CHECK);
-		chkRepeat.setText( "Repeatable" );
+		this.parent = parent;
 		
-		this.chkAutoApprove = new Button(parent, SWT.CHECK);
+		grp1 = new Group( parent, SWT.NONE );
+		setText( grp1, "Repeat" );
+		this.chkRepeat = new Button(grp1, SWT.CHECK);
+		chkRepeat.setText( "Repeatable" );
+		this.chkAutoApprove = new Button(grp1, SWT.CHECK);
 		chkAutoApprove.setText( "Auto Approval" );
 
+		grp2 = new Group( parent, SWT.NONE );
+		setText( grp2, "Breakdown" );
+		this.btnAdd = new Button(grp2, SWT.PUSH);
+		setText( btnAdd, "Add" );
+
+		internalLayout();
 		setDefaultValues();
 		addListeners();
 
 		return super.createDialogArea(parent);
 	}
 
+	private void internalLayout() {
+//		FormLayout formLayout = new FormLayout();
+//		parent.setLayout(formLayout);
+//		formLayout.marginHeight = 10;
+//		formLayout.marginWidth = 10;
+//		
+//		setFormLayoutData( grp1, 0, 20, 0, 20 );
+//		setFormLayoutData( grp2, grp1, 0, SWT.NONE, grp1, 0, SWT.LEFT );
+		
+		// repeat
+		grp1.setLayout( new FormLayout() );
+		setFormLayoutData( chkRepeat, 0, 20, 0, 20 );
+		setFormLayoutData( chkAutoApprove, chkRepeat, 20, SWT.NONE, chkRepeat, 0,
+				SWT.LEFT);
+
+		// breakdown
+		grp2.setLayout( new FormLayout() );
+		setFormLayoutData( btnAdd, 0, 20, 0, 20 );
+	}
+	
 	private void setDefaultValues() {
 		if ( t.getRepeatPayment() != null ) {
 			chkRepeat.setSelection( true );
