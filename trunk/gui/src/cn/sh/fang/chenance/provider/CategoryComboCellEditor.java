@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -308,13 +309,11 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 			if ( this.clientAreaWidth != ctable.getClientArea().width ) {
 				this.clientAreaWidth = ctable.getClientArea().width;
 			}
+			if ( this.clientAreaWidth == 0 ) {
+				this.clientAreaWidth = 128;
+			}
 			e.width = this.clientAreaWidth - 4;
-
-//			if (((Category) e.item.getData()).isRoot()) {
-//				e.height = (int) (e.gc.getFontMetrics().getHeight() * 1.5);
-//			} else {
-				e.height = e.gc.getFontMetrics().getHeight();
-//			}
+			e.height = e.gc.getFontMetrics().getHeight();
 		}
 
 		if (e.type == SWT.EraseItem) {

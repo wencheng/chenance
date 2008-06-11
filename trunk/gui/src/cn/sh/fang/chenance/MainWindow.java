@@ -457,7 +457,7 @@ public class MainWindow {
 		bsTableViewer.setData("categoryList", categoryList);
 		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
 		e.setItems(categoryList);
-		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
+//		e.addListener(new ActivateNextCellEditorListener(tableViewer));
 		editors[Column.CATEGORY.ordinal()] = e;
 
 		TextCellEditor debitEditor = new TextCellEditor(table);
