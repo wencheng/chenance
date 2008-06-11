@@ -17,6 +17,10 @@ public class ReceiptItem extends BaseEntity {
     @Column(name="item_name")
     private String itemName;
 
+    @ManyToOne(fetch=FetchType.LAZY, targetEntity=Category.class)
+    @JoinColumn(name="category_id", referencedColumnName="id")
+    private Category category;
+
     @Column(name="price")
     private Integer price;
 
@@ -73,5 +77,13 @@ public class ReceiptItem extends BaseEntity {
     public void setTransaction(Transaction transaction) {
         this.transaction = transaction;
     }
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
     
 }

@@ -112,6 +112,7 @@ CREATE TABLE t_receipt_item (
   id IDENTITY NOT NULL PRIMARY KEY,
   transaction_id BIGINT NOT NULL,
   item_name VARCHAR(50) NOT NULL,
+  category_id BIGINT,
   price INT,
   quantity INT,
   amount INT NOT NULL,
