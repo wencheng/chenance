@@ -34,3 +34,6 @@ http://jiemamy.sourceforge.jp/eclipse/
 
 JadClipse
 http://sourceforge.net/projects/jadclipse/
+
+AJDT 1.5.2
+http://download.eclipse.org/tools/ajdt/33/update
