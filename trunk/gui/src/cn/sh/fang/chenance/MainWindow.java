@@ -84,10 +84,10 @@ import cn.sh.fang.chenance.util.CalendarCellEditor;
 import cn.sh.fang.chenance.util.SWTUtil;
 
 public class MainWindow {
-	
-	static Logger LOG = Logger.getLogger( MainWindow.class );
-	
-	static boolean MAC_OS_X; 
+
+	static Logger LOG = Logger.getLogger(MainWindow.class);
+
+	static boolean MAC_OS_X;
 
 	private Shell sShell = null; // @jve:decl-index=0:visual-constraint="91,5"
 	private CoolBar coolBar;
@@ -108,10 +108,11 @@ public class MainWindow {
 	private Display display;
 
 	static {
-		// set factory here due to a bug in max os x 
+		// set factory here due to a bug in max os x
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
-		MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith("mac os x");
-		if ( MAC_OS_X ) {
+		MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith(
+				"mac os x");
+		if (MAC_OS_X) {
 			BaseService.init();
 		}
 	}
@@ -127,11 +128,11 @@ public class MainWindow {
 
 	public static void main(String[] args) {
 		final Display display = new Display();
-		final Splash s = new Splash( display );
-		final MainWindow swt = new MainWindow( display );
-		s.run( new Runnable() {
+		final Splash s = new Splash(display);
+		final MainWindow swt = new MainWindow(display);
+		s.run(new Runnable() {
 			public void run() {
-				if ( ! MAC_OS_X ) {
+				if (!MAC_OS_X) {
 					BaseService.init();
 				}
 
@@ -142,7 +143,7 @@ public class MainWindow {
 			}
 		});
 
-//		swt.sShell.setAlpha( 220 );
+		// swt.sShell.setAlpha( 220 );
 		try {
 			while (!swt.sShell.isDisposed()) {
 				if (!display.readAndDispatch())
@@ -181,55 +182,58 @@ public class MainWindow {
 
 		// File
 		MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-		fileMenuHeader.setText(_("&File"));
+		setText(fileMenuHeader, "&File");
 		Menu fileMenu = new Menu(sShell, SWT.DROP_DOWN);
 		fileMenuHeader.setMenu(fileMenu);
 		MenuItem fileNewItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileNewItem.setText(_("&New"));
-//		fileNewItem.addSelectionListener(new FileNewListener());
+		setText(fileNewItem, "&New");
+		// fileNewItem.addSelectionListener(new FileNewListener());
 		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileOpenItem.setText(_("&Open"));
-//		fileOpenItem.addSelectionListener(new FileOpenListener());
+		setText(fileOpenItem, "&Open");
+		// fileOpenItem.addSelectionListener(new FileOpenListener());
 		MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
-		fileSaveItem.setText(_("&Save"));
-//		fileSaveItem.addSelectionListener(new FileSaveListener());
+		setText(fileSaveItem, "&Save");
+		// fileSaveItem.addSelectionListener(new FileSaveListener());
 
 		// Edit
 		MenuItem menuItem2 = new MenuItem(menuBar, SWT.CASCADE);
-		menuItem2.setText(_("&Edit"));
+		setText(menuItem2, "&Edit");
 
 		// View
 		MenuItem viewMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-		viewMenuHeader.setText(_("&View"));
+		setText(viewMenuHeader, "&View");
 		Menu viewMenu = new Menu(sShell, SWT.DROP_DOWN);
 		viewMenuHeader.setMenu(viewMenu);
 		MenuItem viewBsItem = new MenuItem(viewMenu, SWT.RADIO);
-		viewBsItem.setText(_("Balance Sheet"));
+		setText(viewBsItem, "Balance Sheet");
 		// viewBsItem.addSelectionListener(new
 		// ChangeLanguageListener(Locale.ENGLISH));
 		MenuItem viewInvItem = new MenuItem(viewMenu, SWT.RADIO);
-		viewInvItem.setText(_("Investment History"));
+		setText(viewInvItem, "Investment History");
 		MenuItem viewAssetItem = new MenuItem(viewMenu, SWT.RADIO);
-		viewAssetItem.setText(_("Asset Management"));
+		setText(viewAssetItem, "Asset Management");
 
 		// Lang
 		MenuItem langMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
-		setText( langMenuHeader, "&Language" );
+		setText(langMenuHeader, "&Language");
 		Menu langMenu = new Menu(sShell, SWT.DROP_DOWN);
 		langMenuHeader.setMenu(langMenu);
 		MenuItem langEnItem = new MenuItem(langMenu, SWT.RADIO);
-		langEnItem.setText(_("English"));
-		langEnItem.addSelectionListener(new ChangeLanguageListener(Locale.ENGLISH));
+		setText(langEnItem, "English");
+		langEnItem.addSelectionListener(new ChangeLanguageListener(
+				Locale.ENGLISH));
 		MenuItem langJaItem = new MenuItem(langMenu, SWT.RADIO);
-		langJaItem.setText(_("日本語"));
-		langJaItem.addSelectionListener(new ChangeLanguageListener(Locale.JAPANESE));
+		setText(langJaItem, "日本語");
+		langJaItem.addSelectionListener(new ChangeLanguageListener(
+				Locale.JAPANESE));
 		MenuItem langZhItem = new MenuItem(langMenu, SWT.RADIO);
-		langZhItem.setText(_("简体中文"));
-		langZhItem.addSelectionListener(new ChangeLanguageListener(Locale.CHINESE));
+		setText(langZhItem, "简体中文");
+		langZhItem.addSelectionListener(new ChangeLanguageListener(
+				Locale.CHINESE));
 
 		// Help
 		MenuItem menuItem4 = new MenuItem(menuBar, SWT.CASCADE);
-		setText( menuItem4, "&Help" );
+		setText(menuItem4, "&Help");
 	}
 
 	/**
@@ -288,13 +292,13 @@ public class MainWindow {
 	private void createTabFolder() {
 		tabFolder = new TabFolder(sShell, SWT.TOP | SWT.BORDER);
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
-		item1.setText(_("Balance"));
+		setText(item1, "Balance");
 		item1.setControl(getBalanceSheetTabControl(tabFolder));
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
-		item2.setText(_("Category"));
+		setText(item2, "Category");
 		item2.setControl(getCategoryTabControl(tabFolder));
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
-		item3.setText(_("Accounts"));
+		setText(item3, "Accounts");
 		item3.setControl(getAccountTabControl(tabFolder));
 		tabFolder.setSize(sShell.getSize());
 	}
@@ -310,14 +314,14 @@ public class MainWindow {
 		TableTree tableTree = bsAccountList.createControl(composite);
 
 		Button oneDay = new Button(composite, SWT.RADIO);
-		oneDay.setText(_("Day"));
+		setText(oneDay, "Day");
 		oneDay.setSelection(true);
 		Button oneWeek = new Button(composite, SWT.RADIO);
-		oneWeek.setText(_("Week"));
+		setText(oneWeek, "Week");
 		Button oneMonth = new Button(composite, SWT.RADIO);
-		oneMonth.setText(_("Month"));
+		setText(oneMonth, "Month");
 		Button oneYear = new Button(composite, SWT.RADIO);
-		oneYear.setText(_("Year"));
+		setText(oneYear, "Year");
 
 		// バランスシート
 		table = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
@@ -447,7 +451,7 @@ public class MainWindow {
 
 		// Create the cell editors
 		final CellEditor[] editors = new CellEditor[Column.values().length];
-		
+
 		// editors[0] = new CheckboxCellEditor(table);
 		CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
 		editors[Column.DATE.ordinal()] = dateEditor;
@@ -457,7 +461,7 @@ public class MainWindow {
 		bsTableViewer.setData("categoryList", categoryList);
 		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
 		e.setItems(categoryList);
-//		e.addListener(new ActivateNextCellEditorListener(tableViewer));
+		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
 		editors[Column.CATEGORY.ordinal()] = e;
 
 		TextCellEditor debitEditor = new TextCellEditor(table);
@@ -478,11 +482,12 @@ public class MainWindow {
 		table.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Object obj = ((StructuredSelection)bsTableViewer.getSelection()).getFirstElement();
-				
+				Object obj = ((StructuredSelection) bsTableViewer
+						.getSelection()).getFirstElement();
+
 				// Clean up detail column editor
 				CellEditor oldEditor = editors[Column.DETAIL.ordinal()];
-				if ( oldEditor.isActivated() && oldEditor.getValue() != obj ) {
+				if (oldEditor.isActivated() && oldEditor.getValue() != obj) {
 					oldEditor.deactivate();
 				}
 			}
@@ -610,7 +615,7 @@ public class MainWindow {
 
 		// 編集フォーム
 		Group group = new Group(comp, SWT.RESIZE);
-		group.setText(_("Cagetory Info"));
+		setText(group, "Cagetory Info");
 		FormLayout formLayout = new FormLayout();
 		group.setLayout(formLayout);
 		formLayout.marginHeight = 10;
