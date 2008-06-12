@@ -1,0 +1,18 @@
+#summary Installation instructions.
+
+= Introduction =
+
+Add your content here.
+
+
+= Windows XP/Vista =
+ # Download main program
+ # Extract it
+ # Download dependency libraries
+ # Extract it
+
+= Mac OS X =
+
+
+= Linux =
+
