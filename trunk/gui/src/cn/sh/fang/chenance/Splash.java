@@ -61,10 +61,10 @@ public class Splash implements MouseListener, MouseMoveListener {
 		shell.setRegion(region);
 		shell.setSize(bounds.width, bounds.height);
 		Rectangle size = region.getBounds();
-		Rectangle b = display.getBounds();
+		Rectangle b = display.getPrimaryMonitor().getBounds();
 		System.out.println(b);
 		System.out.println(size);
-		shell.setLocation( (b.width+b.x-size.width)/2, (b.height+b.y-size.height)/2 );
+		shell.setLocation( b.x+(b.width-size.width)/2, b.y+(b.height-size.height)/2 );
 		
 		shell.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
