@@ -1,6 +1,7 @@
 package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
+import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
@@ -56,21 +57,21 @@ public class AccountEditForm {
 
 	public Control createControl(Composite parent) {
 		grp = new Group(parent, SWT.NONE);
-		grp.setText(_("Account Info"));
+		setText(grp, "Account Info");
 
 		// left side
 		lblName = new Label(grp, SWT.NONE);
-		lblName.setText(_("Account Name:"));
+		setText(lblName, "Account Name:");
 		lblName.pack();
 		name = new Text(grp, SWT.BORDER);
 
 		lblNamePh = new Label(grp, SWT.NONE);
-		lblNamePh.setText(_("Account Name Phonetic:"));
+		setText(lblNamePh, "Account Name Phonetic:");
 		lblNamePh.pack();
 		namePh = new Text(grp, SWT.BORDER);
 
 		this.lblType = new Label(grp, SWT.NONE);
-		lblType.setText(_("Account Type:"));
+		setText(lblType, "Account Type:");
 		lblType.pack();
 		this.type = new Combo(grp, SWT.READ_ONLY);
 		type.setItems(new String[] { "現金", "預金", "カード", "投資" });
@@ -78,7 +79,7 @@ public class AccountEditForm {
 		type.select(0);
 
 		this.lblCurrency = new Label(grp, SWT.NONE);
-		lblCurrency.setText(_("Currency:"));
+		setText(lblCurrency, "Currency:");
 		lblCurrency.pack();
 		this.currency = new Combo(grp, SWT.READ_ONLY);
 		currency.setItems(new String[] { "USD", "JPY", "EUD", "GBP", "RMB" });
@@ -86,52 +87,52 @@ public class AccountEditForm {
 		currency.select(1);
 
 		this.lblDay = new Label(grp, SWT.NONE);
-		lblDay.setText(_("締切日："));
+		setText(lblDay, "締切日：");
 		lblDay.pack();
 		this.day = new Text(grp, SWT.BORDER);
 
 		// right side
 		this.lblBankName = new Label(grp, SWT.NONE);
-		lblBankName.setText(_("Bank Name:"));
+		setText(lblBankName, "Bank Name:");
 		lblBankName.pack();
 		this.bankName = new Text(grp, SWT.BORDER);
 
 		this.lblBranchName = new Label(grp, SWT.NONE);
-		lblBranchName.setText(_("Branch Name:"));
+		setText(lblBranchName, "Branch Name:");
 		lblBranchName.pack();
 		this.branchName = new Text(grp, SWT.BORDER);
 
 		this.lblBankNo = new Label(grp, SWT.NONE);
-		lblBankNo.setText(_("Account No:"));
+		setText(lblBankNo, "Account No:");
 		lblBankNo.pack();
 		this.bankNo = new Text(grp, SWT.BORDER);
 
 		this.lblInterest = new Label(grp, SWT.NONE);
-		lblInterest.setText(_("Interest Rate:"));
+		setText(lblInterest, "Interest Rate:");
 		lblInterest.pack();
 		this.interest = new Text(grp, SWT.BORDER | SWT.RIGHT);
-		interest.setText(_("00.00"));
+		setText(interest, "00.00");
 		interest.pack();
 		this.lblInterestR = new Label(grp, SWT.NONE);
-		lblInterestR.setText(_("%"));
+		setText(lblInterestR, "%");
 		lblInterestR.pack();
 		this.interestPer = new Combo(grp, SWT.READ_ONLY);
 		interestPer.setItems(new String[] { _("One Year"), _("One Month") });
 		interestPer.select(0);
 
 		this.lblStart = new Label(grp, SWT.NONE);
-		lblStart.setText(_("Start Balance:"));
+		setText(lblStart, "Start Balance:");
 		lblStart.pack();
 		this.start = new Text(grp, SWT.BORDER);
 
 		this.lblMemo = new Label(grp, SWT.NONE);
-		lblMemo.setText(_("Memo:"));
+		setText(lblMemo, "Memo:");
 		lblMemo.pack();
 		memo = new Text(grp, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 
 		btnSave = new Button(grp, SWT.NONE);
-		btnSave.setText(_("&Save this account"));
-		
+		setText(btnSave, "&Save this account");
+
 		createOptionControl();
 
 		internalLayout();
@@ -144,47 +145,46 @@ public class AccountEditForm {
 		bar.setBackgroundMode(SWT.INHERIT_FORCE);
 
 		Composite composite = new Composite(bar, SWT.NONE);
-	    GridLayout layout = new GridLayout();
-	    layout.marginLeft = layout.marginTop = layout.marginRight 
-	    = layout.marginBottom = 0;
-	    layout.verticalSpacing = 10;
-	    composite.setLayout(layout);
-	    
-	    Button button = new Button(composite, SWT.PUSH);
-	    button.setText("SWT.PUSH");
-	    button = new Button(composite, SWT.RADIO);
-	    button.setText("SWT.RADIO");
-	    button = new Button(composite, SWT.CHECK);
-	    button.setText("SWT.CHECK");
-	    button = new Button(composite, SWT.TOGGLE);
-	    button.setText("SWT.TOGGLE");
+		GridLayout layout = new GridLayout();
+		layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 0;
+		layout.verticalSpacing = 10;
+		composite.setLayout(layout);
 
-	    ExpandItem item0 = new ExpandItem(bar, SWT.NONE, 0);
-	    item0.setText(_("Options"));
-	    item0.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
-	    item0.setControl(composite);
+		Button button = new Button(composite, SWT.PUSH);
+		button.setText("SWT.PUSH");
+		button = new Button(composite, SWT.RADIO);
+		button.setText("SWT.RADIO");
+		button = new Button(composite, SWT.CHECK);
+		button.setText("SWT.CHECK");
+		button = new Button(composite, SWT.TOGGLE);
+		button.setText("SWT.TOGGLE");
 
-        bar.addExpandListener(new ExpandAdapter(){
-            @Override
-            public void itemCollapsed(ExpandEvent e) {
-                Display.getCurrent().asyncExec(new Runnable(){
-                    public void run() {
-                    	grp.pack();
-                    	grp.layout();
-                    }
-                });
-            }
- 
-            @Override
-            public void itemExpanded(ExpandEvent e) {
-                Display.getCurrent().asyncExec(new Runnable(){
-                    public void run() {
-                        grp.pack();
-                        grp.layout();
-                    }
-                });
-            }
-        });
+		ExpandItem item0 = new ExpandItem(bar, SWT.NONE, 0);
+		setText(item0, "Options");
+		item0.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+		item0.setControl(composite);
+
+		bar.addExpandListener(new ExpandAdapter() {
+			@Override
+			public void itemCollapsed(ExpandEvent e) {
+				Display.getCurrent().asyncExec(new Runnable() {
+					public void run() {
+						grp.pack();
+						grp.layout();
+					}
+				});
+			}
+
+			@Override
+			public void itemExpanded(ExpandEvent e) {
+				Display.getCurrent().asyncExec(new Runnable() {
+					public void run() {
+						grp.pack();
+						grp.layout();
+					}
+				});
+			}
+		});
 	}
 
 	int maxWidth, totalHeight;
@@ -219,7 +219,7 @@ public class AccountEditForm {
 		grp.setLayout(formLayout);
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
-		
+
 		// left side
 		setFormLayoutData(lblName, 0, 20, 0, 20);
 		setFormLayoutData(lblNamePh, lblName, 20, SWT.NONE, lblName, 0,
@@ -251,16 +251,13 @@ public class AccountEditForm {
 		setFormLayoutData(lblStart, lblInterest, 20, SWT.NONE, lblBankName, 0,
 				SWT.LEFT);
 
-		Control d = computeSize(new Control[] { lblBankName, lblBranchName, lblBankNo,
-				lblInterest, lblStart});
+		Control d = computeSize(new Control[] { lblBankName, lblBranchName,
+				lblBankNo, lblInterest, lblStart });
 
-		setFormLayoutData(bankName, lblBankName, 0, SWT.TOP, d, 5,
-				SWT.NONE).width = 80;
-		setFormLayoutData(branchName, lblBranchName, 0, SWT.TOP, d,
-				5, SWT.NONE).width = 80;
+		setFormLayoutData(bankName, lblBankName, 0, SWT.TOP, d, 5, SWT.NONE).width = 80;
+		setFormLayoutData(branchName, lblBranchName, 0, SWT.TOP, d, 5, SWT.NONE).width = 80;
 		setFormLayoutData(bankNo, lblBankNo, 0, SWT.TOP, d, 5, SWT.NONE).width = 80;
-		setFormLayoutData(interest, lblInterest, 0, SWT.TOP, d, 5,
-				SWT.NONE);
+		setFormLayoutData(interest, lblInterest, 0, SWT.TOP, d, 5, SWT.NONE);
 		setFormLayoutData(lblInterestR, lblInterest, 0, SWT.TOP, interest, 5,
 				SWT.NONE);
 		setFormLayoutData(interestPer, lblInterestR, 0, SWT.TOP, lblInterestR,
@@ -271,14 +268,14 @@ public class AccountEditForm {
 		setFormLayoutData(lblMemo, lblDay, 20, SWT.NONE, lblName, 0, SWT.LEFT);
 		FormData fd = setFormLayoutData(memo, lblMemo, 0, SWT.NONE, lblName, 0,
 				SWT.LEFT);
-		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
+		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - 20;
 		fd.height = 80;
 		setFormLayoutDataRight(btnSave, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT);
-		
+
 		fd = setFormLayoutData(bar, btnSave, 10, SWT.NONE, memo, 0, SWT.LEFT);
-		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
-//		fd.height = 10;
-		
+		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - 20;
+		// fd.height = 10;
+
 		grp.pack();
 	}
 }

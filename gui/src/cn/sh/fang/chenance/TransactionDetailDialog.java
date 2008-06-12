@@ -50,9 +50,9 @@ public class TransactionDetailDialog extends Dialog {
 		grp1 = new Group( parent, SWT.NONE );
 		setText( grp1, "Repeat" );
 		this.chkRepeat = new Button(grp1, SWT.CHECK);
-		chkRepeat.setText( "Repeatable" );
+		setText( chkRepeat, "Repeatable" );
 		this.chkAutoApprove = new Button(grp1, SWT.CHECK);
-		chkAutoApprove.setText( "Auto Approval" );
+		setText( chkAutoApprove, "Auto Approval" );
 
 		grp2 = new Group( parent, SWT.NONE );
 		setText( grp2, "Breakdown" );
