@@ -1,4 +1,5 @@
 #summary Create a win32 setup by NSIS.
+#labels Development
 
 = Introduction =
 
