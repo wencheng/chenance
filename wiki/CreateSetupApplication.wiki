@@ -1,0 +1,17 @@
+#summary Create a win32 setup by NSIS.
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+NSIS
+http://nsis.sourceforge.net/
+
+http://nsis.sourceforge.net/ZipDLL_plug-in
+
+To use ZipDLL: 
+ # Extract ZipDLL.dll to directory Plugins in your NSIS installation 
+ # Extract ZipDLL.nsh to directory Include in your NSIS installation
