@@ -19,7 +19,7 @@ import javax.persistence.*;
 
 @Table(name="t_receipt_item")
 @Entity
-public class ReceiptItem extends BaseEntity {
+public class Breakdown extends BaseEntity {
 
     @Id
     @GeneratedValue

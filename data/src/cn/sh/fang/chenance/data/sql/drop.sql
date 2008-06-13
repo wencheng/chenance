@@ -1,5 +1,5 @@
+DROP TABLE t_breakdown;
 DROP TABLE t_loan;
-DROP TABLE t_receipt_item;
 DROP TABLE t_investment;
 DROP TABLE t_asset;
 DROP TABLE t_transaction;

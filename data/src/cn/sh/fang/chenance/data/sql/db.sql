@@ -108,7 +108,7 @@ CREATE TABLE t_investment (
 
 
 -- define: t_receipt_item
-CREATE TABLE t_receipt_item (
+CREATE TABLE t_breakdown (
   id IDENTITY NOT NULL PRIMARY KEY,
   transaction_id BIGINT NOT NULL,
   item_name VARCHAR(50) NOT NULL,
