@@ -1,4 +1,5 @@
 #summary See some screenshots
+#labels Phase-Deploy,Featured
 
 = Introduction =
 
