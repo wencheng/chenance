@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>../gui</module>
-		<module>../data</module>
+		<module>../chenance-data</module>
 	</modules>
 	<repositories>
 		<repository>
@@ -19,16 +19,6 @@
 		</repository>
 	</repositories>
 	<build>
-		<filters>
-  			<filter>filter.properties</filter>
-		</filters>
-		<resources>
-  			<resource>
-    			<directory>bin</directory>
-    			<filtering>true</filtering>
-  			</resource>
-		</resources>
-	
 		<plugins>
 			<plugin>
 				<inherited>false</inherited>
@@ -95,15 +85,16 @@
 				<executions>
 					<execution>
 						<configuration>
+					        <filters>
+            					<filter>bundle.properties</filter>
+          					</filters>
 							<descriptors>
-							<!-- 
 								<descriptor>
-									bin/win32/assembly-win32.xml
+									bin/assembly-win32.xml
 								</descriptor>
 								<descriptor>
-									bin/zip/assembly-zip.xml
+									bin/assembly-zip.xml
 								</descriptor>
-								 -->
 								<descriptor>
 									bin/assembly-macosx.xml
 								</descriptor>

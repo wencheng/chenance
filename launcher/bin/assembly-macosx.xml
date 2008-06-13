@@ -8,9 +8,10 @@
     	<fileSet>
       		<directory>bin/macosx</directory>
       		<outputDirectory>Chenance.app/Contents</outputDirectory>
-      		<includes>
-      			<include>**/**</include>
-      		</includes>
+      		<excludes>
+      			<exclude>MacOS/chenance</exclude>
+      		</excludes>
+      		<filtered>true</filtered>
     	</fileSet>
   	</fileSets>
   	<files>
@@ -18,6 +19,7 @@
 			<source>bin/macosx/MacOS/chenance</source>
 			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
+			<filtered>true</filtered>
   		</file>
   	</files>
   	<moduleSets>

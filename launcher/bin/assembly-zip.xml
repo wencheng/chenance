@@ -3,12 +3,13 @@
 	<formats>
 		<format>dir</format>
 	</formats>
-	<files>
-		<file>
-			<source>bin/zip/chenance.bat</source>
+	<fileSets>
+		<fileSet>
+			<directory>bin/zip</directory>
 			<outputDirectory>/</outputDirectory>
-		</file>
-	</files>
+			<filtered>true</filtered>
+		</fileSet>
+	</fileSets>
 	<moduleSets>
 		<moduleSet>
 			<includes>
