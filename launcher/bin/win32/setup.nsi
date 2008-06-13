@@ -1,10 +1,10 @@
 !include MUI2.nsh
 !include ZipDLL.nsh
 
-name "Chenance"
+name "${chenance.name}"
 
 # define the name of the installer
-outfile "chenance-0.1-setup.exe"
+outfile "chenance-${chenance.version.short}-setup.exe"
 
 # define the directory to install to, the desktop in this case as specified  
 # by the predefined $DESKTOP variable

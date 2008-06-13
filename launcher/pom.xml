@@ -19,6 +19,16 @@
 		</repository>
 	</repositories>
 	<build>
+		<filters>
+  			<filter>filter.properties</filter>
+		</filters>
+		<resources>
+  			<resource>
+    			<directory>bin</directory>
+    			<filtering>true</filtering>
+  			</resource>
+		</resources>
+	
 		<plugins>
 			<plugin>
 				<inherited>false</inherited>
@@ -44,7 +54,7 @@
 									cn.sh.fang.chenance.MainWindow
 								</mainClass>
 								<preCp>
-									chenance-gui-${version}.jar;chenance-data-1.0.jar
+									chenance-gui-${chenance.version.short}.jar;chenance-data-${chenance.data.version}.jar
 								</preCp>
 							</classPath>
 							<singleInstance>

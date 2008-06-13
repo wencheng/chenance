@@ -1,4 +1,4 @@
 #!/bin/sh
 java \
-	-cp chenance-data-0.0.1-SNAPSHOT.jar:chenance-gui-0.0.1-SNAPSHOT.jar \
+	-cp chenance-data-${chenance.data.version}.jar:chenance-gui-${chenance.version.short}.jar \
 	cn.sh.fang.chenance.MainWindow
