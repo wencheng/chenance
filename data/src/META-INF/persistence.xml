@@ -13,13 +13,13 @@
 		<class>
 		cn.sh.fang.chenance.data.entity.BaseEntity</class>
 		<class>
+		cn.sh.fang.chenance.data.entity.Breakdown</class>
+		<class>
 		cn.sh.fang.chenance.data.entity.Category</class>
 		<class>
 		cn.sh.fang.chenance.data.entity.Investment</class>
 		<class>
 		cn.sh.fang.chenance.data.entity.Loan</class>
-		<class>
-		cn.sh.fang.chenance.data.entity.Breakdown</class>
 		<class>
 		cn.sh.fang.chenance.data.entity.RepeatPayment</class>
 		<class>
