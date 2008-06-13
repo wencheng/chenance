@@ -1,8 +1,12 @@
 #summary Installation instructions.
+#labels Phase-Deploy
 
 = Introduction =
 
-Add your content here.
+*Save the hdd space, Save the network band, Save the earth.*
+
+Dependency libraries will not be included in the installer packages.
+They should be download separately.
 
 
 = Windows XP/Vista =
@@ -15,4 +19,3 @@ Add your content here.
 
 
 = Linux =
-
