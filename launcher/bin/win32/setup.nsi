@@ -31,9 +31,11 @@ setOutPath $INSTDIR
 
 	call GetSwt
 
-# define what to install and place it in the output path
-file test.txt
- 
+	# define what to install and place it in the output path
+	file chenance.exe
+	file chenance-gui-${chenance.version.short}.jar
+	file chenance-data-${chenance.data.version}.jar
+
 sectionEnd
 
 !define LIB_URL http://repo1.maven.org/maven2/
