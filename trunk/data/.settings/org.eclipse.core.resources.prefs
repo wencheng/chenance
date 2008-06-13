@@ -1,19 +1,19 @@
-#Wed Jun 11 00:45:21 JST 2008
+#Fri Jun 13 14:00:39 JST 2008
 eclipse.preferences.version=1
 encoding//schema/jet/Pojo.java.jet=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/AccountService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/AssetService.java=UTF-8
+encoding//src/cn/sh/fang/chenance/data/dao/BreakdownService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/CategoryService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/InvestmentService.java=UTF-8
-encoding//src/cn/sh/fang/chenance/data/dao/ReceiptItemService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/RepeatPaymentService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/dao/TransactionService.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Account.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Asset.java=UTF-8
+encoding//src/cn/sh/fang/chenance/data/entity/Breakdown.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Category.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Investment.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Loan.java=UTF-8
-encoding//src/cn/sh/fang/chenance/data/entity/ReceiptItem.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/RepeatPayment.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/entity/Transaction.java=UTF-8
 encoding//src/cn/sh/fang/chenance/data/sql/db.sql=Shift-JIS

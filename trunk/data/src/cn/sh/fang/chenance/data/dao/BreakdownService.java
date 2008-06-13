@@ -18,20 +18,20 @@ package cn.sh.fang.chenance.data.dao;
 import java.util.List;
 import java.util.Date;
 import javax.persistence.Query;
-import cn.sh.fang.chenance.data.entity.ReceiptItem;
+import cn.sh.fang.chenance.data.entity.Breakdown;
 
 /**
  * 's DAO
  */
-public class ReceiptItemService extends BaseService {
+public class BreakdownService extends BaseService {
 
     @SuppressWarnings("unchecked")
-	public List<ReceiptItem> findAll() {
+	public List<Breakdown> findAll() {
         Query query = em.createQuery("SELECT e FROM ReceiptItem e WHERE is_deleted = 0");
         return query.getResultList();
     }
 
-    public void save(ReceiptItem entity) {
+    public void save(Breakdown entity) {
         if (entity.getId() == null) {
             // new
             entity.setInsertDatetime(new Date());
@@ -43,7 +43,7 @@ public class ReceiptItemService extends BaseService {
     }
 
     public void remove(Integer id, String updater) {
-        ReceiptItem entity = find(id);
+        Breakdown entity = find(id);
         if (entity != null) {
             //em.remove(entity);
             entity.setDeleted(true);
@@ -52,8 +52,8 @@ public class ReceiptItemService extends BaseService {
         }
     }
 
-    public ReceiptItem find(Integer id) {
-        return em.find(ReceiptItem.class, id);
+    public Breakdown find(Integer id) {
+        return em.find(Breakdown.class, id);
     }
 
 }
