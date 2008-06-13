@@ -9,15 +9,15 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>../gui</module>
-		<module>../chenance-data</module>
+		<module>../data</module>
 	</modules>
-	<repositories>
-		<repository>
-			<id>akathist-repository</id>
-			<name>Akathist Repository</name>
-			<url>http://www.9stmaryrd.com/maven</url>
-		</repository>
-	</repositories>
+	<pluginRepositories>
+      <pluginRepository>
+          <id>akathist-repository</id>
+          <name>Akathist Repository</name>
+          <url>http://www.9stmaryrd.com/maven</url>
+      </pluginRepository>
+    </pluginRepositories>
 	<build>
 		<plugins>
 			<plugin>
@@ -63,7 +63,7 @@
 									Chenance executable launcher
 								</fileDescription>
 								<copyright>
-									Copyright (C)2008 Wencheng Fang
+									Copyright (C)2008 Wencheng FANG
 								</copyright>
 								<productVersion>${version}.0.0</productVersion>
 								<txtProductVersion>
@@ -90,13 +90,16 @@
           					</filters>
 							<descriptors>
 								<descriptor>
-									bin/assembly-win32.xml
+									assembly/assembly-win32.xml
 								</descriptor>
 								<descriptor>
-									bin/assembly-zip.xml
+									assembly/assembly-zip.xml
 								</descriptor>
 								<descriptor>
-									bin/assembly-macosx.xml
+									assembly/assembly-macosx.xml
+								</descriptor>
+								<descriptor>
+									assembly/assembly-nsis.xml
 								</descriptor>
 							</descriptors>
 						</configuration>
