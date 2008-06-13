@@ -40,7 +40,7 @@
 
 	<build>
 		<filters>
-  			<filter>../chenance/filter.properties</filter>
+  			<filter>../chenance/bundle.properties</filter>
 		</filters>
 		<resources>
   			<resource>
