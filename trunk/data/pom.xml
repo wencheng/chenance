@@ -39,6 +39,15 @@
 	</repositories>
 
 	<build>
+		<filters>
+  			<filter>filter.properties</filter>
+		</filters>
+		<resources>
+  			<resource>
+    			<directory>resources</directory>
+    			<filtering>true</filtering>
+  			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
