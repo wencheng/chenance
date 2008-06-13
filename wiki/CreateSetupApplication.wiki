@@ -1,5 +1,5 @@
 #summary Create a win32 setup by NSIS.
-#labels Development
+#labels Phase-Implementation
 
 = Introduction =
 
