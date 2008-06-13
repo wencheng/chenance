@@ -42,15 +42,15 @@ sectionEnd
 !define SWT_URL http://ftp.jaist.ac.jp/pub/eclipse/eclipse/downloads/drops/S-3.4RC3-200805301730/swt-3.4RC3-win32-win32-x86.zip
 
 Function GetSwt
-        StrCpy $2 "$TEMP\swt.zip"
-	MessageBox MB_OK "$2"
+    StrCpy $2 "$TEMP\swt.zip"
+    MessageBox MB_OK "$2"
         ;nsisdl::download /TIMEOUT=30000 ${SWT_URL} $2
         ;Pop $R0 ;Get the return value
         ;        StrCmp $R0 "success" +3
         ;        MessageBox MB_OK "Download failed: $R0"
         ;        Quit
-	ZipDLL::extractfile $2 "$TEMP\swt" "swt.jar"
-        Delete $2
+    ZipDLL::extractfile $2 "$INSTDIR\lib" "swt.jar"
+    Delete $2
 FunctionEnd
 
 Function GetJRE

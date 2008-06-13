@@ -14,6 +14,10 @@
 			<source>bin/win32/chenance.exe</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
+		<file>
+			<source>bin/License.rtf</source>
+			<outputDirectory>/</outputDirectory>
+		</file>
 	</files>
 	<moduleSets>
 		<moduleSet>
