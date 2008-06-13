@@ -19,11 +19,6 @@
 			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
   		</file>
-  		<file>
-			<source>../gui/target/chenance-gui-${version}.jar</source>
-			<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
-			<destName>chenance.jar</destName>
-  		</file>
   	</files>
   	<moduleSets>
 		<moduleSet>
@@ -39,9 +34,6 @@
 						<outputDirectory>Chenance.app/Contents/MacOS/lib</outputDirectory>
 					</dependencySet>
 				</dependencySets>
-				<excludes>
-        			<exclude>**/chenance-gui*.jar</exclude>
-			    </excludes>
 			</binaries>
 		</moduleSet>
 	</moduleSets>
