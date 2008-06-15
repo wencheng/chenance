@@ -107,8 +107,10 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			break;
 		case CATEGORY:
 			int i = (Integer)value;
-			if ( i < 0 ) break;
 			List<Category> l = (List<Category>)viewer.getData("categoryList");
+			if ( i < 0 ) {
+				i = 0;
+			}
 			t.setCategory(l.get(i));
 			break;
 		case DEBIT:
@@ -117,15 +119,6 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		case CREDIT:
 			t.setCredit(Integer.valueOf((String)value));
 			break;
-		/*
-		 * case 2 : // OWNER_COLUMN valueString = new
-		 * String[]{"opt1","opt2","opt3"}[((Integer) value).intValue()].trim();
-		 * if (!task.getOwner().equals(valueString)) {
-		 * task.setOwner(valueString); } break; case 3 : // PERCENT_COLUMN
-		 * valueString = ((String) value).trim(); if (valueString.length() == 0)
-		 * valueString = "0";
-		 * task.setPercentComplete(Integer.parseInt(valueString)); break;
-		 */
 		default:
 		}
 

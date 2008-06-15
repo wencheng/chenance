@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.sh.fang.chenance.util;
+package cn.sh.fang.chenance.util.swt;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -58,8 +58,8 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 		
 		cal = new SWTCalendar(popup);
 
-		//cal.addListener(SWT.Move, this);
-		//cal.addListener(SWT.Resize, this);
+		cal.addListener(SWT.Move, this);
+		cal.addListener(SWT.Resize, this);
 
 		cal.addSWTCalendarListener(new SWTCalendarListener() {
 			public void dateChanged(SWTCalendarEvent event) {
@@ -117,7 +117,6 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 	@Override
 	public void activate(ColumnViewerEditorActivationEvent e) {
 		super.activate(e);
-
 
         if ( popup.isVisible() == false ) {
         	Table table = (Table)parent;

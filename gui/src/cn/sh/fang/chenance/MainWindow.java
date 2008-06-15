@@ -15,11 +15,12 @@
  */
 package cn.sh.fang.chenance;
 
-import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
+import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -95,8 +96,8 @@ import cn.sh.fang.chenance.provider.CategoryComboCellEditor;
 import cn.sh.fang.chenance.provider.CategoryListContentProvider;
 import cn.sh.fang.chenance.provider.CategoryListLabelProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.chenance.util.CalendarCellEditor;
 import cn.sh.fang.chenance.util.SWTUtil;
+import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
 
 public class MainWindow {
 
@@ -108,7 +109,7 @@ public class MainWindow {
 	private CoolBar coolBar;
 	private Menu menuBar;
 	private TabFolder tabFolder;
-	private Table table;
+	private Table bsTable;
 
 	private AccountListProvider accountListProv;
 
@@ -121,6 +122,8 @@ public class MainWindow {
 	private TableViewer bsTableViewer;
 
 	private Display display;
+
+	private BalanceSheetLabelProvider bslp;
 
 	static {
 		// set factory here due to a bug in max os x
@@ -323,6 +326,15 @@ public class MainWindow {
 
 		// カレンダー
 		DateTime listDate = new DateTime(composite, SWT.CALENDAR | SWT.SHORT);
+		listDate.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				DateTime dt = (DateTime) e.widget;
+				Calendar cal = Calendar.getInstance();
+				cal.set(dt.getYear(), dt.getMonth(), dt.getDay());
+				bs.setDate( cal.getTime() );
+				bsTableViewer.refresh();
+			}
+		});
 
 		// 口座ツリー
 		bsAccountList = new AccountList(accountListProv);
@@ -331,26 +343,53 @@ public class MainWindow {
 		Button oneDay = new Button(composite, SWT.RADIO);
 		setText(oneDay, "Day");
 		oneDay.setSelection(true);
+		oneDay.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				bslp.setDateFormat( BalanceSheetLabelProvider.DD );
+			}
+		});
 		Button oneWeek = new Button(composite, SWT.RADIO);
 		setText(oneWeek, "Week");
+		oneWeek.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
+			}
+		});
 		Button oneMonth = new Button(composite, SWT.RADIO);
 		setText(oneMonth, "Month");
+		oneMonth.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
+			}
+		});
 		Button oneYear = new Button(composite, SWT.RADIO);
 		setText(oneYear, "Year");
+		oneYear.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
+			}
+		});
 
 		// バランスシート
-		table = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
+		bsTable = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
+		bsTable.setLinesVisible(true);
+		bsTable.setHeaderVisible(true);
 		// カラム
 		TableColumn[] cols = new TableColumn[6];
 		for (int i = 0; i < 6; i++) {
-			cols[i] = new TableColumn(table, SWT.NONE);
+			cols[i] = new TableColumn(bsTable, SWT.NONE);
 			cols[i].setWidth(100);
 		}
 		cols[0].setText("日付");
-		cols[0].setAlignment(SWT.CENTER);
 		cols[1].setText("費目");
 		cols[1].setWidth(150);
 		cols[2].setText("支払");
@@ -363,17 +402,18 @@ public class MainWindow {
 		// リスト
 		createTableViewer();
 		cols[0].pack();
+		cols[0].setAlignment(SWT.CENTER);
 		// ポップアップメニュー
 		Menu menu = new Menu(sShell, SWT.POP_UP);
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
 		item.setText("Popup");
-		table.setMenu(menu);
+		bsTable.setMenu(menu);
 		// <Add New>
-		table.addMouseListener(new MouseAdapter() {
+		bsTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
 				if (e.button == 1) {
-					Transaction t = (Transaction) table.getSelection()[0]
+					Transaction t = (Transaction) bsTable.getSelection()[0]
 							.getData();
 					if (t.getDate() == null) {
 						bs.addItem();
@@ -385,15 +425,15 @@ public class MainWindow {
 		});
 		// default account selection
 		// TODO select account last saved
-		bsAccountList.getTableTree().addSelectionListener(
+		bsAccountList.addSelectionListener(
 				new AccountListSelectionAdapter(bs, this.bsTableViewer));
 		bsAccountList.selectAccount(0);
 
 		// 残高ラベル
 		Label total = new Label(composite, SWT.RIGHT);
-		total.setText("￥0");
+		total.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
 		Label label = new Label(composite, SWT.NONE);
-		label.setText("残高: ");
+		setText( label, "Balance:" );
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
@@ -410,11 +450,11 @@ public class MainWindow {
 		layoutData.height = 300;
 		// layoutData.width = listDate.getSize().x;
 
-		SWTUtil.setFormLayoutData(table, listDate, 0, SWT.TOP, listDate, 20,
+		SWTUtil.setFormLayoutData(bsTable, listDate, 0, SWT.TOP, listDate, 20,
 				SWT.NONE).height = 400;
-		table.setSize(tabFolder.getSize());
+		bsTable.setSize(tabFolder.getSize());
 
-		SWTUtil.setFormLayoutData(oneDay, table, 0, SWT.TOP, table, 10,
+		SWTUtil.setFormLayoutData(oneDay, bsTable, 0, SWT.TOP, bsTable, 10,
 				SWT.NONE).width = 80;
 		SWTUtil.setFormLayoutData(oneWeek, oneDay, 10, SWT.NONE, oneDay, 0,
 				SWT.LEFT).width = 80;
@@ -423,16 +463,16 @@ public class MainWindow {
 		SWTUtil.setFormLayoutData(oneYear, oneMonth, 10, SWT.NONE, oneMonth, 0,
 				SWT.LEFT).width = 80;
 
-		SWTUtil.setFormLayoutDataRight(total, table, 10, SWT.NONE, table, -20,
+		SWTUtil.setFormLayoutDataRight(total, bsTable, 10, SWT.NONE, bsTable, -20,
 				SWT.RIGHT).width = 80;
-		SWTUtil.setFormLayoutDataRight(label, table, 10, SWT.NONE, total, -100,
+		SWTUtil.setFormLayoutDataRight(label, bsTable, 10, SWT.NONE, total, -100,
 				SWT.RIGHT);
 
 		return composite;
 	}
 
 	private void createTableViewer() {
-		bsTableViewer = new TableViewer(table);
+		bsTableViewer = new TableViewer(bsTable);
 		bsTableViewer.setUseHashlookup(true);
 
 		bsTableViewer.setColumnProperties(Column.stringValues());
@@ -468,33 +508,33 @@ public class MainWindow {
 		final CellEditor[] editors = new CellEditor[Column.values().length];
 
 		// editors[0] = new CheckboxCellEditor(table);
-		CalendarCellEditor dateEditor = new CalendarCellEditor(table, SWT.NULL);
+		CalendarCellEditor dateEditor = new CalendarCellEditor(bsTable, SWT.NULL);
 		editors[Column.DATE.ordinal()] = dateEditor;
 
 		CategoryService service = new CategoryService();
 		List<Category> categoryList = service.findAll();
 		bsTableViewer.setData("categoryList", categoryList);
-		CategoryComboCellEditor e = new CategoryComboCellEditor(table);
+		CategoryComboCellEditor e = new CategoryComboCellEditor(bsTable);
 		e.setItems(categoryList);
 		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
 		editors[Column.CATEGORY.ordinal()] = e;
 
-		TextCellEditor debitEditor = new TextCellEditor(table);
+		TextCellEditor debitEditor = new TextCellEditor(bsTable);
 		((Text) debitEditor.getControl()).setTextLimit(9);
 		((Text) debitEditor.getControl())
 				.addVerifyListener(new NumberVerifyListener());
 		editors[Column.DEBIT.ordinal()] = debitEditor;
 
-		TextCellEditor creditEditor = new TextCellEditor(table);
+		TextCellEditor creditEditor = new TextCellEditor(bsTable);
 		((Text) creditEditor.getControl()).setTextLimit(9);
 		((Text) creditEditor.getControl())
 				.addVerifyListener(new NumberVerifyListener());
 		editors[Column.CREDIT.ordinal()] = creditEditor;
 
 		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(
-				table);
+				bsTable);
 
-		table.addSelectionListener(new SelectionAdapter() {
+		bsTable.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Object obj = ((StructuredSelection) bsTableViewer
@@ -517,8 +557,11 @@ public class MainWindow {
 		// tableViewer.setSorter(new ExampleTaskSorter(
 		// ExampleTaskSorter.DESCRIPTION));
 
+		bslp = new BalanceSheetLabelProvider(bsTableViewer);
+		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
+
 		bsTableViewer.setContentProvider(bs);
-		bsTableViewer.setLabelProvider(new BalanceSheetLabelProvider(table));
+		bsTableViewer.setLabelProvider(bslp);
 		bsTableViewer.setInput(bs);
 
 		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
