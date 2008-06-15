@@ -19,6 +19,7 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
@@ -34,6 +35,8 @@ import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 
 public class AccountList {
+	
+	final static Logger LOG = Logger.getLogger( AccountList.class );
 	
 	private AccountListProvider prov;
 	
@@ -91,6 +94,8 @@ public class AccountList {
 		TableTreeItem i;
 		int balanceSum = 0;
 		for ( Account a : this.prov.getAccounts() ) {
+			LOG.debug( String.format( "updating: %s %d", a.getName(), a.getCurrentBalance() ) );
+			
 			i = items.get(a.getId());
 			if ( i == null ) {
 				i = new TableTreeItem(this.tableTree.getItem(0), SWT.NONE);

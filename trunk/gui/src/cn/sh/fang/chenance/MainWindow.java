@@ -25,11 +25,14 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -77,6 +80,7 @@ import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
+import cn.sh.fang.chenance.listener.AbstractDataAdapter;
 import cn.sh.fang.chenance.listener.AccountEditFormListener;
 import cn.sh.fang.chenance.listener.AccountListListener;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
@@ -124,6 +128,10 @@ public class MainWindow {
 	private Display display;
 
 	private BalanceSheetLabelProvider bslp;
+
+	protected Calendar selectedCal = Calendar.getInstance();
+
+	private Label currentBalance;
 
 	static {
 		// set factory here due to a bug in max os x
@@ -329,9 +337,8 @@ public class MainWindow {
 		listDate.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				DateTime dt = (DateTime) e.widget;
-				Calendar cal = Calendar.getInstance();
-				cal.set(dt.getYear(), dt.getMonth(), dt.getDay());
-				bs.setDate( cal.getTime() );
+				selectedCal.set(dt.getYear(), dt.getMonth(), dt.getDay());
+				bs.setDate( selectedCal.getTime() );
 				bsTableViewer.refresh();
 			}
 		});
@@ -348,6 +355,8 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.DD );
+				bs.setDate( selectedCal.getTime() );
+				bsTableViewer.refresh();
 			}
 		});
 		Button oneWeek = new Button(composite, SWT.RADIO);
@@ -357,6 +366,11 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
+				Calendar bgn = (Calendar) selectedCal.clone();
+				Calendar end = (Calendar) selectedCal.clone();
+				bgn.add( Calendar.DATE, -7 );
+				bs.setDate( bgn.getTime(), end.getTime() );
+				bsTableViewer.refresh();
 			}
 		});
 		Button oneMonth = new Button(composite, SWT.RADIO);
@@ -366,6 +380,12 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
+				Calendar bgn = (Calendar) selectedCal.clone();
+				bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
+				Calendar end = (Calendar) bgn.clone();
+				end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
+				bs.setDate( bgn.getTime(), end.getTime() );
+				bsTableViewer.refresh();
 			}
 		});
 		Button oneYear = new Button(composite, SWT.RADIO);
@@ -375,6 +395,12 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
+				Calendar bgn = (Calendar) selectedCal.clone();
+				bgn.set( Calendar.MONTH, bgn.getActualMinimum(Calendar.MONTH) );
+				Calendar end = (Calendar) bgn.clone();
+				end.set( Calendar.MONTH, bgn.getActualMaximum(Calendar.MONTH) );
+				bs.setDate( bgn.getTime(), end.getTime() );
+				bsTableViewer.refresh();
 			}
 		});
 
@@ -423,6 +449,7 @@ public class MainWindow {
 				super.mouseDoubleClick(e);
 			}
 		});
+		
 		// default account selection
 		// TODO select account last saved
 		bsAccountList.addSelectionListener(
@@ -430,8 +457,8 @@ public class MainWindow {
 		bsAccountList.selectAccount(0);
 
 		// 残高ラベル
-		Label total = new Label(composite, SWT.RIGHT);
-		total.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
+		currentBalance = new Label(composite, SWT.RIGHT);
+		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
 		Label label = new Label(composite, SWT.NONE);
 		setText( label, "Balance:" );
 
@@ -463,9 +490,9 @@ public class MainWindow {
 		SWTUtil.setFormLayoutData(oneYear, oneMonth, 10, SWT.NONE, oneMonth, 0,
 				SWT.LEFT).width = 80;
 
-		SWTUtil.setFormLayoutDataRight(total, bsTable, 10, SWT.NONE, bsTable, -20,
+		SWTUtil.setFormLayoutDataRight(currentBalance, bsTable, 10, SWT.NONE, bsTable, -20,
 				SWT.RIGHT).width = 80;
-		SWTUtil.setFormLayoutDataRight(label, bsTable, 10, SWT.NONE, total, -100,
+		SWTUtil.setFormLayoutDataRight(label, bsTable, 10, SWT.NONE, currentBalance, -100,
 				SWT.RIGHT);
 
 		return composite;
@@ -552,10 +579,26 @@ public class MainWindow {
 		bsTableViewer.setCellEditors(editors);
 		// Set the cell modifier for the viewer
 		bsTableViewer.setCellModifier(new BalanceSheetCellModifier(
-				bsTableViewer));
+				bs, bsTableViewer, accountListProv));
 		// Set the default sorter for the viewer
 		// tableViewer.setSorter(new ExampleTaskSorter(
 		// ExampleTaskSorter.DESCRIPTION));
+
+		ICellEditorListener propChange = new ICellEditorListener(){
+			public void applyEditorValue() {
+			}
+
+			public void cancelEditor() {
+			}
+
+			public void editorValueChanged(boolean arg0, boolean arg1) {
+			}
+		};
+		for ( CellEditor ed : editors ) {
+			if ( ed != null ) {
+				ed.addListener(propChange);
+			}
+		}
 
 		bslp = new BalanceSheetLabelProvider(bsTableViewer);
 		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
@@ -575,7 +618,8 @@ public class MainWindow {
 		// 概要ツリー
 		AccountList accountList = new AccountList(this.accountListProv);
 		final TableTree tableTree = accountList.createControl(composite);
-
+		accountList.selectAccount(0);
+		
 		// 追加ボタン
 		Button btnAdd = new Button(composite, SWT.PUSH);
 		btnAdd.setText("＋");
@@ -592,6 +636,12 @@ public class MainWindow {
 		accountListProv.addChangeListener(new AccountListListener(tableTree));
 		accountListProv.addChangeListener(new BsAccountListListener(
 				bsAccountList));
+		accountListProv.addChangeListener(new AbstractDataAdapter<Account>(){
+			@Override
+			public void onUpdated(Account item) {
+				currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
+			}
+		});
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
