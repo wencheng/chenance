@@ -62,7 +62,7 @@ public class TransactionDetailDialog extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		this.parent = parent;
 		
-		grp1 = new Group( parent, SWT.NONE );
+		grp1 = new Group( this.parent, SWT.NONE );
 		setText( grp1, "Repeat" );
 		this.chkRepeat = new Button(grp1, SWT.CHECK);
 		setText( chkRepeat, "Repeatable" );

@@ -15,15 +15,12 @@
  */
 package cn.sh.fang.chenance;
 
-import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
@@ -34,7 +31,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.listener.IDataAdapter;
 import cn.sh.fang.chenance.listener.AbstractDataAdapter;
 
 // 編集欄

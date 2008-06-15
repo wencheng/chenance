@@ -35,8 +35,6 @@ public class Splash implements MouseListener, MouseMoveListener {
 
 	private Shell shell;
 
-	private Thread t;
-
 	private Boolean isRunning = false;
 
 	private boolean isMoving;
@@ -111,15 +109,13 @@ public class Splash implements MouseListener, MouseMoveListener {
 		
 		shell.setVisible(true);
 
-//		t = new Thread( runnable );
-//		t.start();
-//		while ( isRunning && t.isAlive() ) {
-//			if ( !display.readAndDispatch() ) {
-//				display.sleep();
-//			}
-//		}
-		
-		runnable.run();
+//		runnable.run();
+		display.asyncExec( runnable );
+		while ( isRunning ) {
+			if ( !display.readAndDispatch() ) {
+				display.sleep();
+			}
+		}
 		
 		shell.setVisible( false );
 
