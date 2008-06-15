@@ -16,17 +16,16 @@
 package cn.sh.fang.chenance.provider;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Transaction;
-import cn.sh.fang.chenance.listener.IDataAdapter;
 
 /**
  * Class that plays the role of the domain model in the TableViewerExample In
@@ -52,6 +51,8 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	private Account account = null;
 
 	private List<Transaction> transactions = new ArrayList<Transaction>();
+
+	private Date date = Calendar.getInstance().getTime();
 	
 	static final Transaction EMPTY = new Transaction();
 
@@ -72,9 +73,16 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	
 	public void setAccount(Account account) {
 		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(account);
+		this.transactions = ts.find(date, account);
 		this.transactions.add(EMPTY);
 		this.account = account;
+	}
+	
+	public void setDate(Date date) {
+		this.date  = date;
+		TransactionService ts = new TransactionService();
+		this.transactions = ts.find(date, account);
+		this.transactions.add(EMPTY);
 	}
 
 	/**
@@ -110,6 +118,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		t.setDate(new Date());
 		t.setDebit(0);
 		t.setCredit(0);
+		t.setBalance(0);
 		t.setAccount(this.account);
 		t.setIsApproved(true);
 		t.setUpdater("USER");

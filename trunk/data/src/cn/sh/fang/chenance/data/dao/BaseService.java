@@ -82,14 +82,16 @@ public abstract class BaseService {
 			e.printStackTrace();
 		}
 
-		String basedir = "/cn/sh/fang/chenance/data/sql/";
+		String basedir = "/sql/";
 		String[] files = new String[] { "db.sql", "common-columns/Account.sql",
-				"common-columns/Asset.sql", "common-columns/Category.sql",
-				"common-columns/Investment.sql",
-				"common-columns/ReceiptItem.sql",
+				"common-columns/Category.sql",
 				"common-columns/RepeatPayment.sql",
+				"common-columns/Transaction.sql",
+				"common-columns/Asset.sql", 
+				"common-columns/Investment.sql",
+				"common-columns/Breakdown.sql",
 				"common-columns/Loan.sql",
-				"common-columns/Transaction.sql", };
+				 };
 		try {
 			String sql;
 			for (String f : files) {

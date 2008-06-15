@@ -42,11 +42,7 @@ public class BsAccountListListener implements IDataAdapter<Account> {
 	}
 
 	public void onAdded(Account item) {
-		TableTreeItem parent = (TableTreeItem) this.list.getItem(0);
-		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
-
-		ch.setText(item.getName());
-		ch.setData(item);
+		this.list.addAccount( item );
 	}
 
 	public void onRemoved(Account item) {

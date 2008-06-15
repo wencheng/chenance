@@ -50,6 +50,9 @@ public class Transaction extends BaseEntity {
     @Column(name="credit")
     private Integer credit;
 
+    @Column(name="balance")
+    private Integer balance;
+
     @Column(name="is_approved")
     private Boolean isApproved;
 
@@ -124,5 +127,13 @@ public class Transaction extends BaseEntity {
     public void setIsApproved(Boolean isApproved) {
         this.isApproved = isApproved;
     }
-    
+
+	public Integer getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Integer balance) {
+		this.balance = balance;
+	}
+
 }

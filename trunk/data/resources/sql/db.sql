@@ -71,10 +71,11 @@ CREATE TABLE t_repeat_payment (
 CREATE TABLE t_transaction (
   id IDENTITY NOT NULL PRIMARY KEY,
   account_id BIGINT NOT NULL,
-  _date DATE NOT NULL,
+  _date TIMESTAMP NOT NULL,
   category_id BIGINT NOT NULL,
   debit INT NOT NULL,
   credit INT NOT NULL,
+  balance INT NOT NULL,
   is_approved BOOLEAN DEFAULT true NOT NULL,
   repeat_payment_id BIGINT,
   from_or_to BIGINT,

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.sh.fang.chenance.util;
+package cn.sh.fang.chenance.util.swt;
 
 import org.aspencloud.widgets.ImageCombo;
 import org.eclipse.swt.widgets.Composite;

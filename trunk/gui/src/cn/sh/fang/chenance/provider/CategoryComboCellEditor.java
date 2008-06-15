@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.TableItem;
 import cn.sh.fang.chenance.MainWindow;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.chenance.util.CCombo;
+import cn.sh.fang.chenance.util.swt.CCombo;
 
 /**
  * <p>

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
@@ -103,14 +104,10 @@ public class AccountList {
 		sum.setText(1, balanceSum + "");
 	}
 	
-	public TableTreeItem getItem(int i) {
-		return this.tableTree.getItem(i);
+	public void addSelectionListener(SelectionListener arg0) {
+		tableTree.addSelectionListener(arg0);
 	}
 
-	public TableTree getTableTree() {
-		return tableTree;
-	}
-	
 	/**
 	 * 
 	 * @param i index in the tree
@@ -124,4 +121,20 @@ public class AccountList {
 		this.tableTree.notifyListeners(SWT.Selection, new Event());
 	}
 	
+	public Account getSelectedAccount() {
+		if ( this.tableTree.getSelection().length > 0 ) {
+			return (Account) this.tableTree.getSelection()[0].getData();
+		} else {
+			return null;
+		}
+	}
+
+	public void addAccount(Account item) {
+		TableTreeItem parent = (TableTreeItem) this.tableTree.getItem(0);
+		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
+
+		ch.setText(item.getName());
+		ch.setData(item);
+	}
+
 }
