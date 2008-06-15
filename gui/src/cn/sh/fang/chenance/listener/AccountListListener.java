@@ -91,7 +91,9 @@ public class AccountListListener implements IDataAdapter<Account> {
 	}
 
 	public void onUpdated(Account item) {
-		tree.getSelection()[0].setText(item.getName());
+		if ( tree.getSelection().length > 0 ) {
+			tree.getSelection()[0].setText(item.getName());
+		}
 	}
 
 	public void onLoaded(Account item) {

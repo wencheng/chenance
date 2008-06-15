@@ -15,6 +15,7 @@
  */
 package cn.sh.fang.chenance.provider;
 
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -34,10 +35,16 @@ public class BalanceSheetCellModifier implements ICellModifier {
 
 	TableViewer viewer;
 	
-	TransactionService ts = new TransactionService(); 
+	TransactionService ts = new TransactionService();
 
-	public BalanceSheetCellModifier(TableViewer bs) {
+	private BalanceSheetContentProvider bs;
+
+	private AccountListProvider accountListProv; 
+
+	public BalanceSheetCellModifier(BalanceSheetContentProvider bs2, TableViewer bs, AccountListProvider accountListProv) {
 		this.viewer = bs;
+		this.bs = bs2;
+		this.accountListProv = accountListProv;
 	}
 
 	public boolean canModify(Object o, String prop) {
@@ -54,9 +61,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 
 		Object result = null;
 		Transaction t = (Transaction) element;
-//		LOG.debug(t);
 		LOG.debug(col);
-//		LOG.debug(t.getDebit());
 
 		switch (col) {
 		//case Column.DATE:
@@ -123,6 +128,10 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		}
 
 		ts.save(t);
-		viewer.update(t, null);
+		viewer.refresh();
+//		viewer.update(t, null);
+		
+		bs.itemChanged( t );
+		accountListProv.itemChanged( t.getAccount() );
 	}
 }

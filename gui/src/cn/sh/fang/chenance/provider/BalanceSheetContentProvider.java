@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -34,9 +35,11 @@ import cn.sh.fang.chenance.data.entity.Transaction;
  */
 public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		implements IStructuredContentProvider {
+	
+	static final Logger LOG = Logger.getLogger( BalanceSheetContentProvider.class );
 
 	public enum Column {
-		DATE, CATEGORY, DEBIT, CREDIT, BALANCE, DETAIL, LAST;
+		DATE, CATEGORY, DEBIT, CREDIT, BALANCE, DETAIL;
 
 		public static String[] stringValues() {
 			Column[] v = Column.values();
@@ -52,8 +55,10 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 
 	private List<Transaction> transactions = new ArrayList<Transaction>();
 
-	private Date date = Calendar.getInstance().getTime();
-	
+	private Date bDate = Calendar.getInstance().getTime();
+
+	private Date eDate;
+
 	static final Transaction EMPTY = new Transaction();
 
 	/**
@@ -73,15 +78,28 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	
 	public void setAccount(Account account) {
 		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(date, account);
+		this.transactions = ts.find(account, bDate);
 		this.transactions.add(EMPTY);
 		this.account = account;
 	}
 	
-	public void setDate(Date date) {
-		this.date  = date;
+	public void setDate(Date bDate) {
+		this.bDate = bDate;
+		this.eDate = bDate;
 		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(date, account);
+		this.transactions = ts.find(account, bDate, bDate);
+		this.transactions.add(EMPTY);
+	}
+	
+	public void setDate(Date bDate, Date eDate) {
+		this.bDate = bDate;
+		this.eDate = eDate;
+		
+		LOG.debug( bDate );
+		LOG.debug( eDate );
+		
+		TransactionService ts = new TransactionService();
+		this.transactions = ts.find(account, bDate, eDate);
 		this.transactions.add(EMPTY);
 	}
 
@@ -122,7 +140,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		t.setAccount(this.account);
 		t.setIsApproved(true);
 		t.setUpdater("USER");
-		this.transactions.add(t);
+		this.transactions.add(this.transactions.size()-1, t);
 		return t;
 	}
 

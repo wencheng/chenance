@@ -36,25 +36,24 @@ public class TransactionService extends BaseService {
     }
 
     public void save(Transaction entity) {
-    	int diff;
-        if (entity.getId() == null) {
+        int diff = updateBalance( entity );
+        Account a = entity.getAccount();
+        a.setCurrentBalance( a.getCurrentBalance() + diff );
+
+    	if (entity.getId() == null) {
             // new
             entity.setInsertDatetime(new Date());
-            diff = calcBalance(entity);
+            calcBalance(entity);
             em.persist(entity);
         } else {
             // update
-    		diff = calcOldBalance(entity);
+    		calcBalance(entity);
     		LOG.debug( "balance: " + entity.getBalance() );
             em.merge(entity);
         }
-        
-        updateBalance( entity, diff );
-        Account a = entity.getAccount();
-        a.setCurrentBalance( a.getCurrentBalance() + diff );
     }
 
-    private int calcBalance(Transaction t) {
+    private void calcBalance(Transaction t) {
     	Query query;
     	query = em.createNativeQuery( "SELECT balance FROM t_transaction WHERE account_id = ? AND _date < ? AND is_deleted = 0 ORDER BY _date DESC" );
     	query.setParameter(1, t.getAccount().getId());
@@ -71,8 +70,6 @@ public class TransactionService extends BaseService {
     	
     	i += t.getCredit() - t.getDebit();
     	t.setBalance( i );
-
-    	return t.getCredit() - t.getDebit();
     }
 
     /**
@@ -80,29 +77,66 @@ public class TransactionService extends BaseService {
      * @param t
      * @return difference between before and after
      */
-    private int calcOldBalance(Transaction t) {
-    	if ( t.getId() == null ) {
-    		throw new IllegalArgumentException();
+    private int updateBalance(Transaction t) {
+    	int curr = t.getCredit() - t.getDebit();
+		int diff = curr;
+
+    	if ( t.getId() != null ) {
+    		Query query
+    			= em.createNativeQuery( "SELECT debit, credit, _date FROM t_transaction WHERE id = ?" )
+    			.setParameter(1, t.getId());
+    		Object[] oldTrans = (Object[]) query.getSingleResult();
+
+    		Date olddate = (Date) oldTrans[2];
+    		int oldbalance = (Integer)oldTrans[1] - (Integer)oldTrans[0];
+    		diff = curr - oldbalance;
+
+			LOG.debug( t.getDate() );
+			LOG.debug( olddate );
+
+			if ( t.getDate().compareTo(olddate) < 0 ) {
+	    		// move to earlier
+	    		// add with current balance
+	    		updateBalance(t.getAccount().getId(), t.getDate(), olddate, curr );
+	    	} else if ( t.getDate().compareTo(olddate) > 0 ) {
+	    		// move to later
+	    		// minus old balance
+	    		updateBalance(t.getAccount().getId(), olddate, t.getDate(), oldbalance );
+	    	}
     	}
-    	
-    	Query query;
 
-    	query = em.createNativeQuery( "SELECT debit, credit FROM t_transaction WHERE id = ?" )
-    		.setParameter(1, t.getId());
-    	Object[] old = (Object[]) query.getSingleResult();
-    	LOG.debug( "old: " + old[1].getClass() );
+   		// update with diff
+    	updateBalance(t.getAccount().getId(), t.getDate(), diff );
 
-    	int i = t.getCredit() - t.getDebit() - ((Integer)old[1] - (Integer)old[0]);
-    	t.setBalance( t.getBalance() + i );
-    	return i;
+    	t.setBalance( t.getBalance() + diff );
+
+    	return diff;
     }
 
-    public void updateBalance(Transaction a, int diff) {
+    /**
+     * _date > bdate AND _date < edate
+     * 
+     * @param accountId
+     * @param bdate
+     * @param edate
+     * @param diff
+     */
+    public void updateBalance(Integer accountId, Date bdate, Date edate, int diff) {
+    	Query query;
+    	query = em.createQuery( "UPDATE Transaction SET balance = balance + ? WHERE account.id = ? AND _date > ? AND _date < ? AND is_deleted = 0" );
+   		query.setParameter( 1, diff );
+    	query.setParameter(2, accountId);
+    	query.setParameter(3, bdate);
+    	query.setParameter(4, edate);
+    	query.executeUpdate();
+    }
+
+    public void updateBalance(Integer accountId, Date date, int diff) {
     	Query query;
     	query = em.createQuery( "UPDATE Transaction SET balance = balance + ? WHERE account.id = ? AND _date > ? AND is_deleted = 0" );
    		query.setParameter( 1, diff );
-    	query.setParameter(2, a.getAccount().getId());
-    	query.setParameter(3, a.getDate());
+    	query.setParameter(2, accountId);
+    	query.setParameter(3, date);
     	query.executeUpdate();
     }
 
@@ -120,16 +154,25 @@ public class TransactionService extends BaseService {
         return em.find(Transaction.class, id);
     }
     
-	public List<Transaction> find(Date date, Account account) {
-        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0");
+	public List<Transaction> find(Account account, Date date) {
+        return find( account, date, date );
+	}
+
+	public List<Transaction> find(Account account, Date bDate, Date eDate) {
+        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0 ORDER BY _date");
         query.setParameter(1, account.getId());
         Calendar cal = Calendar.getInstance();
-        cal.setTime( date );
+        cal.setTime( bDate );
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         query.setParameter(2, cal.getTime() );
+        cal.setTime( eDate );
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         cal.add(Calendar.DATE, 1);
         query.setParameter(3, cal.getTime() );
         return query.getResultList();

@@ -32,7 +32,7 @@ public class BalanceSheetTransactionListener implements
 	public BalanceSheetTransactionListener(TableViewer tableViewer) {
 		this.viewer = tableViewer;
 	}
-	
+
 	public void onAdded(Transaction t) {
 		// TODO detail buttons would not be updated, fix it.
 		this.viewer.insert(t, this.viewer.getTable().getItemCount()-1);
