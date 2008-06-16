@@ -60,7 +60,7 @@ CREATE TABLE t_repeat_payment (
   amount INT NOT NULL,
   period INT NOT NULL,
   period_unit INT NOT NULL,
-  auto_approve BOOLEAN DEFAULT false NOT NULL,
+  auto_confirm BOOLEAN DEFAULT false NOT NULL,
   FOREIGN KEY (category_id)
     REFERENCES t_category (id)
 );
@@ -73,10 +73,11 @@ CREATE TABLE t_transaction (
   account_id BIGINT NOT NULL,
   _date TIMESTAMP NOT NULL,
   category_id BIGINT NOT NULL,
+  budget INT,
   debit INT NOT NULL,
   credit INT NOT NULL,
   balance INT NOT NULL,
-  is_approved BOOLEAN DEFAULT true NOT NULL,
+  is_confirmed BOOLEAN DEFAULT true NOT NULL,
   repeat_payment_id BIGINT,
   from_or_to BIGINT,
   FOREIGN KEY (category_id)

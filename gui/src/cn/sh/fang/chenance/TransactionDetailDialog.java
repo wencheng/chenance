@@ -17,17 +17,26 @@ package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
+import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import cn.sh.fang.chenance.data.dao.RepeatPaymentService;
 import cn.sh.fang.chenance.data.entity.RepeatPayment;
@@ -37,11 +46,13 @@ public class TransactionDetailDialog extends Dialog {
 	
 	private Transaction t;
 	private Button chkRepeat;
-	private Button chkAutoApprove;
+	private Button chkAutoConfirm;
 	private Button btnAdd;
-	private Group grp1;
+	private Label lblRepeat;
 	private Composite parent;
-	private Group grp2;
+	private Label lblBreakdown;
+	private List<ComboText> breakdowns = new ArrayList<ComboText>();
+	private Button chkConfirmed;
 
 	public TransactionDetailDialog(Shell shell, Transaction t) {
 		super(shell);
@@ -60,54 +71,69 @@ public class TransactionDetailDialog extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		this.parent = parent;
-		
-		grp1 = new Group( this.parent, SWT.NONE );
-		setText( grp1, "Repeat" );
-		this.chkRepeat = new Button(grp1, SWT.CHECK);
-		setText( chkRepeat, "Repeatable" );
-		this.chkAutoApprove = new Button(grp1, SWT.CHECK);
-		setText( chkAutoApprove, "Auto Approval" );
+		this.parent = new Composite( parent, SWT.NONE );
 
-		grp2 = new Group( parent, SWT.NONE );
-		setText( grp2, "Breakdown" );
-		this.btnAdd = new Button(grp2, SWT.PUSH);
+		this.chkConfirmed = new Button( this.parent, SWT.CHECK);
+		setText( chkConfirmed, "Confirmed" );
+
+		lblRepeat = new Label( this.parent, SWT.NONE );
+		setText( lblRepeat, "Repeatability:" );
+		this.chkRepeat = new Button( this.parent, SWT.CHECK);
+		setText( chkRepeat, "Repeatable" );
+		this.chkAutoConfirm = new Button( this.parent, SWT.CHECK);
+		setText( chkAutoConfirm, "Auto Confirm" );
+
+		lblBreakdown = new Label( this.parent, SWT.NONE );
+		setText( lblBreakdown, "Breakdown:" );
+		this.btnAdd = new Button( this.parent, SWT.PUSH);
 		setText( btnAdd, "Add" );
 
 		internalLayout();
 		setDefaultValues();
 		addListeners();
 
-		return super.createDialogArea(parent);
+		return parent;
+//		return super.createDialogArea(parent);
 	}
 
 	private void internalLayout() {
-//		FormLayout formLayout = new FormLayout();
-//		parent.setLayout(formLayout);
-//		formLayout.marginHeight = 10;
-//		formLayout.marginWidth = 10;
-//		
-//		setFormLayoutData( grp1, 0, 20, 0, 20 );
-//		setFormLayoutData( grp2, grp1, 0, SWT.NONE, grp1, 0, SWT.LEFT );
-		
+		FormLayout formLayout = new FormLayout();
+		parent.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+
 		// repeat
-		grp1.setLayout( new FormLayout() );
-		setFormLayoutData( chkRepeat, 0, 20, 0, 20 );
-		setFormLayoutData( chkAutoApprove, chkRepeat, 20, SWT.NONE, chkRepeat, 0,
-				SWT.LEFT);
+		setFormLayoutData( lblRepeat, 0, 20, 0, 20 );
+		setFormLayoutData( chkRepeat, lblRepeat, -2,
+				SWT.TOP, lblRepeat, 10, SWT.NONE );
+		setFormLayoutData( chkAutoConfirm, chkRepeat, 10, SWT.NONE, lblRepeat, 10, SWT.NONE );
+		setFormLayoutData( chkConfirmed, chkAutoConfirm, 10, SWT.NONE, lblRepeat, 10, SWT.NONE );
+
+		// separator
+		Label sep = new Label( this.parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BORDER );
+		FormData fd = new FormData();
+		sep.setLayoutData( fd );
+		fd.top = new FormAttachment( chkConfirmed, 20 );
+		fd.left = new FormAttachment( 0, 0);
+		fd.right= new FormAttachment( 100, 0 );
 
 		// breakdown
-		grp2.setLayout( new FormLayout() );
-		setFormLayoutData( btnAdd, 0, 20, 0, 20 );
+		setFormLayoutDataRight( lblBreakdown, sep, 20, SWT.NONE, lblRepeat, 0, SWT.RIGHT );
+		setFormLayoutData( btnAdd, lblBreakdown, -(btnAdd.getSize().y-lblBreakdown.getSize().y)/2,
+				SWT.TOP, lblBreakdown, 10, SWT.NONE ).width = 80;
 	}
 	
 	private void setDefaultValues() {
+		chkConfirmed.setSelection( t.getIsConfirmed() );
+		
 		if ( t.getRepeatPayment() != null ) {
 			chkRepeat.setSelection( true );
-			chkAutoApprove.setSelection( t.getRepeatPayment().getAutoApprove() );
+			chkAutoConfirm.setSelection( t.getRepeatPayment().getAutoConfirm() );
+			chkConfirmed.setEnabled( chkRepeat.getSelection() );
 		} else {
 			chkRepeat.setSelection( false );
-			chkAutoApprove.setEnabled( false );
+			chkAutoConfirm.setEnabled( false );
+			chkConfirmed.setEnabled( false );
 		}
 	}
 
@@ -116,9 +142,67 @@ public class TransactionDetailDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				super.widgetSelected(arg0);
-				chkAutoApprove.setEnabled( chkRepeat.getSelection() );
+				chkAutoConfirm.setEnabled( chkRepeat.getSelection() );
+				chkConfirmed.setEnabled( chkRepeat.getSelection() );
 			}
 		});
+
+		btnAdd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				super.widgetSelected(arg0);
+				ComboText ct = new ComboText();
+				ct.combo = new Combo( parent, SWT.BORDER );
+				ct.text = new Text( parent, SWT.BORDER );
+				ct.btn = new Button( parent, SWT.BORDER );
+				ct.btn.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						ComboText c = (ComboText) e.widget.getData();
+						c.combo.dispose();
+						c.text.dispose();
+						breakdowns.remove(c);
+						e.widget.dispose();
+						reLayout();
+					}
+				});
+				ct.btn.setData(ct);
+				if ( breakdowns.size() <= 0 ) {
+					setFormLayoutData( ct.combo, btnAdd, 10, SWT.NONE, btnAdd, 0, SWT.LEFT ).width = 100;
+					setFormLayoutData( ct.text, btnAdd, 10, SWT.NONE, ct.combo, 10, SWT.NONE );
+					setFormLayoutData( ct.btn, btnAdd, 10, SWT.NONE, ct.text, 10, SWT.NONE );
+				} else {
+					ComboText last = breakdowns.get( breakdowns.size()-1 );
+					setFormLayoutData( ct.combo, last.combo, 10, SWT.NONE, last.combo, 0, SWT.LEFT ).width = 100;
+					setFormLayoutData( ct.text, ct.combo, 0, SWT.TOP, last.text, 0, SWT.LEFT );
+					setFormLayoutData( ct.btn, ct.combo, 0, SWT.TOP, ct.text, 10, SWT.NONE );
+				}
+				parent.pack();
+//				parent.layout();
+				TransactionDetailDialog.this.getShell().pack();
+				breakdowns.add( ct );
+			}
+		});
+	}
+	
+	protected void reLayout() {
+		boolean isFirst = true;
+		ComboText last = null;
+		for ( ComboText ct : breakdowns ) {
+			if ( isFirst ) {
+				setFormLayoutData( ct.combo, btnAdd, 10, SWT.NONE, btnAdd, 0, SWT.LEFT ).width = 100;
+				setFormLayoutData( ct.text, btnAdd, 10, SWT.NONE, ct.combo, 10, SWT.NONE );
+				setFormLayoutData( ct.btn, btnAdd, 10, SWT.NONE, ct.text, 10, SWT.NONE );
+				isFirst = false;
+			} else {
+				setFormLayoutData( ct.combo, last.combo, 10, SWT.NONE, last.combo, 0, SWT.LEFT ).width = 100;
+				setFormLayoutData( ct.text, ct.combo, 0, SWT.TOP, last.text, 0, SWT.LEFT );
+				setFormLayoutData( ct.btn, ct.combo, 0, SWT.TOP, ct.text, 10, SWT.NONE );
+			}
+			last = ct;
+		}
+		parent.pack();
+		TransactionDetailDialog.this.getShell().pack();
 	}
 
 	@Override
@@ -133,7 +217,7 @@ public class TransactionDetailDialog extends Dialog {
 			r.setPeriodUnit( 0 );
 			r.setUpdater( "USER" );
 			r.setAmount( t.getDebit() );
-			r.setAutoApprove( chkAutoApprove.getSelection() );
+			r.setAutoConfirm( chkAutoConfirm.getSelection() );
 			new RepeatPaymentService().save( r );
 		}
 		
@@ -142,6 +226,27 @@ public class TransactionDetailDialog extends Dialog {
 
 	public Transaction getTransaction() {
 		return this.t;
+	}
+	
+	class ComboText {
+		Combo combo;
+		Text text;
+		Button btn;
+	}
+	
+	public final static void main(String[] args) {
+		Display display = Display.getDefault();
+		Shell shell = new Shell(display);
+
+		Transaction t =  new Transaction();
+		t.setIsConfirmed( true );
+		
+		TransactionDetailDialog diag = new TransactionDetailDialog(shell, t);
+		try {
+			diag.open();
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
 	}
 
 }

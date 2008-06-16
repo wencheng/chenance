@@ -138,7 +138,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		t.setCredit(0);
 		t.setBalance(0);
 		t.setAccount(this.account);
-		t.setIsApproved(true);
+		t.setIsConfirmed(true);
 		t.setUpdater("USER");
 		this.transactions.add(this.transactions.size()-1, t);
 		return t;
