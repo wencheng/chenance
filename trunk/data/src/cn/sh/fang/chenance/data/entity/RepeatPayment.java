@@ -38,15 +38,15 @@ public class RepeatPayment extends BaseEntity {
     @Column(name="period_unit")
     private Integer periodUnit;
 
-    @Column(name="auto_approve")
-    private Boolean autoApprove;
+    @Column(name="auto_confirm")
+    private Boolean autoConfirm;
 
-    public Boolean getAutoApprove() {
-        return this.autoApprove;
+    public Boolean getAutoConfirm() {
+        return this.autoConfirm;
     }
     
-    public void setAutoApprove(Boolean autoApprove) {
-        this.autoApprove = autoApprove;
+    public void setAutoConfirm(Boolean autoApprove) {
+        this.autoConfirm = autoApprove;
     }
     
     public Integer getPeriodUnit() {

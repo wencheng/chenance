@@ -44,6 +44,9 @@ public class Transaction extends BaseEntity {
     @Column(name="_date")
     private java.util.Date Date;
 
+    @Column(name="budget")
+    private Integer budget;
+
     @Column(name="debit")
     private Integer debit;
 
@@ -53,8 +56,8 @@ public class Transaction extends BaseEntity {
     @Column(name="balance")
     private Integer balance;
 
-    @Column(name="is_approved")
-    private Boolean isApproved;
+    @Column(name="is_confirmed")
+    private Boolean isConfirmed;
 
     public java.util.Date getDate() {
         return this.Date;
@@ -120,12 +123,12 @@ public class Transaction extends BaseEntity {
         this.account = account;
     }
     
-    public Boolean getIsApproved() {
-        return this.isApproved;
+    public Boolean getIsConfirmed() {
+        return this.isConfirmed;
     }
     
-    public void setIsApproved(Boolean isApproved) {
-        this.isApproved = isApproved;
+    public void setIsConfirmed(Boolean isApproved) {
+        this.isConfirmed = isApproved;
     }
 
 	public Integer getBalance() {
@@ -134,6 +137,14 @@ public class Transaction extends BaseEntity {
 
 	public void setBalance(Integer balance) {
 		this.balance = balance;
+	}
+
+	public Integer getBudget() {
+		return budget;
+	}
+
+	public void setBudget(Integer budget) {
+		this.budget = budget;
 	}
 
 }
