@@ -36,12 +36,17 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.javabuilders.clazz.databinding.Binder;
+
+import cn.sh.fang.chenance.data.entity.Account;
 
 public class AccountEditForm {
 
+	private Account account = new Account();
+	
 	Group grp;
 	Label lblName;
-	public Text name;
+	public Text tName;
 	Label lblNamePh;
 	public Text namePh;
 	public Button btnSave;
@@ -70,6 +75,15 @@ public class AccountEditForm {
 	public AccountEditForm() {
 	}
 
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+//		this.account = account;
+		this.account.setName( account.getName() );
+	}
+
 	public Control createControl(Composite parent) {
 		grp = new Group(parent, SWT.NONE);
 		setText(grp, "Account Info");
@@ -78,7 +92,12 @@ public class AccountEditForm {
 		lblName = new Label(grp, SWT.NONE);
 		setText(lblName, "Account Name:");
 		lblName.pack();
-		name = new Text(grp, SWT.BORDER);
+		tName = new Text(grp, SWT.BORDER);
+		account.setName("AA");
+		Binder.bind(this, "account.name", tName, "text");
+		account.setName("asdfasdfas");
+		tName.setText("bcder");
+		System.err.println(account.getName());
 
 		lblNamePh = new Label(grp, SWT.NONE);
 		setText(lblNamePh, "Account Name Phonetic:");
@@ -249,19 +268,19 @@ public class AccountEditForm {
 		Control c = computeSize(new Control[] { lblName, lblNamePh, lblType,
 				lblCurrency, lblDay });
 
-		setFormLayoutData(name, lblName, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
+		setFormLayoutData(tName, lblName, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
 		setFormLayoutData(namePh, lblNamePh, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
 		setFormLayoutData(type, lblType, 0, SWT.TOP, c, 10, SWT.NONE);
 		setFormLayoutData(currency, lblCurrency, 0, SWT.TOP, c, 10, SWT.NONE);
 		setFormLayoutData(day, lblDay, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
 
 		// right side
-		setFormLayoutData(lblBankName, name, 0, SWT.TOP, name, 50, SWT.NONE);
-		setFormLayoutData(lblBranchName, lblBankName, 20, SWT.NONE, name, 50,
+		setFormLayoutData(lblBankName, tName, 0, SWT.TOP, tName, 50, SWT.NONE);
+		setFormLayoutData(lblBranchName, lblBankName, 20, SWT.NONE, tName, 50,
 				SWT.NONE);
-		setFormLayoutData(lblBankNo, lblBranchName, 20, SWT.NONE, name, 50,
+		setFormLayoutData(lblBankNo, lblBranchName, 20, SWT.NONE, tName, 50,
 				SWT.NONE);
-		setFormLayoutData(lblInterest, lblBankNo, 20, SWT.NONE, name, 50,
+		setFormLayoutData(lblInterest, lblBankNo, 20, SWT.NONE, tName, 50,
 				SWT.NONE);
 		setFormLayoutData(lblStart, lblInterest, 20, SWT.NONE, lblBankName, 0,
 				SWT.LEFT);
