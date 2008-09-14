@@ -57,7 +57,7 @@ public class AccountList {
 		table.setHeaderVisible(false);
 		table.setLinesVisible(false);
 //		table.addMouseListener(new AccountListMouseAdapter());
-
+		
 		TableColumn col1 = new TableColumn(table, SWT.LEFT);
 		TableColumn col2 = new TableColumn(table, SWT.RIGHT);
 		TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);

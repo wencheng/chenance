@@ -20,6 +20,13 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ExpandAdapter;
 import org.eclipse.swt.events.ExpandEvent;
@@ -36,13 +43,19 @@ import org.eclipse.swt.widgets.ExpandItem;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.javabuilders.clazz.databinding.Binder;
 
 import cn.sh.fang.chenance.data.entity.Account;
 
 public class AccountEditForm {
+	
+	final static Account EMPTY_ACCOUNT;
 
-	private Account account = new Account();
+	static {
+		EMPTY_ACCOUNT = new Account();
+		EMPTY_ACCOUNT.setName("");
+	}
+
+	private Account account;
 	
 	Group grp;
 	Label lblName;
@@ -73,6 +86,13 @@ public class AccountEditForm {
 	private ExpandBar bar;
 
 	public AccountEditForm() {
+		account = new Account();
+		try {
+			PropertyUtils.copyProperties(this.account, EMPTY_ACCOUNT);
+		} catch (IllegalAccessException e) {
+		} catch (InvocationTargetException e) {
+		} catch (NoSuchMethodException e) {
+		}
 	}
 
 	public Account getAccount() {
@@ -80,8 +100,12 @@ public class AccountEditForm {
 	}
 
 	public void setAccount(Account account) {
-//		this.account = account;
-		this.account.setName( account.getName() );
+		try {
+			PropertyUtils.copyProperties(this.account, account);
+		} catch (IllegalAccessException e) {
+		} catch (InvocationTargetException e) {
+		} catch (NoSuchMethodException e) {
+		}
 	}
 
 	public Control createControl(Composite parent) {
@@ -93,16 +117,26 @@ public class AccountEditForm {
 		setText(lblName, "Account Name:");
 		lblName.pack();
 		tName = new Text(grp, SWT.BORDER);
-		account.setName("AA");
-		Binder.bind(this, "account.name", tName, "text");
-		account.setName("asdfasdfas");
-		tName.setText("bcder");
-		System.err.println(account.getName());
+		account.setName("");
+		
+		// The bindValue method call binds the text element with the model
+		Realm.runWithDefault(SWTObservables.getRealm(Display.getCurrent()),
+				new Runnable() {
+			public void run() {
+				DataBindingContext dbc = new DataBindingContext();
+				dbc.bindValue(SWTObservables.observeText(tName, SWT.Modify),
+						BeansObservables.observeValue(account, "name"), null, null);
+			}
+		});
+		
+//		Binder.bind(this, "account.name", tName, "text");
 
 		lblNamePh = new Label(grp, SWT.NONE);
 		setText(lblNamePh, "Account Name Phonetic:");
 		lblNamePh.pack();
 		namePh = new Text(grp, SWT.BORDER);
+//		account.set
+//		Binder.bind(this, "account.name", tName, "text");
 
 		this.lblType = new Label(grp, SWT.NONE);
 		setText(lblType, "Account Type:");
