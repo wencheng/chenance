@@ -627,21 +627,21 @@ public class MainWindow {
 		btnDel.setText("－");
 
 		// フォーム
-		AccountEditForm accountForm = new AccountEditForm();
+		final AccountEditForm accountForm = new AccountEditForm();
 		Group grp = (Group) accountForm.createControl(composite);
 
 		// イベント
-		accountListProv.addChangeListener(new AccountEditFormListener(
-				accountForm));
-		accountListProv.addChangeListener(new AccountListListener(tableTree));
-		accountListProv.addChangeListener(new BsAccountListListener(
-				bsAccountList));
-		accountListProv.addChangeListener(new AbstractDataAdapter<Account>(){
-			@Override
-			public void onUpdated(Account item) {
-				currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
-			}
-		});
+//		accountListProv.addChangeListener(new AccountEditFormListener(
+//				accountForm));
+//		accountListProv.addChangeListener(new AccountListListener(tableTree));
+//		accountListProv.addChangeListener(new BsAccountListListener(
+//				bsAccountList));
+//		accountListProv.addChangeListener(new AbstractDataAdapter<Account>(){
+//			@Override
+//			public void onUpdated(Account item) {
+//				currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
+//			}
+//		});
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -649,11 +649,14 @@ public class MainWindow {
 			}
 		});
 		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
-		tableTree.addSelectionListener(new SelectionAdapter() {
+		accountList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (e.item.getData() instanceof Account) {
-					accountListProv.itemChanged((Account) e.item.getData());
+//					accountListProv.itemChanged((Account) e.item.getData());
+					accountForm.setAccount((Account) e.item.getData());
+//					accountForm.getAccount().setName(((Account) e.item.getData()).getName());
+//					accountForm.getAccount().setName("AAA");
 				} else {
 					e.doit = true;
 				}

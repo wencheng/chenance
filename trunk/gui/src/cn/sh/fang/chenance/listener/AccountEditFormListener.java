@@ -29,16 +29,16 @@ public class AccountEditFormListener extends AbstractDataAdapter<Account> {
 	public void onAdded(Account item) {
 		form.btnSave.setEnabled(true);
 
-		form.name.setText(item.getName());
+		form.tName.setText(item.getName());
 		form.memo.setText(item.getDescription());
 		form.btnSave.setData(item);
 
-		form.name.setFocus();
-		form.name.selectAll();
+		form.tName.setFocus();
+		form.tName.selectAll();
 	}
 
 	public void onRemoved(Account item) {
-		form.name.setText("");
+		form.tName.setText("");
 		form.memo.setText("");
 		form.btnSave.setEnabled(false);
 	}
@@ -48,7 +48,7 @@ public class AccountEditFormListener extends AbstractDataAdapter<Account> {
 
 		if ( item == form.btnSave.getData() ) {
 			// save
-			item.setName(form.name.getText());
+			item.setName(form.tName.getText());
 			item.setDescription(form.memo.getText());
 			if (form.start.getText().length() == 0) {
 				item.setStartBalance(0);
@@ -56,7 +56,7 @@ public class AccountEditFormListener extends AbstractDataAdapter<Account> {
 				item.setStartBalance(Integer.parseInt(form.start.getText()));
 			}
 		} else {
-			form.name.setText(item.getName());
+			form.tName.setText(item.getName());
 			form.memo.setText(item.getDescription());
 			form.btnSave.setData(item);
 		}
