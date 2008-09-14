@@ -16,6 +16,8 @@
 package cn.sh.fang.chenance.data.entity;
 
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -23,6 +25,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.hibernate.annotations.Generated;
@@ -32,6 +35,9 @@ import org.hibernate.annotations.GenerationTime;
 public class BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 5582998883084529012L;
+	
+	@Transient
+	PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	@Column(name="INSERT_DATETIME", updatable=false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -80,4 +86,21 @@ public class BaseEntity implements Serializable {
 	public void setUpdater(String updater) {
 		this.updater = updater;
 	}
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(listener);
+    }
+ 
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+ 
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(listener);
+    }
+ 
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        changeSupport.removePropertyChangeListener(propertyName, listener);
+    }    
+
 }
