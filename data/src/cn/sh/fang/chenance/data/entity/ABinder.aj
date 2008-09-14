@@ -9,7 +9,8 @@ public aspect ABinder {
 	after() : bindSetters() {
 		String name = thisJoinPoint.getSignature().getName();
 		name = Character.toLowerCase(name.charAt(3)) + name.substring(4);
-		((BaseEntity)thisJoinPoint.getThis()).changeSupport.firePropertyChange(name, null, null);
+		((BaseEntity)thisJoinPoint.getThis()).changeSupport.firePropertyChange(name,
+				null, thisJoinPoint.getArgs()[0]);
 
 		// find if the variable is registered
 //		Entry e = new Entry( thisJoinPoint.getThis(), thisJoinPoint. );

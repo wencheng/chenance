@@ -33,29 +33,14 @@
 			<version>3.2.1</version>
 		</dependency>
 		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>[1.0.0,2.0.0)</version>
+		</dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.core</groupId>
-			<artifactId>commands</artifactId>
-			<version>3.3.0-I20070605-0010</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse</groupId>
-			<artifactId>jface</artifactId>
-			<version>3.3.0-I20070606-0010</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.eclipse</groupId>
-					<artifactId>swt</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.eclipse.core</groupId>
-					<artifactId>commands</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- 
 		<dependency>

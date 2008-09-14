@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -80,11 +81,7 @@ import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
-import cn.sh.fang.chenance.listener.AbstractDataAdapter;
-import cn.sh.fang.chenance.listener.AccountEditFormListener;
-import cn.sh.fang.chenance.listener.AccountListListener;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
-import cn.sh.fang.chenance.listener.BsAccountListListener;
 import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
@@ -133,6 +130,8 @@ public class MainWindow {
 
 	private Label currentBalance;
 
+	public static DataBindingContext bindingContext;
+
 	static {
 		// set factory here due to a bug in max os x
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
@@ -145,6 +144,8 @@ public class MainWindow {
 
 	public MainWindow(Display display) {
 		this.display = display;
+		
+//		Realm.setDefault(SWTObservables.getRealm(Display.getCurrent()));
 	}
 
 	private void init() {
@@ -649,14 +650,15 @@ public class MainWindow {
 			}
 		});
 		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
+		
+		
+		
 		accountList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (e.item.getData() instanceof Account) {
 //					accountListProv.itemChanged((Account) e.item.getData());
 					accountForm.setAccount((Account) e.item.getData());
-//					accountForm.getAccount().setName(((Account) e.item.getData()).getName());
-//					accountForm.getAccount().setName("AAA");
 				} else {
 					e.doit = true;
 				}

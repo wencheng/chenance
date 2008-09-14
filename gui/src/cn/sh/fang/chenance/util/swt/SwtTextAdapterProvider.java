@@ -5,6 +5,7 @@
 
 package cn.sh.fang.chenance.util.swt;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -17,7 +18,9 @@ import org.jdesktop.swingbinding.adapters.BeanAdapterBase;
  */
 public final class SwtTextAdapterProvider implements BeanAdapterProvider {
 
-    private static final String PROPERTY_BASE = "text";
+	static Logger LOG = Logger.getLogger(SwtTextAdapterProvider.class);
+
+	private static final String PROPERTY_BASE = "text";
     private static final String ON_ACTION_OR_FOCUS_LOST = PROPERTY_BASE + "_ON_ACTION_OR_FOCUS_LOST";
     private static final String ON_FOCUS_LOST = PROPERTY_BASE + "_ON_FOCUS_LOST";
 
@@ -91,7 +94,7 @@ public final class SwtTextAdapterProvider implements BeanAdapterProvider {
             private void updateText() {
                 Object oldText = cachedText;
                 cachedText = getText();
-                System.err.println(cachedText);
+                LOG.debug( "update text: " + cachedText);
                 firePropertyChange(oldText, cachedText);
             }
 
