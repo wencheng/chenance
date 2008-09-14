@@ -35,8 +35,8 @@ http://jiemamy.sourceforge.jp/eclipse/
 JadClipse
 http://sourceforge.net/projects/jadclipse/
 
-AJDT 1.5.2
-http://download.eclipse.org/tools/ajdt/33/update
+AJDT 1.6.0
+http://download.eclipse.org/tools/ajdt/34/update
 
 Use JFace's databinding
 http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.jface.examples.databinding/src/org/eclipse/jface/examples/databinding/snippets/Snippet009TableViewer.java?view=markup
