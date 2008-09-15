@@ -52,8 +52,11 @@ public class AccountTree {
 
 	private IObservableValue hasSelected;
 
+	public AccountTree(Model model) {
+		this.model = model;
+	}
+	
 	public AccountTree(List<Account> accounts) {
-
 		List<Account> a = new ArrayList<Account>();
 		Model a1 = new Model();
 		a1.setName("Account");
@@ -95,7 +98,6 @@ public class AccountTree {
 						"accounts");
 			} else if (target instanceof Account) {
 				return new EmptyObservableList(Realm.getDefault(), null);
-//				return BeansObservables.observeValue(target, "name");
 			} else {
 				return new EmptyObservableList(Realm.getDefault(), null);
 			}
