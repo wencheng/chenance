@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
-import cn.sh.fang.chenance.AccountList;
+import cn.sh.fang.chenance.AccountTab;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 
@@ -35,14 +35,14 @@ public class BsAccountListListener implements IDataAdapter<Account> {
 
 	final static Logger LOG = Logger.getLogger(BsAccountListListener.class);
 
-	AccountList list;
+	AccountTab list;
 
-	public BsAccountListListener(AccountList t) {
+	public BsAccountListListener(AccountTab t) {
 		this.list = t;
 	}
 
 	public void onAdded(Account item) {
-		this.list.addAccount( item );
+//		this.list.addAccount( item );
 	}
 
 	public void onRemoved(Account item) {
@@ -50,7 +50,7 @@ public class BsAccountListListener implements IDataAdapter<Account> {
 	}
 
 	public void onUpdated(Account item) {
-		this.list.updateList();
+//		this.list.updateList();
 	}
 
 	public static class AccountListSelectionAdapter extends SelectionAdapter {

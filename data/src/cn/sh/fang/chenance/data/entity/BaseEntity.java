@@ -103,4 +103,8 @@ public class BaseEntity implements Serializable {
         changeSupport.removePropertyChangeListener(propertyName, listener);
     }    
 
+    public void firePropertyChange(String propertyName, Object old, Object newv) {
+        changeSupport.firePropertyChange(propertyName, old, newv);
+    }    
+
 }

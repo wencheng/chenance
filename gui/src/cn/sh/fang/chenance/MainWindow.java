@@ -78,7 +78,6 @@ import org.eclipse.swt.widgets.Tree;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
-import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
@@ -118,7 +117,7 @@ public class MainWindow {
 
 	private CategoryEditForm categoryEditForm;
 
-	private AccountList bsAccountList;
+	private AccountTab bsAccountList;
 
 	private TableViewer bsTableViewer;
 
@@ -331,7 +330,8 @@ public class MainWindow {
 		item2.setControl(getCategoryTabControl(tabFolder));
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		setText(item3, "Accounts");
-		item3.setControl(getAccountTabControl(tabFolder));
+		
+		item3.setControl( new AccountTab(accountListProv).getAccountTabControl(tabFolder) );
 		tabFolder.setSize(sShell.getSize());
 	}
 
@@ -616,82 +616,6 @@ public class MainWindow {
 		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
 				bsTableViewer);
 		bs.addChangeListener(bstl);
-	}
-
-	private Control getAccountTabControl(TabFolder tabFolder) {
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-
-		// 概要ツリー
-		AccountList accountList = new AccountList(this.accountListProv);
-		
-		final Tree tableTree = accountList.createControl(composite);
-//		accountList.selectAccount(0);
-		
-		// 追加ボタン
-		Button btnAdd = new Button(composite, SWT.PUSH);
-		btnAdd.setText("＋");
-		Button btnDel = new Button(composite, SWT.PUSH);
-		btnDel.setText("－");
-
-		// フォーム
-		final AccountEditForm accountForm = new AccountEditForm();
-		Group grp = (Group) accountForm.createControl(composite);
-
-		// イベント
-//		accountListProv.addChangeListener(new AccountEditFormListener(
-//				accountForm));
-//		accountListProv.addChangeListener(new AccountListListener(tableTree));
-//		accountListProv.addChangeListener(new BsAccountListListener(
-//				bsAccountList));
-//		accountListProv.addChangeListener(new AbstractDataAdapter<Account>(){
-//			@Override
-//			public void onUpdated(Account item) {
-//				currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
-//			}
-//		});
-		accountList.addButton(btnAdd);
-//		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
-		
-		
-		
-		accountList.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (e.item.getData() instanceof Account) {
-//					accountListProv.itemChanged((Account) e.item.getData());
-					accountForm.setAccount((Account) e.item.getData());
-				} else {
-					e.doit = true;
-				}
-			}
-		});
-		accountForm.btnSave.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				accountListProv.itemChanged((Account) e.widget.getData());
-			}
-		});
-
-		// レイアウト
-		FormLayout formLayout = new FormLayout();
-		composite.setLayout(formLayout);
-		formLayout.marginHeight = 10;
-		formLayout.marginWidth = 10;
-
-		FormData fd = SWTUtil.setFormLayoutData(tableTree, 0, 0, 0, 10);
-		fd.height = 400;
-		fd.width = 175;
-
-		fd = SWTUtil.setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE,
-				tableTree, 0, SWT.RIGHT);
-		fd.width = fd.height;
-		fd = SWTUtil.setFormLayoutDataRight(btnAdd, tableTree, 2, SWT.NONE,
-				btnDel, 0, SWT.NONE);
-		fd.width = fd.height;
-
-		setFormLayoutData(grp, 0, 0, tableTree, 20);
-
-		return composite;
 	}
 
 	private Control getCategoryTabControl(TabFolder tabFolder) {
