@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
@@ -130,7 +131,7 @@ public class CategoryTab {
 	 */
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
-		IObservableValue treeViewerSelectionObserveSelection = ViewersObservables
+		final IObservableValue observeSelection = ViewersObservables
 				.observeSingleSelection(tree.viewer);
 
 		// "name" field
@@ -138,7 +139,7 @@ public class CategoryTab {
 				this.form.name, SWT.Modify);
 		IObservableValue v1 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
-						treeViewerSelectionObserveSelection, "name",
+						observeSelection, "name",
 						java.lang.String.class);
 		bindingContext.bindValue(w1, v1, null, null);
 
@@ -146,9 +147,21 @@ public class CategoryTab {
 		IObservableValue w2 = new StyledTextObservableValue(this.form.desc, SWT.Modify);
 		IObservableValue v2 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
-						treeViewerSelectionObserveSelection, "description",
+						observeSelection, "description",
 						java.lang.String.class);
 		bindingContext.bindValue(w2, v2, null, null);
+
+		// "save" button
+		IObservableValue isSavable = new ComputedValue(Boolean.TYPE) {
+			protected Object calculate() {
+				if ( observeSelection.getValue() == null ) {
+					return Boolean.FALSE;
+				}
+				return Boolean.valueOf(((Category)observeSelection.getValue()).getParent() != null);
+			}
+		};
+		bindingContext.bindValue(SWTObservables.observeEnabled(this.form.btnSave),
+				isSavable, null, null);
 
 		//
 		return bindingContext;

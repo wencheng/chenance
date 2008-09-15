@@ -15,6 +15,8 @@
  */
 package cn.sh.fang.chenance;
 
+import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +35,12 @@ import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 import cn.sh.fang.chenance.data.entity.Account;
 
@@ -56,10 +61,8 @@ public class AccountTree {
 	public AccountTree(List<Account> accounts) {
 		List<Account> a = new ArrayList<Account>();
 		Model a1 = new Model();
-		a1.setName("Account");
 		a1.setAccounts(accounts);
 		Model a2 = new Model();
-		a2.setName("Balance");
 		a.add(a1);
 		a.add(a2);
 
@@ -148,12 +151,31 @@ public class AccountTree {
 		return hasSelected;
 	}
 
-	public Account getSelectedAccount() {
+	public Account getSelected() {
 		IStructuredSelection selection = (IStructuredSelection)viewer
 			.getSelection();
 		if (selection.isEmpty())
 			return null;
 		return (Account) selection.getFirstElement();
+	}
+
+	/**
+	 * 
+	 * @param i
+	 *            index in the tree
+	 */
+	public void selectAccount(int i) {
+		TreeItem item = this.viewer.getTree().getItem(0);
+		if ( i < 0 || i > item.getItemCount() ) {
+			return;
+		}
+	
+		this.viewer.getTree().setSelection( item.getItem(i) );
+		this.viewer.getTree().notifyListeners(SWT.Selection, new Event());
+	}
+	
+	public void addSelectionListener(SelectionAdapter a) {
+		this.viewer.getTree().addSelectionListener(a);
 	}
 
 	class TableLabelProvider extends ObservableMapLabelProvider {
@@ -166,7 +188,16 @@ public class AccountTree {
 		public String getColumnText(Object element, int columnIndex) {
 			switch (columnIndex) {
 			case 0:
-				return super.getColumnText(element, 0);
+				if (element instanceof Model) {
+					Model a = (Model)element;
+					if ( a.getAccounts() != null ) {
+						return _("Accounts");
+					} else {
+						return _("Balance Total");
+					}
+				} else {
+					return super.getColumnText(element, 0);
+				}
 			case 1:
 				if (element instanceof Account) {
 					Integer i = ((Account) element).getCurrentBalance();
