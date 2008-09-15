@@ -50,9 +50,7 @@ import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -410,21 +408,15 @@ public class MainWindow {
 			cols[i].setWidth(100);
 		}
 		setText(cols[0], "Date");
-//		cols[0].setText(_("日付"));
 		setText(cols[1], "Item");
-//		cols[1].setText("費目");
 		cols[1].setWidth(150);
 		setText(cols[2], "Expense");
-//		cols[2].setText("支払");
 		cols[2].setAlignment(SWT.RIGHT);
 		setText(cols[3], "Income");
-//		cols[3].setText("預入");
 		cols[3].setAlignment(SWT.RIGHT);
 		setText(cols[4], "Balance");
-//		cols[4].setText("残高");
 		cols[4].setAlignment(SWT.RIGHT);
 		setText(cols[5], "Detail");
-//		cols[5].setText("詳細");
 		// リスト
 		createTableViewer();
 		cols[0].pack();
