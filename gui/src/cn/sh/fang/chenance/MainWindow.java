@@ -649,12 +649,7 @@ public class MainWindow {
 //				currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
 //			}
 //		});
-		btnAdd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				accountListProv.addItem();
-			}
-		});
+		accountList.addButton(btnAdd);
 //		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
 		
 		
