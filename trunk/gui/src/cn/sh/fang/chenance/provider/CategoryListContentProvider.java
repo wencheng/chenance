@@ -19,25 +19,15 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.List;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-
 import cn.sh.fang.chenance.ChenanceDataException;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.util.SWTUtil;
 
-public class CategoryListContentProvider extends BaseProvider<Category>
-		implements ITreeContentProvider {
+public class CategoryListContentProvider {
+
+	private Category root;
 
 	List<Category> tops;
-	private TreeViewer viewer;
-	private Category root;
 
 	CategoryService cs = new CategoryService();
 
@@ -56,73 +46,6 @@ public class CategoryListContentProvider extends BaseProvider<Category>
 		return root;
 	}
 
-	public Object[] getElements(Object arg0) {
-		return getChildren(arg0);
-	}
-
-	public Object[] getChildren(Object obj) {
-		if (obj == null) {
-			return null;
-		}
-
-		if (obj instanceof Category) {
-			Category c = (Category) obj;
-			return c.getChildren().toArray();
-		}
-		return new Object[0];
-	}
-
-	public Object getParent(Object arg0) {
-		return ((Category) arg0).getParent();
-	}
-
-	public boolean hasChildren(Object arg0) {
-		List<Category> c = ((Category) arg0).getChildren();
-		return c != null && c.size() > 0;
-	}
-
-	public void dispose() {
-		// TODO Auto-generated method stub
-	}
-
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		this.viewer = (TreeViewer) viewer;
-		// if (oldInput != null) {
-		// removeListenerFrom((Category) oldInput);
-		// }
-		// if (newInput != null) {
-		// addListenerTo((Category) newInput);
-		// }
-	}
-
-	public class AddCategorySelectionAdapter extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			super.widgetSelected(e);
-			if (viewer.getSelection().isEmpty()) {
-				SWTUtil
-						.showErrorMessage(viewer.getControl().getShell(),
-								"You cannot add root category.  Please select a category.");
-				return;
-			}
-
-			Category parent = (Category) ((IStructuredSelection) viewer
-					.getSelection()).getFirstElement();
-			int code;
-			try {
-				code = generateCode(parent);
-			} catch (ChenanceDataException e1) {
-				SWTUtil
-						.showErrorMessage(viewer.getControl().getShell(),
-								"You cannot add into this category any more.  Please select another category.");
-				return;
-			}
-
-			CategoryListContentProvider.this.addItem();
-		}
-
-	}
-
 	public static Integer generateCode(Category parent) throws ChenanceDataException {
 		int pid = parent.getCode();
 		int i = parent.getChildren().size() + 1;
@@ -138,18 +61,7 @@ public class CategoryListContentProvider extends BaseProvider<Category>
 		}
 	}
 
-	public class DelCategorySelectionAdapter extends SelectionAdapter {
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			// TODO Auto-generated method stub
-			super.widgetSelected(e);
-		}
-	}
-
-	@Override
-	protected Category doAddItem() {
-		Category parent = (Category)((IStructuredSelection) viewer
-				.getSelection()).getFirstElement();
+	public Category doAddItem(Category parent) {
 		int code = 0;
 		try {
 			code = generateCode(parent);
@@ -166,17 +78,9 @@ public class CategoryListContentProvider extends BaseProvider<Category>
 		cs.save(c);
 		return c;
 	}
-
-	@Override
-	protected Category doRemoveItem(Category t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected Category doUpdateItem(Category t) {
-		cs.save(t);
-		return t;
+	
+	public void save(Category c) {
+		cs.save(c);
 	}
 
 }

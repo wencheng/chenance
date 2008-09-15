@@ -41,7 +41,7 @@ public class AccountListProvider extends BaseProvider<Account> {
 	}
 	
 	@Override
-	protected Account doAddItem() {
+	public Account doAddItem() {
 		Account a = new Account();
 		a.setDescription("");
 		a.setCurrentBalance(0);

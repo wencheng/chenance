@@ -127,7 +127,6 @@ public class AccountTree {
 		// And a standard label provider that maps columns
 		IObservableMap[] attributeMaps = BeansObservables.observeMaps(provider
 				.getKnownElements(), Account.class, new String[] { "name" });
-		viewer.setLabelProvider(new ObservableMapLabelProvider(attributeMaps));
 		viewer.setLabelProvider(new TableLabelProvider(attributeMaps));
 
 		// Now set the Viewer's input

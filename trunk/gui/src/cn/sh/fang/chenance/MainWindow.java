@@ -16,8 +16,6 @@
 package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
-import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
-import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
 import java.util.Calendar;
 import java.util.List;
@@ -31,16 +29,11 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ICellEditorListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -58,7 +51,6 @@ import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -71,7 +63,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.swt.widgets.Tree;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
@@ -79,8 +70,6 @@ import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
-import cn.sh.fang.chenance.listener.CategoryEditFormListener;
-import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
 import cn.sh.fang.chenance.provider.AccountListProvider;
@@ -89,8 +78,6 @@ import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.CategoryComboCellEditor;
-import cn.sh.fang.chenance.provider.CategoryListContentProvider;
-import cn.sh.fang.chenance.provider.CategoryListLabelProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
@@ -126,6 +113,8 @@ public class MainWindow {
 	private Label currentBalance;
 
 	private AccountTab accountTab;
+
+	private CategoryTab categoryTab;
 
 	public static DataBindingContext bindingContext;
 
@@ -323,9 +312,11 @@ public class MainWindow {
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
 		setText(item1, "Balance");
 		item1.setControl(getBalanceSheetTabControl(tabFolder));
+
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
 		setText(item2, "Category");
-		item2.setControl(getCategoryTabControl(tabFolder));
+		categoryTab = new CategoryTab();
+		item2.setControl(categoryTab.getCategoryTabControl(tabFolder));
 
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		setText(item3, "Accounts");
@@ -617,79 +608,6 @@ public class MainWindow {
 		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
 				bsTableViewer);
 		bs.addChangeListener(bstl);
-	}
-
-	private Control getCategoryTabControl(TabFolder tabFolder) {
-		Composite comp = new Composite(tabFolder, SWT.NONE);
-
-		// ツリー
-		TreeViewer treeViewer = new TreeViewer(comp, SWT.BORDER | SWT.SINGLE);
-		Tree tree = treeViewer.getTree();
-		final CategoryListContentProvider prov = new CategoryListContentProvider();
-		treeViewer.setContentProvider(prov);
-		treeViewer.setLabelProvider(new CategoryListLabelProvider());
-		treeViewer.setInput(prov.getRoot());
-		treeViewer.expandAll();
-		ColumnViewerToolTipSupport.enableFor(treeViewer);
-
-		// 追加削除ボタン
-		Button btnAdd = new Button(comp, SWT.PUSH);
-		btnAdd.setText("＋");
-		Button btnDel = new Button(comp, SWT.PUSH);
-		btnDel.setText("－");
-
-		btnAdd.addSelectionListener(prov.new AddCategorySelectionAdapter());
-		btnDel.addSelectionListener(prov.new DelCategorySelectionAdapter());
-		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent e) {
-				if (e.getSelection() != null) {
-					Category c = (Category) ((IStructuredSelection) e
-							.getSelection()).getFirstElement();
-					if (c != null) {
-						prov.itemChanged(c);
-					}
-				}
-			}
-		});
-
-		// 編集フォーム
-		Group group = new Group(comp, SWT.RESIZE);
-		setText(group, "Cagetory Info");
-		FormLayout formLayout = new FormLayout();
-		group.setLayout(formLayout);
-		formLayout.marginHeight = 10;
-		formLayout.marginWidth = 10;
-		categoryEditForm = new CategoryEditForm(group, comp.getStyle());
-		categoryEditForm.btnSave.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-				prov.itemChanged((Category) e.widget.getData());
-			}
-		});
-		// group.pack();
-
-		prov.addChangeListener(new CategoryEditFormListener(categoryEditForm));
-		prov.addChangeListener(new CategoryListListener(treeViewer));
-
-		// レイアウト
-		formLayout = new FormLayout();
-		comp.setLayout(formLayout);
-		formLayout.marginHeight = 10;
-		formLayout.marginWidth = 10;
-
-		FormData fd = setFormLayoutData(tree, 0, 0, 0, 10);
-		fd.height = 400;
-		fd.width = 175;
-		fd = setFormLayoutDataRight(btnDel, tree, 2, SWT.NONE, tree, 0,
-				SWT.RIGHT);
-		fd.width = fd.height;
-		fd = setFormLayoutDataRight(btnAdd, tree, 2, SWT.NONE, btnDel, 0,
-				SWT.NONE);
-		fd.width = fd.height;
-		setFormLayoutData(group, tree, 0, SWT.TOP, tree, 20, SWT.NONE);
-
-		return comp;
 	}
 
 }
