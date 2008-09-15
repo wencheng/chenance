@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.core.databinding.observable.Realm;
@@ -47,9 +46,9 @@ public class AccountTree {
 
 	final static Logger LOG = Logger.getLogger(AccountTree.class);
 
-	private TreeViewer viewer;
-
 	Model model;
+
+	public TreeViewer viewer;
 
 	private IObservableValue hasSelected;
 
