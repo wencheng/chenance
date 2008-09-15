@@ -8,5 +8,11 @@ Add your content here.
 
 = Details =
 
-Main Window
-http://chenance.googlecode.com/svn/wiki/img/screenshot1.png
+Balance Sheet
+http://chenance.googlecode.com/svn/wiki/img/BalanceSheet.png
+
+Category Edit
+http://chenance.googlecode.com/svn/wiki/img/Categort.png
+
+Account Manage
+http://chenance.googlecode.com/svn/wiki/img/Accounts.png
