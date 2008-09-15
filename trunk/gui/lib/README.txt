@@ -1,5 +1,6 @@
 Put swt.jar in here.
 
+http://wiki.eclipse.org/index.php/JFace
 JFace Library includes
 org.eclipse.jface
 org.eclipse.swt.<os>
