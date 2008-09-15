@@ -30,12 +30,9 @@ import org.eclipse.core.internal.databinding.observable.EmptyObservableList;
 import org.eclipse.jface.databinding.viewers.ObservableListTreeContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -107,7 +104,7 @@ public class AccountTree {
 	public TreeViewer createControl(Composite composite) {
 		Tree tree = new Tree(composite, SWT.BORDER | SWT.FULL_SELECTION
 				| SWT.SINGLE);
-		tree.setLinesVisible(true);
+		tree.setLinesVisible(false);
 		viewer = new TreeViewer(tree);
 
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
@@ -118,6 +115,9 @@ public class AccountTree {
 		column2.setAlignment(SWT.RIGHT);
 		column2.setText("Person");
 		column2.setWidth(50);
+		
+//		viewer = new TreeViewer(composite, SWT.BORDER | SWT.FULL_SELECTION
+//				| SWT.SINGLE);
 
 		// Create a standard content provider
 		ObservableListTreeContentProvider provider = new ObservableListTreeContentProvider(
@@ -128,7 +128,7 @@ public class AccountTree {
 		IObservableMap[] attributeMaps = BeansObservables.observeMaps(provider
 				.getKnownElements(), Account.class, new String[] { "name" });
 		viewer.setLabelProvider(new ObservableMapLabelProvider(attributeMaps));
-		viewer.setLabelProvider(new TableLabelProvider());
+		viewer.setLabelProvider(new TableLabelProvider(attributeMaps));
 
 		// Now set the Viewer's input
 		viewer.setInput(model);
@@ -157,16 +157,17 @@ public class AccountTree {
 		return (Account) selection.getFirstElement();
 	}
 
-	class TableLabelProvider implements ITableLabelProvider {
+	class TableLabelProvider extends ObservableMapLabelProvider {
 
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+		public TableLabelProvider(IObservableMap[] attributeMaps) {
+			super(attributeMaps);
 		}
 
+		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			switch (columnIndex) {
 			case 0:
-				return ((Account) element).getName();
+				return super.getColumnText(element, 0);
 			case 1:
 				if (element instanceof Account) {
 					Integer i = ((Account) element).getCurrentBalance();
@@ -181,19 +182,6 @@ public class AccountTree {
 				// return ((House)element).getSex();
 			}
 			return null;
-		}
-
-		public void addListener(ILabelProviderListener listener) {
-		}
-
-		public void dispose() {
-		}
-
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		public void removeListener(ILabelProviderListener listener) {
 		}
 	}
 

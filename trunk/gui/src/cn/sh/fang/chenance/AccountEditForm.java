@@ -147,7 +147,7 @@ public class AccountEditForm {
 		currency.select(1);
 
 		this.lblDay = new Label(grp, SWT.NONE);
-		setText(lblDay, "Closing Day：");
+		setText(lblDay, "Closing Day:");
 		lblDay.pack();
 		this.day = new Text(grp, SWT.BORDER);
 

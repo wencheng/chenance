@@ -116,7 +116,7 @@ public class AccountTab {
 		Tree tableTree = tree.viewer.getTree();
 		FormData fd = SWTUtil.setFormLayoutData(tableTree, 0, 0, 0, 10);
 		fd.height = 400;
-		fd.width = 175;
+//		fd.width = 175;
 
 		fd = SWTUtil.setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE,
 				tableTree, 0, SWT.RIGHT);
