@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
@@ -36,7 +37,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Tree;
@@ -103,7 +103,7 @@ public class AccountTab {
 		form.btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				prov.itemChanged(tree.getSelectedAccount());
+				prov.itemChanged(tree.getSelected());
 			}
 		});
 
@@ -136,7 +136,7 @@ public class AccountTab {
 	 */
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
-		IObservableValue treeViewerSelectionObserveSelection = ViewersObservables
+		final IObservableValue observeSelection = ViewersObservables
 				.observeSingleSelection(tree.viewer);
 
 		// "name" field
@@ -144,7 +144,7 @@ public class AccountTab {
 				this.form.tName, SWT.Modify);
 		IObservableValue v1 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
-						treeViewerSelectionObserveSelection, "name",
+						observeSelection, "name",
 						java.lang.String.class);
 		bindingContext.bindValue(w1, v1, null, null);
 
@@ -153,27 +153,24 @@ public class AccountTab {
 				this.form.memo, SWT.Modify);
 		IObservableValue v2 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
-						treeViewerSelectionObserveSelection, "description",
+						observeSelection, "description",
 						java.lang.String.class);
 		bindingContext.bindValue(w2, v2, null, null);
 
+		// "save" button
+		IObservableValue isSavable = new ComputedValue(Boolean.TYPE) {
+			protected Object calculate() {
+				if ( observeSelection.getValue() == null ) {
+					return Boolean.FALSE;
+				}
+				return Boolean.valueOf(((Account)observeSelection.getValue()).getId() != null);
+			}
+		};
+		bindingContext.bindValue(SWTObservables.observeEnabled(this.form.btnSave),
+				isSavable, null, null);
+
 		//
 		return bindingContext;
-	}
-
-	/**
-	 * 
-	 * @param i
-	 *            index in the tree
-	 */
-	public void selectAccount(int i) {
-		TreeItem item = this.tree.viewer.getTree().getItem(0);
-		if ( i < 0 || i > item.getItemCount() ) {
-			return;
-		}
-
-		this.tree.viewer.getTree().setSelection( item.getItem(i) );
-		this.tree.viewer.getTree().notifyListeners(SWT.Selection, new Event());
 	}
 
 	private void addButton(Button btnAdd) {

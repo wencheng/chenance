@@ -17,12 +17,12 @@ package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.viewers.CellEditor;
@@ -98,8 +98,6 @@ public class MainWindow {
 
 	BalanceSheetContentProvider bs;
 
-	private CategoryEditForm categoryEditForm;
-
 	private AccountTree bsAccountTree;
 
 	private TableViewer bsTableViewer;
@@ -115,8 +113,6 @@ public class MainWindow {
 	private AccountTab accountTab;
 
 	private CategoryTab categoryTab;
-
-	public static DataBindingContext bindingContext;
 
 	static {
 		// set factory here due to a bug in max os x
@@ -188,7 +184,7 @@ public class MainWindow {
 		sShell.setSize(1000, 400);
 
 		createMenuBar();
-		createToolBar();
+//		createToolBar();
 		createControls();
 
 		arrangeWidgetsLayout();
@@ -282,12 +278,12 @@ public class MainWindow {
 		coolData.left = new FormAttachment(0);
 		coolData.right = new FormAttachment(100);
 		coolData.top = new FormAttachment(0);
-		coolBar.setLayoutData(coolData);
-		coolBar.addListener(SWT.Resize, new Listener() {
-			public void handleEvent(Event event) {
-				sShell.layout();
-			}
-		});
+//		coolBar.setLayoutData(coolData);
+//		coolBar.addListener(SWT.Resize, new Listener() {
+//			public void handleEvent(Event event) {
+//				sShell.layout();
+//			}
+//		});
 
 		FormData textData = new FormData();
 		textData.left = new FormAttachment(0);
@@ -450,13 +446,21 @@ public class MainWindow {
 		
 		// default account selection
 		// TODO select account last saved
-//		bsAccountList.addSelectionListener(
-//				new AccountListSelectionAdapter(bs, this.bsTableViewer));
-//		bsAccountList.selectAccount(0);
+		bsAccountTree.addSelectionListener( new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+						
+				Account a = bsAccountTree.getSelected();
+				bs.setAccount(a);
+//				tv.refresh();
+			}
+		});
+		bsAccountTree.selectAccount(0);
 
 		// 残高ラベル
 		currentBalance = new Label(composite, SWT.RIGHT);
-//		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
+		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountTree.getSelected().getCurrentBalance()));
 		Label label = new Label(composite, SWT.NONE);
 		setText( label, "Balance:" );
 
