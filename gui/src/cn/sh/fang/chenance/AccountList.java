@@ -15,21 +15,28 @@
  */
 package cn.sh.fang.chenance;
 
-import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.IObservable;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
+import org.eclipse.core.internal.databinding.observable.EmptyObservableList;
+import org.eclipse.jface.databinding.viewers.ObservableListTreeContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.custom.TableTreeItem;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.provider.AccountListProvider;
@@ -38,7 +45,7 @@ public class AccountList {
 	
 	final static Logger LOG = Logger.getLogger( AccountList.class );
 	
-	private AccountListProvider prov;
+	private AccountListProvider prov; 
 	
 	// Account.id <-> TableTreeItem
 	HashMap<Integer,TableTreeItem> items = null;
@@ -49,9 +56,78 @@ public class AccountList {
 
 	public AccountList(AccountListProvider prov) {
 		this.prov = prov;
+		
+		List<Account> a = new ArrayList<Account>();
+		Model a1 = new Model();
+		a1.setName("Account");
+		a1.setAccounts(prov.getAccounts());
+		Model a2 = new Model();
+		a2.setName("Balance");
+		a.add(a1);
+		a.add(a2);
+		model.setAccounts(a);
 	}
 
-	public TableTree createControl(Composite composite) {
+	Model model = new Model();
+
+	class Model extends Account {
+		List<Account> accounts;
+
+		public List<Account> getAccounts() {
+			return accounts;
+		}
+
+		public void setAccounts(List<Account> accounts) {
+			this.accounts = accounts;
+		}
+		
+	}
+	
+	class ModelObservableFactory implements IObservableFactory { 
+
+		public ModelObservableFactory() { 
+			super(); 
+		} 
+
+		public IObservable createObservable(Object target) { 
+			if( target instanceof Model ){
+				return BeansObservables.observeList(Realm.getDefault(), 
+						target, "accounts");
+			} else if( target instanceof Account ){
+				return new EmptyObservableList(Realm.getDefault(), null);
+//				return BeansObservables.observeValue(target, "name");
+			} else {
+				return new EmptyObservableList(Realm.getDefault(), null);
+			}
+		}
+	}
+
+	public Tree createControl(Composite composite) {
+		Tree tree = new Tree(composite,
+		SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
+		TreeViewer viewer = new TreeViewer(tree);
+
+	    TreeColumn column2 = new TreeColumn(tree, SWT.RIGHT);
+	    column2.setAlignment(SWT.LEFT);
+	    column2.setText("Person");
+	    column2.setWidth(100);
+
+	    // Create a standard content provider
+		ObservableListTreeContentProvider provider = 
+			new ObservableListTreeContentProvider(new ModelObservableFactory(), null);
+		viewer.setContentProvider(provider);
+		
+		// And a standard label provider that maps columns
+		IObservableMap[] attributeMaps = BeansObservables.observeMaps(
+				provider.getKnownElements(), Account.class,
+				new String[] { "name" });
+		viewer.setLabelProvider( new ObservableMapLabelProvider(attributeMaps) );
+		
+		// Now set the Viewer's input
+		viewer.setInput( model );
+		viewer.expandAll();
+
+		/*
 		tableTree = new TableTree(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
 		Table table = tableTree.getTable();
 		table.setHeaderVisible(false);
@@ -86,10 +162,11 @@ public class AccountList {
 				fd.getHeight(), fd.getStyle() | SWT.BOLD));
 		parent.setFont(newFont);
 		sum.setFont(newFont);
+		*/
 		
-		return tableTree;
+		return viewer.getTree();
 	}
-
+	
 	public void updateList() {
 		TableTreeItem i;
 		int balanceSum = 0;
@@ -110,7 +187,7 @@ public class AccountList {
 	}
 	
 	public void addSelectionListener(SelectionListener arg0) {
-		tableTree.addSelectionListener(arg0);
+//		tableTree.addSelectionListener(arg0);
 	}
 
 	/**

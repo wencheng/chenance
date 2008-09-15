@@ -155,33 +155,38 @@ public class MainWindow {
 
 	public static void main(String[] args) {
 		final Display display = new Display();
-		final Splash s = new Splash(display);
-		final MainWindow swt = new MainWindow(display);
-		s.run(new Runnable() {
+		Realm.runWithDefault(SWTObservables.getRealm(display),
+				new Runnable() {
 			public void run() {
-				if (!MAC_OS_X) {
-					BaseService.init();
+				final Splash s = new Splash(display);
+				final MainWindow swt = new MainWindow(display);
+				s.run(new Runnable() {
+					public void run() {
+						if (!MAC_OS_X) {
+							BaseService.init();
+						}
+		
+						swt.init();
+						swt.createSShell();
+						swt.sShell.open();
+						s.close();
+					}
+				});
+		
+				// swt.sShell.setAlpha( 220 );
+				try {
+					while (!swt.sShell.isDisposed()) {
+						if (!display.readAndDispatch())
+							display.sleep();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					shutdown();
 				}
-
-				swt.init();
-				swt.createSShell();
-				swt.sShell.open();
-				s.close();
+				display.dispose();
 			}
 		});
-
-		// swt.sShell.setAlpha( 220 );
-		try {
-			while (!swt.sShell.isDisposed()) {
-				if (!display.readAndDispatch())
-					display.sleep();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			shutdown();
-		}
-		display.dispose();
 	}
 
 	public static void shutdown() {
@@ -345,8 +350,8 @@ public class MainWindow {
 		});
 
 		// 口座ツリー
-		bsAccountList = new AccountList(accountListProv);
-		TableTree tableTree = bsAccountList.createControl(composite);
+//		bsAccountList = new AccountList(accountListProv);
+//		TableTree tableTree = bsAccountList.createControl(composite);
 
 		Button oneDay = new Button(composite, SWT.RADIO);
 		setText(oneDay, "Day");
@@ -453,13 +458,13 @@ public class MainWindow {
 		
 		// default account selection
 		// TODO select account last saved
-		bsAccountList.addSelectionListener(
-				new AccountListSelectionAdapter(bs, this.bsTableViewer));
-		bsAccountList.selectAccount(0);
+//		bsAccountList.addSelectionListener(
+//				new AccountListSelectionAdapter(bs, this.bsTableViewer));
+//		bsAccountList.selectAccount(0);
 
 		// 残高ラベル
 		currentBalance = new Label(composite, SWT.RIGHT);
-		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
+//		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
 		Label label = new Label(composite, SWT.NONE);
 		setText( label, "Balance:" );
 
@@ -473,9 +478,9 @@ public class MainWindow {
 		// SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
 		// SWT.NONE).width = 80;
 
-		FormData layoutData = SWTUtil.setFormLayoutData(tableTree, listDate,
-				10, SWT.NONE, listDate, 0, SWT.LEFT);
-		layoutData.height = 300;
+//		FormData layoutData = SWTUtil.setFormLayoutData(tableTree, listDate,
+//				10, SWT.NONE, listDate, 0, SWT.LEFT);
+//		layoutData.height = 300;
 		// layoutData.width = listDate.getSize().x;
 
 		SWTUtil.setFormLayoutData(bsTable, listDate, 0, SWT.TOP, listDate, 20,
@@ -618,8 +623,9 @@ public class MainWindow {
 
 		// 概要ツリー
 		AccountList accountList = new AccountList(this.accountListProv);
-		final TableTree tableTree = accountList.createControl(composite);
-		accountList.selectAccount(0);
+		
+		final Tree tableTree = accountList.createControl(composite);
+//		accountList.selectAccount(0);
 		
 		// 追加ボタン
 		Button btnAdd = new Button(composite, SWT.PUSH);
@@ -649,7 +655,7 @@ public class MainWindow {
 				accountListProv.addItem();
 			}
 		});
-		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
+//		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
 		
 		
 		
@@ -679,7 +685,7 @@ public class MainWindow {
 
 		FormData fd = SWTUtil.setFormLayoutData(tableTree, 0, 0, 0, 10);
 		fd.height = 400;
-		// fd.width = 175;
+		fd.width = 175;
 
 		fd = SWTUtil.setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE,
 				tableTree, 0, SWT.RIGHT);
