@@ -16,7 +16,6 @@
 package cn.sh.fang.chenance;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -29,62 +28,49 @@ import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.internal.databinding.observable.EmptyObservableList;
-import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ObservableListTreeContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableTree;
-import org.eclipse.swt.custom.TableTreeItem;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import cn.sh.fang.chenance.data.entity.Account;
-import cn.sh.fang.chenance.provider.AccountListProvider;
 
-public class AccountList {
+public class AccountTree {
 
-	final static Logger LOG = Logger.getLogger(AccountList.class);
+	final static Logger LOG = Logger.getLogger(AccountTree.class);
 
-	private AccountListProvider prov;
+	private TreeViewer viewer;
 
-	// Account.id <-> TableTreeItem
-	HashMap<Integer, TableTreeItem> items = null;
+	Model model;
 
-	private TableTreeItem sum;
+	private IObservableValue hasSelected;
 
-	private TableTree tableTree;
-
-	public AccountList(AccountListProvider prov) {
-		this.prov = prov;
+	public AccountTree(List<Account> accounts) {
 
 		List<Account> a = new ArrayList<Account>();
 		Model a1 = new Model();
 		a1.setName("Account");
-		a1.setAccounts(prov.getAccounts());
+		a1.setAccounts(accounts);
 		Model a2 = new Model();
 		a2.setName("Balance");
 		a.add(a1);
 		a.add(a2);
-		model.setAccounts(a);
+
+		this.model = new Model();
+		this.model.setAccounts(a);
 	}
 
-	Model model = new Model();
-
-	private TreeViewer viewer;
-
 	class Model extends Account {
+		private static final long serialVersionUID = 1L;
+
 		List<Account> accounts;
 
 		public List<Account> getAccounts() {
@@ -117,7 +103,7 @@ public class AccountList {
 		}
 	}
 
-	public Tree createControl(Composite composite) {
+	public TreeViewer createControl(Composite composite) {
 		Tree tree = new Tree(composite, SWT.BORDER | SWT.FULL_SELECTION
 				| SWT.SINGLE);
 		tree.setLinesVisible(true);
@@ -147,110 +133,27 @@ public class AccountList {
 		viewer.setInput(model);
 		viewer.expandAll();
 
-		// tableTree = new TableTree(composite, SWT.BORDER | SWT.FULL_SELECTION
-		// | SWT.SINGLE);
-		// Table table = tableTree.getTable();
-		// table.setHeaderVisible(false);
-		// table.setLinesVisible(false);
-		// // table.addMouseListener(new AccountListMouseAdapter());
-		//		
-		// TableColumn col1 = new TableColumn(table, SWT.LEFT);
-		// TableColumn col2 = new TableColumn(table, SWT.RIGHT);
-		// TableTreeItem parent = new TableTreeItem(tableTree, SWT.NONE);
-		// parent.setText(0, _("Accounts"));
-		// parent.setText(1, "");
-		// parent.setGrayed(true);
-		// items = new HashMap<Integer,TableTreeItem>();
-		// sum = new TableTreeItem(tableTree, SWT.NONE);
-		// sum.setText(0, _("Balance Total"));
-		// sum.setGrayed(true);
-		//
-		// updateList();
-		//
-		// parent.setExpanded(true);
-		//
-		// col1.pack();
-		// col1.setResizable(true);
-		// col1.setToolTipText("Double-click to view the balance");
-		// col1.setWidth(col1.getWidth() + 20);
-		// // col2.pack();
-		// col2.setWidth(80);
-		// col2.setResizable(false);
-		//
-		// FontData fd = parent.getFont().getFontData()[0];
-		// Font newFont = new Font(tableTree.getDisplay(), new
-		// FontData(fd.getName(),
-		// fd.getHeight(), fd.getStyle() | SWT.BOLD));
-		// parent.setFont(newFont);
-		// sum.setFont(newFont);
-
 		final IObservableValue beanViewerSelection = ViewersObservables
 			.observeSingleSelection(viewer);
-		IObservableValue beanSelected = new ComputedValue(Boolean.TYPE) {
+		this.hasSelected = new ComputedValue(Boolean.TYPE) {
 			protected Object calculate() {
 				return Boolean.valueOf(beanViewerSelection.getValue() != null);
 			}
 		};
-		DataBindingContext bdc = new DataBindingContext();
-//		dbc.bindValue(SWTObservables.observeEnabled(addBtn),
-//				beanSelected, null, null);
 
-		return viewer.getTree();
+		return viewer;
 	}
 
-	public void updateList() {
-		TableTreeItem i;
-		int balanceSum = 0;
-		for (Account a : this.prov.getAccounts()) {
-			LOG.debug(String.format("updating: %s %d", a.getName(), a
-					.getCurrentBalance()));
-
-			i = items.get(a.getId());
-			if (i == null) {
-				i = new TableTreeItem(this.tableTree.getItem(0), SWT.NONE);
-				balanceSum += a.getCurrentBalance();
-				items.put(a.getId(), i);
-			}
-			i.setText(0, a.getName());
-			i.setText(1, a.getCurrentBalance() + "");
-			i.setData(a);
-		}
-		sum.setText(1, balanceSum + "");
-	}
-
-	public void addSelectionListener(SelectionListener arg0) {
-		// tableTree.addSelectionListener(arg0);
-	}
-
-	/**
-	 * 
-	 * @param i
-	 *            index in the tree
-	 */
-	public void selectAccount(int i) {
-		if (i < 0 || i > items.size() - 1) {
-			return;
-		}
-
-		this.tableTree.setSelection(new TableTreeItem[] { this.tableTree
-				.getItem(0).getItem(i) });
-		this.tableTree.notifyListeners(SWT.Selection, new Event());
+	public IObservableValue getHasSelected() {
+		return hasSelected;
 	}
 
 	public Account getSelectedAccount() {
-		if (this.tableTree.getSelection().length > 0) {
-			return (Account) this.tableTree.getSelection()[0].getData();
-		} else {
+		IStructuredSelection selection = (IStructuredSelection)viewer
+			.getSelection();
+		if (selection.isEmpty())
 			return null;
-		}
-	}
-
-	public void addAccount(Account item) {
-		TableTreeItem parent = (TableTreeItem) this.tableTree.getItem(0);
-		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
-
-		ch.setText(item.getName());
-		ch.setData(item);
+		return (Account) selection.getFirstElement();
 	}
 
 	class TableLabelProvider implements ITableLabelProvider {
@@ -293,45 +196,4 @@ public class AccountList {
 		}
 	}
 
-	protected DataBindingContext initDataBindings() {
-		IObservableValue treeViewerSelectionObserveSelection = ViewersObservables
-				.observeSingleSelection(viewer);
-//		IObservableValue textTextObserveWidget = SWTObservables.observeText(
-//				name, SWT.Modify);
-		IObservableValue treeViewerValueObserveDetailValue = BeansObservables
-				.observeDetailValue(Realm.getDefault(),
-						treeViewerSelectionObserveSelection, "text",
-						java.lang.String.class);
-		//
-		//
-		DataBindingContext bindingContext = new DataBindingContext();
-		//
-//		bindingContext.bindValue(textTextObserveWidget,
-//				treeViewerValueObserveDetailValue, null, null);
-		//
-		return bindingContext;
-	}
-
-	public void addButton(Button btnAdd) {
-		btnAdd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Model parent = (Model)model.getAccounts().get(0);
-				List<Account> list = parent.getAccounts();
-
-				Account a = new Account();
-				a.setName("New Account");
-				a.setDescription("");
-				a.setCurrentBalance(0);
-				a.setUpdater("USER");
-
-				list.add(a);
-				parent.setAccounts(list);
-
-				viewer.setSelection(new StructuredSelection(a));
-//				beanText.selectAll();
-//				beanText.setFocus();
-			}
-		});
-	}
 }
