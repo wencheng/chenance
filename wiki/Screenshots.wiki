@@ -8,11 +8,11 @@ Add your content here.
 
 = Details =
 
-Balance Sheet
+==== Balance Sheet ====
 http://chenance.googlecode.com/svn/wiki/img/BalanceSheet.png
 
-Category Edit
-http://chenance.googlecode.com/svn/wiki/img/Categort.png
+==== Category Edit ====
+http://chenance.googlecode.com/svn/wiki/img/Category.png
 
-Account Manage
+==== Account Manage ====
 http://chenance.googlecode.com/svn/wiki/img/Accounts.png
