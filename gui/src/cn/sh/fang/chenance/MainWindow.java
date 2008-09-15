@@ -409,16 +409,22 @@ public class MainWindow {
 			cols[i] = new TableColumn(bsTable, SWT.NONE);
 			cols[i].setWidth(100);
 		}
-		cols[0].setText("日付");
-		cols[1].setText("費目");
+		setText(cols[0], "Date");
+//		cols[0].setText(_("日付"));
+		setText(cols[1], "Item");
+//		cols[1].setText("費目");
 		cols[1].setWidth(150);
-		cols[2].setText("支払");
+		setText(cols[2], "Expense");
+//		cols[2].setText("支払");
 		cols[2].setAlignment(SWT.RIGHT);
-		cols[3].setText("預入");
+		setText(cols[3], "Income");
+//		cols[3].setText("預入");
 		cols[3].setAlignment(SWT.RIGHT);
-		cols[4].setText("残高");
+		setText(cols[4], "Balance");
+//		cols[4].setText("残高");
 		cols[4].setAlignment(SWT.RIGHT);
-		cols[5].setText("詳細");
+		setText(cols[5], "Detail");
+//		cols[5].setText("詳細");
 		// リスト
 		createTableViewer();
 		cols[0].pack();
