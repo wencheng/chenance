@@ -57,16 +57,18 @@ public class AccountTab {
 
 	private AccountEditForm form;
 
-	public AccountTab(AccountListProvider prov) {
+	private Model model;
+
+	public AccountTab(AccountListProvider prov, Model model) {
 		this.prov = prov;
-		
+		this.model = model;
 	}
 
 	public Control getAccountTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
-	
+
 		// 概要ツリー
-		tree = new AccountTree(this.prov.getAccounts());
+		tree = new AccountTree(model);
 		tree.createControl(composite);
 //		this.selectAccount(0);
 
@@ -101,10 +103,10 @@ public class AccountTab {
 		form.btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				prov.itemChanged((Account) e.widget.getData());
+				prov.itemChanged(tree.getSelectedAccount());
 			}
 		});
-	
+
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
 		composite.setLayout(formLayout);
@@ -138,24 +140,22 @@ public class AccountTab {
 				.observeSingleSelection(tree.viewer);
 
 		// "name" field
-		IObservableValue textTextObserveWidget = SWTObservables.observeText(
+		IObservableValue w1 = SWTObservables.observeText(
 				this.form.tName, SWT.Modify);
-		IObservableValue treeViewerValueObserveDetailValue = BeansObservables
+		IObservableValue v1 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
 						treeViewerSelectionObserveSelection, "name",
 						java.lang.String.class);
-		bindingContext.bindValue(textTextObserveWidget,
-				treeViewerValueObserveDetailValue, null, null);
+		bindingContext.bindValue(w1, v1, null, null);
 
 		// "description" field
-		IObservableValue observeWidget = SWTObservables.observeText(
+		IObservableValue w2 = SWTObservables.observeText(
 				this.form.memo, SWT.Modify);
-		IObservableValue valueObserveDetailValue = BeansObservables
+		IObservableValue v2 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
 						treeViewerSelectionObserveSelection, "description",
 						java.lang.String.class);
-		bindingContext.bindValue(observeWidget,
-				valueObserveDetailValue, null, null);
+		bindingContext.bindValue(w2, v2, null, null);
 
 		//
 		return bindingContext;
@@ -193,8 +193,8 @@ public class AccountTab {
 				parent.setAccounts(list);
 
 				tree.viewer.setSelection(new StructuredSelection(a));
-//				beanText.selectAll();
-//				beanText.setFocus();
+				form.tName.selectAll();
+				form.tName.setFocus();
 			}
 		});
 	}
@@ -215,7 +215,8 @@ public class AccountTab {
 				}
 	
 				List<Account> list = new ArrayList<Account>(parent.getAccounts());
-				list.remove(index);
+				Account i = list.remove(index);
+				LOG.debug("remove account: " + i);
 				parent.setAccounts(list);
 			}
 		});

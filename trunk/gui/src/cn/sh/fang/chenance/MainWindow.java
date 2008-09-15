@@ -19,7 +19,6 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
-import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -44,12 +43,10 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableTree;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -78,6 +75,7 @@ import org.eclipse.swt.widgets.Tree;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.dao.CategoryService;
+import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
@@ -85,8 +83,6 @@ import cn.sh.fang.chenance.listener.CategoryEditFormListener;
 import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
-import cn.sh.fang.chenance.listener.AccountListListener.DelAccountSelectionAdapter;
-import cn.sh.fang.chenance.listener.BsAccountListListener.AccountListSelectionAdapter;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
@@ -117,7 +113,7 @@ public class MainWindow {
 
 	private CategoryEditForm categoryEditForm;
 
-	private AccountTab bsAccountList;
+	private AccountTree bsAccountTree;
 
 	private TableViewer bsTableViewer;
 
@@ -128,6 +124,8 @@ public class MainWindow {
 	protected Calendar selectedCal = Calendar.getInstance();
 
 	private Label currentBalance;
+
+	private AccountTab accountTab;
 
 	public static DataBindingContext bindingContext;
 
@@ -280,9 +278,9 @@ public class MainWindow {
 		ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
 		toolItem.setText("A");
 		toolBar.pack();
-		Point size = toolBar.getSize();
+//		Point size = toolBar.getSize();
 		coolItem.setControl(toolBar);
-		Point preferred = coolItem.computeSize(size.x, size.y);
+//		Point preferred = coolItem.computeSize(size.x, size.y);
 		coolItem.setPreferredSize(new org.eclipse.swt.graphics.Point(15, 26));
 	}
 
@@ -328,10 +326,12 @@ public class MainWindow {
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
 		setText(item2, "Category");
 		item2.setControl(getCategoryTabControl(tabFolder));
+
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		setText(item3, "Accounts");
-		
-		item3.setControl( new AccountTab(accountListProv).getAccountTabControl(tabFolder) );
+		accountTab = new AccountTab(accountListProv,bsAccountTree.model);
+		item3.setControl(accountTab.getAccountTabControl(tabFolder) );
+
 		tabFolder.setSize(sShell.getSize());
 	}
 
@@ -350,8 +350,9 @@ public class MainWindow {
 		});
 
 		// 口座ツリー
-//		bsAccountList = new AccountList(accountListProv);
-//		TableTree tableTree = bsAccountList.createControl(composite);
+		List<Account> accounts = accountListProv.getAccounts();
+		bsAccountTree = new AccountTree(accounts);
+		bsAccountTree.createControl(composite);
 
 		Button oneDay = new Button(composite, SWT.RADIO);
 		setText(oneDay, "Day");
@@ -474,14 +475,14 @@ public class MainWindow {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 
-		// SWTUtil.setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
-		// SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
-		// SWT.NONE).width = 80;
+//		SWTUtil.setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
+//		SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
+//		SWT.NONE).width = 80;
 
-//		FormData layoutData = SWTUtil.setFormLayoutData(tableTree, listDate,
-//				10, SWT.NONE, listDate, 0, SWT.LEFT);
-//		layoutData.height = 300;
-		// layoutData.width = listDate.getSize().x;
+		FormData layoutData = SWTUtil.setFormLayoutData(bsAccountTree.viewer.getTree(),
+				listDate, 10, SWT.NONE, listDate, 0, SWT.LEFT);
+		layoutData.height = 300;
+//		layoutData.width = listDate.getSize().x;
 
 		SWTUtil.setFormLayoutData(bsTable, listDate, 0, SWT.TOP, listDate, 20,
 				SWT.NONE).height = 400;

@@ -48,21 +48,24 @@ public class Splash implements MouseListener, MouseMoveListener {
 	private void init() {
 		shell = new Shell( display, SWT.NO_TRIM );
 		final Image image = new Image( null, 
-				this.getClass().getClassLoader().getResourceAsStream( "cn/sh/fang/chenance/splash.gif" ));
+				this.getClass().getClassLoader().getResourceAsStream(
+//						"cn/sh/fang/chenance/splash.gif" ));
+						"cn/sh/fang/chenance/icons/1921_morgan_dollar_chapman_obv.jpg" ));
+						
 
 		//define a region 
 		Region region = new Region();
 		Rectangle pixel = new Rectangle(0, 0, 1, 1);
 		Rectangle bounds = image.getBounds();
 		ImageData id = image.getImageData();
-		int trans = id.transparentPixel;
+//		int trans = id.transparentPixel;
+		System.out.println(id.getPixel(0, 0));
 		for (int y = 0; y < bounds.height; y++) {
 			for (int x = 0; x < bounds.width; x++) {
-//				System.out.println(id.getPixel(x, y));
 				// mac why? 0xffffff = 16777215
-//				if ( id.getPixel(x, y) != 16777215 ) {
+				if ( id.getPixel(x, y) != 16777215 ) {
 				// win
-				if ( id.getPixel(x, y) != trans ) {
+//				if ( id.getPixel(x, y) != trans ) {
 					pixel.x = x;
 					pixel.y = y;
 					region.add(pixel);
