@@ -14,7 +14,7 @@ Add your content here.  Format your content with:
   * Automatic links to other wiki pages
 
 Subclipse
-http://subclipse.tigris.org/update_1.2.x
+http://subclipse.tigris.org/update_1.4.x
 
 m2eclipse
 http://m2eclipse.sonatype.org/update/
