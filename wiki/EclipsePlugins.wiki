@@ -51,6 +51,7 @@ JFace
 jface
 core.runtime
 core.commands
+equinox.common
 
 Databinding
 core.databinding
