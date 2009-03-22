@@ -109,15 +109,12 @@ public final class SwtTextAdapterProvider implements BeanAdapterProvider {
 //                updateText();
 //            }
 
-            @Override
 			public void modifyText(ModifyEvent arg0) {
 				updateText();
 			}
 
-			@Override
 			public void focusGained(FocusEvent e) {}
 
-			@Override
 			public void focusLost(FocusEvent e) {
 //				if (!e.isTemporary()) {
 					updateText();
@@ -126,7 +123,6 @@ public final class SwtTextAdapterProvider implements BeanAdapterProvider {
         
     }
 
-    @Override
     public boolean providesAdapter(Class<?> type, String property) {
         if (!Text.class.isAssignableFrom(type)) {
             return false;
@@ -140,7 +136,6 @@ public final class SwtTextAdapterProvider implements BeanAdapterProvider {
                  
     }
     
-    @Override
     public Object createAdapter(Object source, String property) {
         if (!providesAdapter(source.getClass(), property)) {
             throw new IllegalArgumentException();
@@ -149,7 +144,6 @@ public final class SwtTextAdapterProvider implements BeanAdapterProvider {
         return new Adapter((Text)source, property);
     }
     
-    @Override
     public Class<?> getAdapterClass(Class<?> type) {
         return Text.class.isAssignableFrom(type) ?
             SwtTextAdapterProvider.Adapter.class :
