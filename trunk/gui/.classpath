@@ -2,12 +2,14 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Databinding"/>
 	<classpathentry kind="lib" path="lib/beansbinding-1.2.1-swt.jar"/>
 	<classpathentry kind="lib" path="lib/javabuilder.clazz.0.1.DEV.2008.09.03.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/chenance-data"/>
+	<classpathentry kind="lib" path="lib/swt.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JFace"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/chenance-data"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

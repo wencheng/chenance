@@ -8,9 +8,15 @@
 	<version>0.1</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>../gui</module>
-		<module>../data</module>
+		<module>../chenance-gui</module>
+		<module>../chenance-data</module>
 	</modules>
+	<repositories>
+		<repository>
+			<id>foxtrot</id>
+			<url>http://maven.atlassian.com/repository/public/</url>
+		</repository>
+	</repositories>
 	<pluginRepositories>
       <pluginRepository>
           <id>akathist-repository</id>

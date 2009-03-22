@@ -50,7 +50,7 @@ public class Splash implements MouseListener, MouseMoveListener {
 		final Image image = new Image( null, 
 				this.getClass().getClassLoader().getResourceAsStream(
 //						"cn/sh/fang/chenance/splash.gif" ));
-						"cn/sh/fang/chenance/icons/1921_morgan_dollar_chapman_obv.jpg" ));
+						"splash/1921_morgan_dollar_chapman_obv.jpg" ));
 						
 
 		//define a region 
