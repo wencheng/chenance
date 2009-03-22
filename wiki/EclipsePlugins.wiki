@@ -14,7 +14,10 @@ Add your content here.  Format your content with:
   * Automatic links to other wiki pages
 
 Subclipse
-http://subclipse.tigris.org/update_1.4.x
+http://subclipse.tigris.org/update_1.6.x
+
+Subversion package for Mac OS X
+http://www.open.collab.net/downloads/apple/?_=d
 
 m2eclipse
 http://m2eclipse.sonatype.org/update/
@@ -43,3 +46,13 @@ http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.jface.examples.databinding/
 
 SWT 3.4
 http://www.eclipse.org/swt/
+
+JFace
+jface
+core.runtime
+core.commands
+
+Databinding
+core.databinding
+core.databinding.beans
+jface.databinding
