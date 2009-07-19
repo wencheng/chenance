@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -69,6 +70,7 @@ import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
+import cn.sh.fang.chenance.listener.IDataAdapter;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
@@ -135,6 +137,8 @@ public class MainWindow {
 
 	public static void main(String[] args) {
 		final Display display = new Display();
+		
+		try {
 		Realm.runWithDefault(SWTObservables.getRealm(display),
 				new Runnable() {
 			public void run() {
@@ -167,6 +171,9 @@ public class MainWindow {
 				display.dispose();
 			}
 		});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void shutdown() {
@@ -186,6 +193,16 @@ public class MainWindow {
 		createControls();
 
 		arrangeWidgetsLayout();
+		
+		loadDefaultBalanceSheet();
+	}
+
+	private void loadDefaultBalanceSheet() {
+		// today's balance sheet
+		bsAccountTree.selectAccount(0);
+		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
+		//bs.setDate( selectedCal.getTime() );
+		bsTableViewer.refresh();
 	}
 
 	private void createMenuBar() {
@@ -322,24 +339,42 @@ public class MainWindow {
 
 	private Control getBalanceSheetTabControl(TabFolder tabFolder) {
 		Composite composite = new Composite(tabFolder, SWT.NONE);
-
-		// カレンダー
-		DateTime listDate = new DateTime(composite, SWT.CALENDAR | SWT.SHORT);
-		listDate.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent e) {
-				DateTime dt = (DateTime) e.widget;
-				selectedCal.set(dt.getYear(), dt.getMonth(), dt.getDay());
-				bs.setDate( selectedCal.getTime() );
-				bsTableViewer.refresh();
-			}
-		});
-
+		
 		// 口座ツリー
 		List<Account> accounts = accountListProv.getAccounts();
 		bsAccountTree = new AccountTree(accounts);
 		bsAccountTree.createControl(composite);
+		accountListProv.addChangeListener(new IDataAdapter<Account>(){
+			public void onAdded(Account item) {
+			}
+			public void onLoaded(Account item) {
+			}
+			public void onRemoved(Account item) {
+			}
+			public void onUpdated(Account item) {
+				bsAccountTree.viewer.refresh();
+				currentBalance.setText(NumberFormat.getCurrencyInstance().format(item.getCurrentBalance()));
+			}
+		});
+		// default account selection
+		// TODO select account last saved
+		bsAccountTree.selectAccount(0);
+		bsAccountTree.addSelectionListener( new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
 
-		Button oneDay = new Button(composite, SWT.RADIO);
+				Account a = bsAccountTree.getSelected();
+				if ( a.getId() != null ) {
+					bs.setAccount(a);
+					bsTableViewer.refresh();
+				}
+			}
+		});
+
+		// 表示範囲（日、週、月、年）
+		// 日
+		final Button oneDay = new Button(composite, SWT.RADIO);
 		setText(oneDay, "Day");
 		oneDay.setSelection(true);
 		oneDay.addSelectionListener(new SelectionAdapter(){
@@ -351,7 +386,8 @@ public class MainWindow {
 				bsTableViewer.refresh();
 			}
 		});
-		Button oneWeek = new Button(composite, SWT.RADIO);
+		// 週
+		final Button oneWeek = new Button(composite, SWT.RADIO);
 		setText(oneWeek, "Week");
 		oneWeek.addSelectionListener(new SelectionAdapter(){
 			@Override
@@ -359,13 +395,15 @@ public class MainWindow {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
 				Calendar bgn = (Calendar) selectedCal.clone();
-				Calendar end = (Calendar) selectedCal.clone();
-				bgn.add( Calendar.DATE, -7 );
-				bs.setDate( bgn.getTime(), end.getTime() );
+				bgn.add( Calendar.DATE, -(bgn.get(Calendar.DAY_OF_WEEK)-bgn.getMinimalDaysInFirstWeek()) );
+				Calendar end = (Calendar) bgn.clone();
+				end.add( Calendar.DATE, 7 );
+				bs.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
 				bsTableViewer.refresh();
 			}
 		});
-		Button oneMonth = new Button(composite, SWT.RADIO);
+		// 月
+		final Button oneMonth = new Button(composite, SWT.RADIO);
 		setText(oneMonth, "Month");
 		oneMonth.addSelectionListener(new SelectionAdapter(){
 			@Override
@@ -376,11 +414,12 @@ public class MainWindow {
 				bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
 				Calendar end = (Calendar) bgn.clone();
 				end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
-				bs.setDate( bgn.getTime(), end.getTime() );
+				bs.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
 				bsTableViewer.refresh();
 			}
 		});
-		Button oneYear = new Button(composite, SWT.RADIO);
+		// 年
+		final Button oneYear = new Button(composite, SWT.RADIO);
 		setText(oneYear, "Year");
 		oneYear.addSelectionListener(new SelectionAdapter(){
 			@Override
@@ -388,11 +427,33 @@ public class MainWindow {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
 				Calendar bgn = (Calendar) selectedCal.clone();
-				bgn.set( Calendar.MONTH, bgn.getActualMinimum(Calendar.MONTH) );
+				bgn.set( Calendar.MONTH, 0 );
+				bgn.set( Calendar.DATE, 1 );
 				Calendar end = (Calendar) bgn.clone();
-				end.set( Calendar.MONTH, bgn.getActualMaximum(Calendar.MONTH) );
-				bs.setDate( bgn.getTime(), end.getTime() );
+				end.set( Calendar.MONTH, 11 );
+				end.set( Calendar.DATE, 31 );
+				end.add( Calendar.DATE, 1 );
+				bs.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
 				bsTableViewer.refresh();
+			}
+		});
+		
+		// カレンダー
+		DateTime listDate = new DateTime(composite, SWT.CALENDAR | SWT.SHORT);
+		listDate.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				DateTime dt = (DateTime) e.widget;
+				selectedCal.set(dt.getYear(), dt.getMonth(), dt.getDay());
+				
+				if ( oneDay.getSelection() ) {
+					oneDay.notifyListeners(SWT.Selection, new Event());
+				} else if ( oneWeek.getSelection() ) {
+					oneWeek.notifyListeners(SWT.Selection, new Event());
+				} else if ( oneMonth.getSelection() ) {
+					oneMonth.notifyListeners(SWT.Selection, new Event());
+				} else if ( oneYear.getSelection() ) {
+					oneYear.notifyListeners(SWT.Selection, new Event());
+				}
 			}
 		});
 
@@ -422,10 +483,21 @@ public class MainWindow {
 		cols[0].pack();
 		cols[0].setAlignment(SWT.CENTER);
 		// ポップアップメニュー
-		Menu menu = new Menu(sShell, SWT.POP_UP);
-		MenuItem item = new MenuItem(menu, SWT.PUSH);
-		item.setText("Popup");
-		bsTable.setMenu(menu);
+		Menu mePopup = new Menu(sShell, SWT.POP_UP);
+		MenuItem miDelete = new MenuItem(mePopup, SWT.PUSH);
+		setText(miDelete, "Delete");
+		miDelete.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				Transaction t = (Transaction) bsTable.getSelection()[0].getData();
+				if ( t.getDate() != null ) {
+					bs.removeItem(t);
+				}
+				bsTableViewer.refresh();
+			}
+		});
+		bsTable.setMenu(mePopup);
 		// <Add New>
 		bsTable.addMouseListener(new MouseAdapter() {
 			@Override
@@ -442,20 +514,6 @@ public class MainWindow {
 			}
 		});
 		
-		// default account selection
-		// TODO select account last saved
-		bsAccountTree.addSelectionListener( new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				super.widgetSelected(e);
-						
-				Account a = bsAccountTree.getSelected();
-				bs.setAccount(a);
-//				tv.refresh();
-			}
-		});
-		bsAccountTree.selectAccount(0);
-
 		// 残高ラベル
 		currentBalance = new Label(composite, SWT.RIGHT);
 		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountTree.getSelected().getCurrentBalance()));
@@ -472,10 +530,12 @@ public class MainWindow {
 //		SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
 //		SWT.NONE).width = 80;
 
+		// アカウント
 		FormData layoutData = SWTUtil.setFormLayoutData(bsAccountTree.viewer.getTree(),
 				listDate, 10, SWT.NONE, listDate, 0, SWT.LEFT);
 		layoutData.height = 300;
-//		layoutData.width = listDate.getSize().x;
+		layoutData.width = listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		LOG.debug(listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 		SWTUtil.setFormLayoutData(bsTable, listDate, 0, SWT.TOP, listDate, 20,
 				SWT.NONE).height = 400;

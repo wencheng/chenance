@@ -55,9 +55,11 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 
 	private List<Transaction> transactions = new ArrayList<Transaction>();
 
+	private Date cDate;
+
 	private Date bDate = Calendar.getInstance().getTime();
 
-	private Date eDate;
+	private Date eDate = bDate;
 
 	static final Transaction EMPTY = new Transaction();
 
@@ -77,30 +79,34 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	};
 	
 	public void setAccount(Account account) {
-		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(account, bDate);
-		this.transactions.add(EMPTY);
 		this.account = account;
+		refresh();
 	}
 	
-	public void setDate(Date bDate) {
-		this.bDate = bDate;
-		this.eDate = bDate;
+	private void refresh() {
 		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(account, bDate, bDate);
+		this.transactions = ts.find(account, bDate, eDate);
 		this.transactions.add(EMPTY);
 	}
+
+	/**
+	 * Hour, minute, second will be ignored
+	 * 
+	 * @param date
+	 */
+	public void setDate(Date date) {
+		setDate(date, date, date);
+	}
 	
-	public void setDate(Date bDate, Date eDate) {
+	public void setDate(Date cDate, Date bDate, Date eDate) {
+		this.cDate = cDate;
 		this.bDate = bDate;
 		this.eDate = eDate;
 		
 		LOG.debug( bDate );
 		LOG.debug( eDate );
-		
-		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(account, bDate, eDate);
-		this.transactions.add(EMPTY);
+
+		refresh();
 	}
 
 	/**
@@ -133,7 +139,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	@Override
 	protected Transaction doAddItem() {
 		Transaction t = new Transaction();
-		t.setDate(new Date());
+		t.setDate(cDate);
 		t.setDebit(0);
 		t.setCredit(0);
 		t.setBalance(0);

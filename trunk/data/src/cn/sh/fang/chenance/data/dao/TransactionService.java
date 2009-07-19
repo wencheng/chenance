@@ -158,6 +158,14 @@ public class TransactionService extends BaseService {
         return find( account, date, date );
 	}
 
+	/**
+	 * Hour, minute, second will be ignored.
+	 * 
+	 * @param account
+	 * @param bDate
+	 * @param eDate
+	 * @return
+	 */
 	public List<Transaction> find(Account account, Date bDate, Date eDate) {
         Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0 ORDER BY _date");
         query.setParameter(1, account.getId());

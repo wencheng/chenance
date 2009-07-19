@@ -15,7 +15,6 @@
  */
 package cn.sh.fang.chenance.provider;
 
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -129,7 +128,6 @@ public class BalanceSheetCellModifier implements ICellModifier {
 
 		ts.save(t);
 		viewer.refresh();
-//		viewer.update(t, null);
 		
 		bs.itemChanged( t );
 		accountListProv.itemChanged( t.getAccount() );

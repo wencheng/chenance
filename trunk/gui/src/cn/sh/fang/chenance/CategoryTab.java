@@ -87,7 +87,7 @@ public class CategoryTab {
 
 		// 編集フォーム
 		Group group = new Group(comp, SWT.RESIZE);
-		setText(group, "Cagetory Info");
+		setText(group, "Category Info");
 		FormLayout formLayout = new FormLayout();
 		group.setLayout(formLayout);
 		formLayout.marginHeight = 10;
