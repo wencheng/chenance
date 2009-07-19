@@ -15,6 +15,7 @@
  */
 package cn.sh.fang.chenance;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -30,6 +31,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class Splash implements MouseListener, MouseMoveListener {
+
+	static Logger LOG = Logger.getLogger(Splash.class);
 
 	private Display display;
 
@@ -78,10 +81,10 @@ public class Splash implements MouseListener, MouseMoveListener {
 		shell.setSize(bounds.width, bounds.height);
 		Rectangle size = region.getBounds();
 		Rectangle b = display.getPrimaryMonitor().getBounds();
-		System.out.println(b);
-		System.out.println(size);
+		LOG.debug(b);
+		LOG.debug(size);
 		shell.setLocation( b.x+(b.width-size.width)/2, b.y+(b.height-size.height)/2 );
-		
+
 		shell.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				e.gc.drawImage(image, 0, 0);

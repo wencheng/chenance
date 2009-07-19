@@ -40,7 +40,7 @@ setOutPath $INSTDIR
 sectionEnd
 
 !define LIB_URL http://chenance.googlecode.com/files/lib.zip
-!define SWT_URL http://ftp.jaist.ac.jp/pub/eclipse/eclipse/downloads/drops/S-3.4RC3-200805301730/swt-3.4RC3-win32-win32-x86.zip
+!define SWT_URL http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip&url=http://download.eclipse.org/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip&mirror_id=1
 
 Function GetLib
     StrCpy $2 "$TEMP\lib.zip"
