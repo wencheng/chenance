@@ -70,7 +70,6 @@ public class AccountTab {
 		// 概要ツリー
 		tree = new AccountTree(model);
 		tree.createControl(composite);
-//		this.selectAccount(0);
 
 		// 追加ボタン
 		Button btnAdd = new Button(composite, SWT.PUSH);
@@ -83,20 +82,8 @@ public class AccountTab {
 		Group grp = (Group) form.createControl(composite);
 	
 		// イベント
-	//		accountListProv.addChangeListener(new AccountEditFormListener(
-	//				accountForm));
-	//		accountListProv.addChangeListener(new AccountListListener(tableTree));
-	//		accountListProv.addChangeListener(new BsAccountListListener(
-	//				bsAccountList));
-	//		accountListProv.addChangeListener(new AbstractDataAdapter<Account>(){
-	//			@Override
-	//			public void onUpdated(Account item) {
-	//				currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountList.getSelectedAccount().getCurrentBalance()));
-	//			}
-	//		});
 		this.addButton(btnAdd);
 		this.removeButton(btnDel);
-//		btnDel.addSelectionListener(new DelAccountSelectionAdapter(tableTree));
 
 		initDataBindings();
 
@@ -116,7 +103,7 @@ public class AccountTab {
 		Tree tableTree = tree.viewer.getTree();
 		FormData fd = SWTUtil.setFormLayoutData(tableTree, 0, 0, 0, 10);
 		fd.height = 400;
-//		fd.width = 175;
+		fd.width = 217;
 
 		fd = SWTUtil.setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE,
 				tableTree, 0, SWT.RIGHT);
@@ -201,20 +188,14 @@ public class AccountTab {
 			public void widgetSelected(final SelectionEvent e) {
 				TreeItem selectedItem = tree.viewer.getTree().getSelection()[0];
 				TreeItem parentItem = selectedItem.getParentItem();
-				Model parent;
-				int index;
-				if (parentItem == null) {
-					parent = tree.model;
-					index = tree.viewer.getTree().indexOf(selectedItem);
-				} else {
-					parent = (Model) parentItem.getData();
-					index = parentItem.indexOf(selectedItem);
+				if (parentItem != null) {
+					Model parent = (Model) parentItem.getData();
+					int index = parentItem.indexOf(selectedItem);
+					List<Account> list = new ArrayList<Account>(parent.getAccounts());
+					Account i = list.remove(index);
+					LOG.debug("remove account: " + i);
+					parent.setAccounts(list);
 				}
-	
-				List<Account> list = new ArrayList<Account>(parent.getAccounts());
-				Account i = list.remove(index);
-				LOG.debug("remove account: " + i);
-				parent.setAccounts(list);
 			}
 		});
 	}

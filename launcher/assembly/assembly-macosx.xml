@@ -13,6 +13,14 @@
       		</excludes>
       		<filtered>true</filtered>
     	</fileSet>
+    	<fileSet>
+      		<directory>../chenance-gui/lib</directory>
+      		<outputDirectory>Chenance.app/Contents/Resources/Java</outputDirectory>
+      		<excludes>
+      			<exclude>swt.jar</exclude>
+      		</excludes>
+      		<filtered>true</filtered>
+    	</fileSet>
   	</fileSets>
   	<files>
   		<file>
@@ -29,11 +37,11 @@
 				<include>cn.sh.fang.chenance:chenance-data</include>
 			</includes>
 			<binaries>
-				<outputDirectory>Chenance.app/Contents/MacOS</outputDirectory>
+				<outputDirectory>Chenance.app/Contents/Resources/Java</outputDirectory>
 				<unpack>false</unpack>
 				<dependencySets>
 					<dependencySet>
-						<outputDirectory>Chenance.app/Contents/MacOS/lib</outputDirectory>
+						<outputDirectory>Chenance.app/Contents/Resources/Java</outputDirectory>
 					</dependencySet>
 				</dependencySets>
 			</binaries>

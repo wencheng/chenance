@@ -17,6 +17,7 @@ package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,21 +108,18 @@ public class AccountTree {
 	public TreeViewer createControl(Composite composite) {
 		Tree tree = new Tree(composite, SWT.BORDER | SWT.FULL_SELECTION
 				| SWT.SINGLE);
-		tree.setLinesVisible(false);
+		tree.setLinesVisible(true);
 		viewer = new TreeViewer(tree);
 
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 		column1.setAlignment(SWT.LEFT);
-		column1.setText("Land/Stadt");
-		column1.setWidth(160);
+		//column1.setText("Land/Stadt");
+		column1.setWidth(100);
 		TreeColumn column2 = new TreeColumn(tree, SWT.RIGHT);
 		column2.setAlignment(SWT.RIGHT);
-		column2.setText("Person");
-		column2.setWidth(50);
+		//column2.setText("Person");
+		column2.setWidth(93);
 		
-//		viewer = new TreeViewer(composite, SWT.BORDER | SWT.FULL_SELECTION
-//				| SWT.SINGLE);
-
 		// Create a standard content provider
 		ObservableListTreeContentProvider provider = new ObservableListTreeContentProvider(
 				new ModelObservableFactory(), null);
@@ -187,6 +185,7 @@ public class AccountTree {
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
 			switch (columnIndex) {
+			// アカウント名
 			case 0:
 				if (element instanceof Model) {
 					Model a = (Model)element;
@@ -198,18 +197,16 @@ public class AccountTree {
 				} else {
 					return super.getColumnText(element, 0);
 				}
+			// 残高
 			case 1:
 				if (element instanceof Account) {
 					Integer i = ((Account) element).getCurrentBalance();
 					if ( i == null ) {
 						return "";
 					} else {
-						return "￥" + i;
+						return NumberFormat.getCurrencyInstance().format(i);
 					}
 				}
-			case 2:
-				// if (element instanceof House)
-				// return ((House)element).getSex();
 			}
 			return null;
 		}

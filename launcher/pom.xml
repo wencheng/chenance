@@ -14,7 +14,7 @@
 	<repositories>
 		<repository>
 			<id>foxtrot</id>
-			<url>http://maven.atlassian.com/repository/public/</url>
+			<url>http://maven.atlassian.com/repository/public</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>

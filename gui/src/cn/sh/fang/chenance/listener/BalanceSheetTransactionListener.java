@@ -42,6 +42,7 @@ public class BalanceSheetTransactionListener implements
 	}
 
 	public void onRemoved(Transaction t) {
+		ts.remove(t.getId(), t.getUpdater());
 		this.viewer.remove(t);
 	}
 
@@ -51,7 +52,6 @@ public class BalanceSheetTransactionListener implements
 
 	public void onLoaded(Transaction item) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

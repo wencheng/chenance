@@ -42,7 +42,10 @@ public abstract class BaseService {
 	static EntityManagerFactory factory;
 	static protected EntityManager em;
 	static EntityTransaction t;
+	//public static String filepath = System.getProperty("user.home") + "/chenance.db";
 	public static String filepath = System.getProperty("user.home") + "/chenance/db";
+	//public static String jdbcUrl = "jdbc:sqlite:" + filepath;
+	public static String jdbcUrl = "jdbc:h2:" + filepath + ";USER=sa";
 	
 	public BaseService() {
 		if (em == null) {
@@ -54,12 +57,13 @@ public abstract class BaseService {
 	}
 
 	public static void createTable() {
-		if (new File(filepath + ".data.db").exists()) {
+		if (new File(filepath).exists()) {
 			return;
 		}
 		LOG.warn("data file not exists");
 
 		try {
+			//Class.forName("org.sqlite.JDBC");
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
 			// ignore
@@ -68,8 +72,7 @@ public abstract class BaseService {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-			conn = DriverManager.getConnection("jdbc:h2:" + filepath
-					+ ";USER=sa");
+			conn = DriverManager.getConnection(jdbcUrl);
 		} catch (SQLException e) {
 			// TODO error message
 			e.printStackTrace();
@@ -162,7 +165,7 @@ public abstract class BaseService {
 		createTable();
 		
 		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("hibernate.connection.url", "jdbc:h2:" + BaseService.filepath);
+		props.put("hibernate.connection.url", jdbcUrl);
 		factory = Persistence
 				.createEntityManagerFactory("chenance-data", props);
 	}
