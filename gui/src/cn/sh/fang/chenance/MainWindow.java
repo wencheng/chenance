@@ -382,7 +382,9 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-				bs.setDate( selectedCal.getTime() );
+				Calendar ed = (Calendar) selectedCal.clone();
+				ed.add( Calendar.DATE, 1 );
+				bs.setDate( selectedCal.getTime(), selectedCal.getTime(), ed.getTime() );
 				bsTableViewer.refresh();
 			}
 		});
