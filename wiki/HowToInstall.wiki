@@ -10,12 +10,15 @@ They should be download separately.
 
 
 = Windows XP/Vista =
- # Download main program
- # Extract it
- # Download dependency libraries
- # Extract it
+ # Download chenance-_version_-setup.exe
+ # Run it
+ # That's all ^^
 
 = Mac OS X =
-
+ to update
 
 = Linux =
+ # Download chenance-_version_.zip
+ # Extract it to _some place_
+ # Download lib.zip
+ # Extract it to _some place/lib_
