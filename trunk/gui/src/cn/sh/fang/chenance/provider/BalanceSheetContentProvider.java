@@ -55,9 +55,9 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 
 	private List<Transaction> transactions = new ArrayList<Transaction>();
 
-	private Date cDate;
+	private Date cDate = Calendar.getInstance().getTime();
 
-	private Date bDate = Calendar.getInstance().getTime();
+	private Date bDate = cDate;
 
 	private Date eDate = bDate;
 
@@ -146,7 +146,9 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		t.setAccount(this.account);
 		t.setIsConfirmed(true);
 		t.setUpdater("USER");
+		LOG.debug(this.transactions.size());
 		this.transactions.add(this.transactions.size()-1, t);
+		LOG.debug(this.transactions.get(0));
 		return t;
 	}
 

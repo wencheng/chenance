@@ -25,7 +25,7 @@
 			<name>
 				on googlecode
 			</name>
-			<url>http://chenance.googlecode.com/svn/maven2/</url>
+			<url>http://chenance.googlecode.com/svn/maven2</url>
 			<layout>default</layout>
 		</repository>
 	</repositories>

@@ -202,7 +202,8 @@ public class AccountEditForm {
 
 	private void createOptionControl() {
 		bar = new ExpandBar(grp, SWT.V_SCROLL);
-		bar.setBackgroundMode(SWT.INHERIT_FORCE);
+		//bar.setBackgroundMode(SWT.INHERIT_FORCE);
+		bar.setBackgroundMode(SWT.INHERIT_DEFAULT);
 
 		Composite composite = new Composite(bar, SWT.NONE);
 		GridLayout layout = new GridLayout();
