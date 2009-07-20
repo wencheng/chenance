@@ -17,5 +17,7 @@ To use ZipDLL:
  # Extract ZipDLL.dll to directory Plugins in your NSIS installation 
  # Extract ZipDLL.nsh to directory Include in your NSIS installation
 
+http://nsis.sourceforge.net/UAC_plug-in
+
 == EclipseNSIS ==
 http://eclipsensis.sourceforge.net/index.shtml
