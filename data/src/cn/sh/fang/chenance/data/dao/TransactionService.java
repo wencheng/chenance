@@ -171,17 +171,16 @@ public class TransactionService extends BaseService {
         query.setParameter(1, account.getId());
         Calendar cal = Calendar.getInstance();
         cal.setTime( bDate );
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         query.setParameter(2, cal.getTime() );
         cal.setTime( eDate );
-        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.DATE, 1);
         query.setParameter(3, cal.getTime() );
         return query.getResultList();
 	}
