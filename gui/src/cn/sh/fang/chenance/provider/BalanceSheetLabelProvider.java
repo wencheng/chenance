@@ -20,6 +20,7 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -37,6 +38,8 @@ import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 public class BalanceSheetLabelProvider 
 	extends LabelProvider
 	implements ITableLabelProvider {
+	
+	static final Logger LOG = Logger.getLogger( BalanceSheetLabelProvider.class );
 	
 	public static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyy/MM/dd");
 	
@@ -59,7 +62,7 @@ public class BalanceSheetLabelProvider
 		String result = "";
 		Transaction t = (Transaction) element;
 		Column col = Column.values()[columnIndex];
-
+		
 		if ( t.getDate() == null ) {
 			if ( col == Column.DATE ) {
 				return "<" + _("Add New") + ">";
