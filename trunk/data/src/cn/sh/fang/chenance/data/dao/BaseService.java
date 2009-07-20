@@ -57,7 +57,7 @@ public abstract class BaseService {
 	}
 
 	public static void createTable() {
-		if (new File(filepath).exists()) {
+		if (new File(filepath+".data.db").exists()) {
 			return;
 		}
 		LOG.warn("data file not exists");

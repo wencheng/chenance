@@ -6,15 +6,15 @@
 	<persistence-unit name="chenance-data"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<class>cn.sh.fang.chenance.data.entity.Transaction</class>
-		<class>cn.sh.fang.chenance.data.entity.RepeatPayment</class>
-		<class>cn.sh.fang.chenance.data.entity.Loan</class>
-		<class>cn.sh.fang.chenance.data.entity.Investment</class>
-		<class>cn.sh.fang.chenance.data.entity.Category</class>
-		<class>cn.sh.fang.chenance.data.entity.Breakdown</class>
-		<class>cn.sh.fang.chenance.data.entity.BaseEntity</class>
-		<class>cn.sh.fang.chenance.data.entity.Asset</class>
 		<class>cn.sh.fang.chenance.data.entity.Account</class>
+		<class>cn.sh.fang.chenance.data.entity.Asset</class>
+		<class>cn.sh.fang.chenance.data.entity.Breakdown</class>
+		<class>cn.sh.fang.chenance.data.entity.Category</class>
+		<class>cn.sh.fang.chenance.data.entity.Investment</class>
+		<class>cn.sh.fang.chenance.data.entity.Loan</class>
+		<class>cn.sh.fang.chenance.data.entity.RepeatPayment</class>
+		<class>cn.sh.fang.chenance.data.entity.Transaction</class>
+		<class>cn.sh.fang.chenance.data.entity.BaseEntity</class>
 		<properties>
 			<property name="hibernate.connection.username" value="sa" />
 			<property name="hibernate.connection.password" value="" />
