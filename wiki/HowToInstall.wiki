@@ -19,6 +19,6 @@ They should be download separately.
 
 = Linux =
  # Download chenance-_version_.zip
- # Extract it to _some place_
+ # Extract it to _some/path_
  # Download lib.zip
- # Extract it to _some place/lib_
+ # Extract it to _some/path/lib_
