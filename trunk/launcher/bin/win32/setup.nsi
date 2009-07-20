@@ -1,5 +1,8 @@
+;!include UAC.nsh
 !include MUI2.nsh
 !include ZipDLL.nsh
+
+RequestExecutionLevel user
 
 name "${chenance.name}"
 
@@ -13,7 +16,8 @@ installDir $PROGRAMFILES\Chenance
 !define MUI_LICENSEPAGE_TEXT_TOP "License and Agreements"
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "Click 'I Agree' to forward"
 !define MUI_LICENSEPAGE_CHECKBOX
-!insertmacro MUI_PAGE_LICENSE "License.rtf"
+!define LICENSE_FILE "License.rtf"
+!insertmacro MUI_PAGE_LICENSE ${LICENSE_FILE}
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 
@@ -23,21 +27,34 @@ section
 # define the output path for this file
 setOutPath $INSTDIR
 
-	# read the value from the registry into the $0 register
-	;readRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion
+    # read the value from the registry into the $0 register
+    ;readRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion
  
-	# print the results in a popup message box
-	;messageBox MB_OK "version: $0"
+    # print the results in a popup message box
+    ;messageBox MB_OK "version: $0"
     
     call GetJRE
-	call GetLib
-	call GetSwt
+    call GetLib
+    call GetSwt
 
-	# define what to install and place it in the output path
-	file chenance.exe
-	file chenance-gui-${chenance.version.short}.jar
-	file chenance-data-${chenance.data.version}.jar
+    # define what to install and place it in the output path
+    file chenance.exe
+    file chenance-gui-${chenance.gui.version}.jar
+    file chenance-data-${chenance.data.version}.jar
 
+createShortCut "$Desktop\Chenance.lnk" "$INSTDIR\chenance.exe"
+
+WriteUninstaller $INSTDIR\uninstaller.exe
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ImageMaker" \
+                 "DisplayName" "Chenance -- a Personal Finance Manager"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Chenance" \
+                 "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+
+sectionEnd
+
+section "uninstall"
+    delete "$INSTDIR\uninstaller.exe"
 sectionEnd
 
 !define LIB_URL http://chenance.googlecode.com/files/lib.zip
@@ -98,8 +115,8 @@ Function GetJRE
     StrCpy $R0 "$R0\bin\${JAVAEXE}"
     IfErrors CheckRegistry     
     IfFileExists $R0 0 CheckRegistry
-    Call CheckJREVersion
-    IfErrors CheckRegistry JreFound
+    ;Call CheckJREVersion
+    ;IfErrors CheckRegistry JreFound
  
   ; 3) Check for registry
   CheckRegistry:
@@ -107,10 +124,10 @@ Function GetJRE
     ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
     ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
     StrCpy $R0 "$R0\bin\${JAVAEXE}"
-    IfErrors DownloadJRE
-    IfFileExists $R0 0 DownloadJRE
-    Call CheckJREVersion
     IfErrors DownloadJRE JreFound
+    IfFileExists $R0 JreFound DownloadJRE
+    ;Call CheckJREVersion
+    ;IfErrors DownloadJRE JreFound
  
   DownloadJRE:
     Call ElevateToAdmin
@@ -124,12 +141,12 @@ Function GetJRE
     ExecWait $2
     Delete $2
  
-    ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-    ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
-    StrCpy $R0 "$R0\bin\${JAVAEXE}"
-    IfFileExists $R0 0 GoodLuck
-    Call CheckJREVersion
-    IfErrors GoodLuck JreFound
+    ;ReadRegStr $R1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ;ReadRegStr $R0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$R1" "JavaHome"
+    ;StrCpy $R0 "$R0\bin\${JAVAEXE}"
+    ;IfFileExists $R0 0 GoodLuck
+    ;Call CheckJREVersion
+    ;IfErrors GoodLuck JreFound
  
   ; 4) wishing you good luck
   GoodLuck:
@@ -142,21 +159,28 @@ Function GetJRE
     Pop $R1
     Exch $R0
 FunctionEnd
- 
-; Pass the "javaw.exe" path by $R0
-Function CheckJREVersion
-    Push $R1
- 
-    ; Get the file version of javaw.exe
-    ${GetFileVersion} $R0 $R1
-    ${VersionCompare} ${JRE_VERSION} $R1 $R1
- 
-    ; Check whether $R1 != "1"
-    ClearErrors
-    StrCmp $R1 "1" 0 CheckDone
-    SetErrors
- 
-  CheckDone:
-    Pop $R1
-FunctionEnd
 
+; Attempt to give the UAC plug-in a user process and an admin process.
+Function ElevateToAdmin
+  UAC_Elevate:
+    UAC::RunElevated
+    StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
+    StrCmp 0 $0 0 UAC_Err ; Error?
+    StrCmp 1 $1 0 UAC_Success ;Are we the real deal or just the wrapper?
+    Quit
+ 
+  UAC_ElevationAborted:
+    # elevation was aborted, run as normal?
+    MessageBox MB_ICONSTOP "This installer requires admin access, aborting!"
+    Abort
+ 
+  UAC_Err:
+    MessageBox MB_ICONSTOP "Unable to elevate, error $0"
+    Abort
+ 
+  UAC_Success:
+    StrCmp 1 $3 +4 ;Admin?
+    StrCmp 3 $1 0 UAC_ElevationAborted ;Try again?
+    MessageBox MB_ICONSTOP "This installer requires admin access, try again"
+    goto UAC_Elevate 
+FunctionEnd

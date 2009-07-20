@@ -1,11 +1,11 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>dummy.jar</jar>
-  <outfile>C:\Users\Wencheng\Desktop\chenance\launcher\target\chenance-0.0.1-SNAPSHOT-win32.dir\chenance-0.0.1-SNAPSHOT\chenance.exe</outfile>
+  <jar>.</jar>
+  <outfile>chenance.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
-  <chdir></chdir>
+  <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
@@ -13,13 +13,42 @@
   <stayAlive>false</stayAlive>
   <manifest></manifest>
   <icon></icon>
-  <classPath>
-    <mainClass>cn.sh.fang.chenance.MainWindow</mainClass>
-  </classPath>
   <singleInstance>
-    <mutexName>cn.sh.fang.chenance</mutexName>
+    <mutexName>chenance</mutexName>
     <windowTitle></windowTitle>
   </singleInstance>
+  <classPath>
+    <mainClass>cn.sh.fang.chenance.MainWindow</mainClass>
+    <cp>chenance-gui-0.1.jar</cp>
+    <cp>chenance-data-1.0.jar</cp>
+    <cp>lib/hibernate-entitymanager-3.2.1.ga.jar</cp>
+    <cp>lib/hibernate-annotations-3.2.1.ga.jar</cp>
+    <cp>lib/hibernate-3.2.1.ga.jar</cp>
+    <cp>lib/ehcache-1.2.3.jar</cp>
+    <cp>lib/commons-logging-1.1.1.jar</cp>
+    <cp>lib/commons-collections-3.2.1.jar</cp>
+    <cp>lib/jta-1.0.1B.jar</cp>
+    <cp>lib/asm-attrs-1.5.3.jar</cp>
+    <cp>lib/dom4j-1.6.1.jar</cp>
+    <cp>lib/antlr-2.7.6.jar</cp>
+    <cp>lib/cglib-2.1_3.jar</cp>
+    <cp>lib/asm-1.5.3.jar</cp>
+    <cp>lib/persistence-api-1.0.jar</cp>
+    <cp>lib/javassist-3.3.ga.jar</cp>
+    <cp>lib/jboss-archive-browsing-5.0.0alpha-200607201-119.jar</cp>
+    <cp>lib/commons-beanutils-1.8.0.jar</cp>
+    <cp>lib/log4j-1.2.13.jar</cp>
+    <cp>lib/jface-3.4.2.jar</cp>
+    <cp>lib/runtime-3.4.0.jar</cp>
+    <cp>lib/commands-3.4.0.jar</cp>
+    <cp>lib/common-3.4.0.jar</cp>
+    <cp>lib/osgi-3.4.3.jar</cp>
+    <cp>lib/databinding-1.1.1.jar</cp>
+    <cp>lib/databinding-1.2.1.jar</cp>
+    <cp>lib/beans-1.1.1.jar</cp>
+    <cp>lib/swt.jar</cp>
+    <cp>lib/aspectjrt-1.6.5.jar</cp>
+  </classPath>
   <jre>
     <path></path>
     <minVersion>1.5.0</minVersion>
