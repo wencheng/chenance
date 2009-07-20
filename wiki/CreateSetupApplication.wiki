@@ -16,3 +16,6 @@ http://nsis.sourceforge.net/ZipDLL_plug-in
 To use ZipDLL: 
  # Extract ZipDLL.dll to directory Plugins in your NSIS installation 
  # Extract ZipDLL.nsh to directory Include in your NSIS installation
+
+== EclipseNSIS ==
+http://eclipsensis.sourceforge.net/index.shtml
