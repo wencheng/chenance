@@ -38,19 +38,19 @@ CREATE TABLE t_category (
 );
 
 INSERT INTO t_category (id, name, description, parent_id, code)
-  VALUES (1, 'debit', '', NULL, 1000000);
+  VALUES (1, 'Debit', '', NULL, 1000000);
 INSERT INTO t_category (id, name, parent_id, description, code)
   VALUES (2, '食費', 1, '飲食にかかったお金', 1010000);
 INSERT INTO t_category (id, name, parent_id, description, code)
   VALUES (3, '外食', 2, '外食の消費', 1010100);
 INSERT INTO t_category (id, name, description, parent_id, code)
-  VALUES (4, 'credit', '', NULL, 2000000);
+  VALUES (4, 'Credit', '', NULL, 2000000);
 INSERT INTO t_category (id, name, parent_id, description, code)
   VALUES (5, '給与', 4, '給料やボーナス', 2010000);
 INSERT INTO t_category (id, name, parent_id, description, code)
   VALUES (6, '会社', 5, '平日出勤の会社から', 2010100);
 INSERT INTO t_category (id, name, description, code, parent_id)
-  VALUES (7, 'transfer', '', 3000000, NULL);
+  VALUES (7, 'Transfer', '', 3000000, NULL);
 
 
 -- define: t_repeat_payment

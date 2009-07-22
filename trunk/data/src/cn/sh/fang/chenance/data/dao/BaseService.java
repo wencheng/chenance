@@ -152,7 +152,7 @@ public abstract class BaseService {
 	 */
 
 	public static void shutdown() {
-		t.commit();
+//		t.commit();
 		em.close();
 		factory.close();
 	}
