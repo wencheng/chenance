@@ -19,10 +19,14 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
 
 public class AccountListProvider extends BaseProvider<Account> {
+	
+	static Logger LOG = Logger.getLogger(AccountListProvider.class);
 
 	AccountService service = new AccountService();
 

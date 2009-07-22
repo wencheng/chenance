@@ -19,10 +19,6 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.Realm;
@@ -31,7 +27,6 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -47,13 +42,12 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import cn.sh.fang.chenance.data.entity.Category;
+import cn.sh.fang.chenance.listener.CategoryListListener;
 import cn.sh.fang.chenance.provider.CategoryListContentProvider;
 import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.StyledTextObservableValue;
 
 public class CategoryTab {
-
-	private final static Logger LOG = Logger.getLogger(CategoryTab.class);
 
 	private CategoryListContentProvider prov;
 
@@ -63,8 +57,12 @@ public class CategoryTab {
 
 	private Category root;
 
-	public CategoryTab() {
-		prov = new CategoryListContentProvider();
+	private Button btnAdd;
+
+	private Button btnDel;
+
+	public CategoryTab(CategoryListContentProvider prov) {
+		this.prov = prov;
 		this.root = prov.getRoot();
 	}
 
@@ -77,13 +75,15 @@ public class CategoryTab {
 		ColumnViewerToolTipSupport.enableFor(tree.viewer);
 		
 		// 追加削除ボタン
-		Button btnAdd = new Button(comp, SWT.PUSH);
+		btnAdd = new Button(comp, SWT.PUSH);
 		btnAdd.setText("＋");
-		Button btnDel = new Button(comp, SWT.PUSH);
+		btnDel = new Button(comp, SWT.PUSH);
 		btnDel.setText("－");
 
 		addButton(btnAdd);
 		removeButton(btnDel);
+		
+		prov.addChangeListener(new CategoryListListener(tree));
 
 		// 編集フォーム
 		Group group = new Group(comp, SWT.RESIZE);
@@ -97,7 +97,7 @@ public class CategoryTab {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				prov.save(tree.getSelected());
+				prov.itemChanged(tree.getSelected());
 			}
 		});
 		// group.pack();
@@ -163,6 +163,35 @@ public class CategoryTab {
 		bindingContext.bindValue(SWTObservables.observeEnabled(this.form.btnSave),
 				isSavable, null, null);
 
+		// "+" button
+		IObservableValue isAppendable = new ComputedValue(Boolean.TYPE) {
+			protected Object calculate() {
+				if ( observeSelection.getValue() == null ) {
+					return Boolean.FALSE;
+				}
+				try {
+					CategoryListContentProvider.generateCode((Category)observeSelection.getValue());
+				} catch (ChenanceDataException e1) {
+					return Boolean.FALSE;
+				}
+				return Boolean.TRUE;
+			}
+		};
+		bindingContext.bindValue(SWTObservables.observeEnabled(this.btnAdd),
+				isAppendable, null, null);
+
+		// "-" button
+		IObservableValue isDeletable = new ComputedValue(Boolean.TYPE) {
+			protected Object calculate() {
+				if ( observeSelection.getValue() == null ) {
+					return Boolean.FALSE;
+				}
+				return Boolean.valueOf(((Category)observeSelection.getValue()).getParent() != null);
+			}
+		};
+		bindingContext.bindValue(SWTObservables.observeEnabled(this.btnDel),
+				isDeletable, null, null);
+
 		//
 		return bindingContext;
 	}
@@ -186,22 +215,7 @@ public class CategoryTab {
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Category parent = tree.getSelected();
-				List<Category> list = new ArrayList<Category>(parent.getChildren());
-				Category child = prov.doAddItem( parent );
-				list.add(child);
-				parent.setChildren(list);
-
-//				try {
-//					code = generateCode(parent);
-//				} catch (ChenanceDataException e1) {
-//					SWTUtil
-//							.showErrorMessage(viewer.getControl().getShell(),
-//									"You cannot add into this category any more.  Please select another category.");
-//					return;
-//				}
-
-				tree.viewer.setSelection(new StructuredSelection(child));
+				prov.addItem();
 				form.name.selectAll();
 				form.name.setFocus();
 			}
@@ -211,24 +225,7 @@ public class CategoryTab {
 	private void removeButton(Button btn) {
 		btn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				TreeItem selectedItem = tree.viewer.getTree().getSelection()[0];
-				TreeItem parentItem = selectedItem.getParentItem();
-				Category parent;
-				int index;
-				if (parentItem == null) {
-					SWTUtil
-					.showErrorMessage(tree.viewer.getControl().getShell(),
-							"You cannot delete root category.");
-					return;
-				} else {
-					parent = (Category) parentItem.getData();
-					index = parentItem.indexOf(selectedItem);
-				}
-	
-				List<Category> list = new ArrayList<Category>(parent.getChildren());
-				Category i = list.remove(index);
-				LOG.debug("remove category: " + i);
-				parent.setChildren(list);
+				prov.removeItem(tree.getSelected());
 			}
 		});
 	}

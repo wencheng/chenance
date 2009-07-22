@@ -49,7 +49,7 @@ public class AccountTree {
 
 	final static Logger LOG = Logger.getLogger(AccountTree.class);
 
-	Model model;
+	public Model model;
 
 	public TreeViewer viewer;
 
@@ -71,7 +71,7 @@ public class AccountTree {
 		this.model.setAccounts(a);
 	}
 
-	class Model extends Account {
+	public class Model extends Account {
 		private static final long serialVersionUID = 1L;
 
 		List<Account> accounts;
