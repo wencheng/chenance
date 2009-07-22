@@ -95,7 +95,10 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	 * @param date
 	 */
 	public void setDate(Date date) {
-		setDate(date, date, date);
+		Calendar ed = Calendar.getInstance();
+		ed.setTime(date);
+		ed.add( Calendar.DATE, 1 );
+		setDate(date, date, ed.getTime());
 	}
 	
 	public void setDate(Date cDate, Date bDate, Date eDate) {

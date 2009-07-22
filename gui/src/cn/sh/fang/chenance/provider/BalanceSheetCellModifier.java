@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.TableItem;
 
+import cn.sh.fang.chenance.MainWindow;
 import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
@@ -70,7 +71,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			result = t.getDate();
 			break;
 		case CATEGORY:
-			List<Category> l = (List<Category>)viewer.getData("categoryList");
+			List<Category> l = (List<Category>)viewer.getData(MainWindow.CATEGORY_LIST);
 			result = new Integer(l.indexOf(t.getCategory()));
 			break;
 		case DEBIT:
@@ -111,7 +112,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			break;
 		case CATEGORY:
 			int i = (Integer)value;
-			List<Category> l = (List<Category>)viewer.getData("categoryList");
+			List<Category> l = (List<Category>)viewer.getData(MainWindow.CATEGORY_LIST);
 			if ( i < 0 ) {
 				i = 0;
 			}

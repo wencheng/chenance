@@ -17,10 +17,6 @@ package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutData;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.Realm;
@@ -28,7 +24,6 @@ import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -44,12 +39,11 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import cn.sh.fang.chenance.AccountTree.Model;
 import cn.sh.fang.chenance.data.entity.Account;
+import cn.sh.fang.chenance.listener.AccountListListener;
 import cn.sh.fang.chenance.provider.AccountListProvider;
 import cn.sh.fang.chenance.util.SWTUtil;
 
 public class AccountTab {
-
-	private final static Logger LOG = Logger.getLogger(AccountTab.class);
 
 	private AccountListProvider prov;
 
@@ -58,6 +52,10 @@ public class AccountTab {
 	private AccountEditForm form;
 
 	private Model model;
+
+	private Button btnAdd;
+
+	private Button btnDel;
 
 	public AccountTab(AccountListProvider prov, Model model) {
 		this.prov = prov;
@@ -72,9 +70,9 @@ public class AccountTab {
 		tree.createControl(composite);
 
 		// 追加ボタン
-		Button btnAdd = new Button(composite, SWT.PUSH);
+		btnAdd = new Button(composite, SWT.PUSH);
 		btnAdd.setText("＋");
-		Button btnDel = new Button(composite, SWT.PUSH);
+		btnDel = new Button(composite, SWT.PUSH);
 		btnDel.setText("－");
 
 		// フォーム
@@ -82,6 +80,8 @@ public class AccountTab {
 		Group grp = (Group) form.createControl(composite);
 	
 		// イベント
+		this.prov.addChangeListener(new AccountListListener(this.tree));
+		
 		this.addButton(btnAdd);
 		this.removeButton(btnDel);
 
@@ -156,6 +156,17 @@ public class AccountTab {
 		bindingContext.bindValue(SWTObservables.observeEnabled(this.form.btnSave),
 				isSavable, null, null);
 
+		// "-" button
+		IObservableValue isDeletable = new ComputedValue(Boolean.TYPE) {
+			protected Object calculate() {
+				if ( observeSelection.getValue() == null ) {
+					return Boolean.FALSE;
+				}
+				return Boolean.valueOf(((Account)observeSelection.getValue()).getId() != null);
+			}
+		};
+		bindingContext.bindValue(SWTObservables.observeEnabled(this.btnDel),
+				isDeletable, null, null);
 		//
 		return bindingContext;
 	}
@@ -164,19 +175,7 @@ public class AccountTab {
 		btnAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Model parent = (Model)tree.model.getAccounts().get(0);
-				List<Account> list = parent.getAccounts();
-
-				Account a = new Account();
-				a.setName("New Account");
-				a.setDescription("");
-				a.setCurrentBalance(0);
-				a.setUpdater("USER");
-
-				list.add(a);
-				parent.setAccounts(list);
-
-				tree.viewer.setSelection(new StructuredSelection(a));
+				prov.addItem();
 				form.tName.selectAll();
 				form.tName.setFocus();
 			}
@@ -191,10 +190,7 @@ public class AccountTab {
 				if (parentItem != null) {
 					Model parent = (Model) parentItem.getData();
 					int index = parentItem.indexOf(selectedItem);
-					List<Account> list = new ArrayList<Account>(parent.getAccounts());
-					Account i = list.remove(index);
-					LOG.debug("remove account: " + i);
-					parent.setAccounts(list);
+					prov.removeItem(parent.getAccounts().get(index));
 				}
 			}
 		});

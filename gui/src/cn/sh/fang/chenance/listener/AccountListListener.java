@@ -15,28 +15,26 @@
  */
 package cn.sh.fang.chenance.listener;
 
-import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
+import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableTree;
-import org.eclipse.swt.custom.TableTreeItem;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.jface.viewers.StructuredSelection;
 
+import cn.sh.fang.chenance.AccountTree;
+import cn.sh.fang.chenance.AccountTree.Model;
 import cn.sh.fang.chenance.data.entity.Account;
 
 public class AccountListListener implements IDataAdapter<Account> {
 
 	final static Logger LOG = Logger.getLogger(AccountListListener.class);
 
-	TableTree tree;
+	AccountTree tree;
 
-	public AccountListListener(TableTree t) {
+	public AccountListListener(AccountTree t) {
 		this.tree = t;
 	}
 
+	/*
 	public static class DelAccountSelectionAdapter extends SelectionAdapter {
 
 		TableTree tree;
@@ -75,25 +73,27 @@ public class AccountListListener implements IDataAdapter<Account> {
 			mb.open();
 		}
 	}
+	*/
 
 	public void onAdded(Account item) {
-		TableTreeItem parent = (TableTreeItem) this.tree.getItem(0);
-		TableTreeItem ch = new TableTreeItem(parent, SWT.NONE);
+		Model parent = (Model)tree.model.getAccounts().get(0);
+		List<Account> list = parent.getAccounts();
+		list.add(item);
+		parent.setAccounts(list);
 
-		ch.setText(item.getName());
-		ch.setData(item);
-		tree.deselectAll();
-		tree.setSelection(new TableTreeItem[] { ch });
+		tree.viewer.setSelection(new StructuredSelection(item));
 	}
 
 	public void onRemoved(Account item) {
 		// TODO Auto-generated method stub
+		Model parent = (Model)tree.model.getAccounts().get(0);
+		List<Account> list = parent.getAccounts();
+		list.remove(item);
+		parent.setAccounts(list);
 	}
 
 	public void onUpdated(Account item) {
-		if ( tree.getSelection().length > 0 ) {
-			tree.getSelection()[0].setText(item.getName());
-		}
+		tree.viewer.refresh();
 	}
 
 	public void onLoaded(Account item) {

@@ -193,7 +193,7 @@ public class AccountEditForm {
 		btnSave = new Button(grp, SWT.NONE);
 		setText(btnSave, "&Save this account");
 
-		createOptionControl();
+		//createOptionControl();
 
 		internalLayout();
 
@@ -333,8 +333,8 @@ public class AccountEditForm {
 		fd.height = 80;
 		setFormLayoutDataRight(btnSave, memo, 10, SWT.NONE, memo, 0, SWT.RIGHT);
 
-		fd = setFormLayoutData(bar, btnSave, 10, SWT.NONE, memo, 0, SWT.LEFT);
-		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - 20;
+		//fd = setFormLayoutData(bar, btnSave, 10, SWT.NONE, memo, 0, SWT.LEFT);
+		//fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - 20;
 		// fd.height = 10;
 
 		grp.pack();

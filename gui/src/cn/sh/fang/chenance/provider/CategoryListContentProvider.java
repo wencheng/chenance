@@ -23,11 +23,13 @@ import cn.sh.fang.chenance.ChenanceDataException;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
 
-public class CategoryListContentProvider {
+public class CategoryListContentProvider extends BaseProvider<Category> {
 
 	private Category root;
 
 	List<Category> tops;
+	
+	List<Category> all;
 
 	CategoryService cs = new CategoryService();
 
@@ -36,10 +38,10 @@ public class CategoryListContentProvider {
 	}
 
 	private void initData() {
-		CategoryService service = new CategoryService();
-		tops = service.getTops();
+		tops = cs.getTops();
 		this.root = new Category();
 		root.setChildren(tops);
+		all = cs.findAll();
 	}
 
 	public Category getRoot() {
@@ -61,26 +63,46 @@ public class CategoryListContentProvider {
 		}
 	}
 
-	public Category doAddItem(Category parent) {
+	@Override
+	protected Category doAddItem() {
+		/*
 		int code = 0;
 		try {
 			code = generateCode(parent);
 		} catch (ChenanceDataException e1) {
 			// impossible
 		}
+		*/
 
 		Category c = new Category();
-		c.setCode(code);
-		c.setParent(parent);
+		//c.setCode(code);
+		c.setCode(0);
+		//c.setParent(parent);
 		c.setName(_("New Category"));
 		c.setDescription(_("Description of New Category"));
 		c.setUpdater("USER");
 		cs.save(c);
+		
+		all.add(c);
+		
 		return c;
 	}
-	
-	public void save(Category c) {
-		cs.save(c);
+
+	@Override
+	protected Category doRemoveItem(Category t) {
+		cs.remove(t.getId(), "USER");
+		all.remove(t);
+		return null;
+	}
+
+	@Override
+	protected Category doUpdateItem(Category t) {
+		cs.save(t);
+		return t;
+	}
+
+	public List<Category> getAll() {
+		return all;
 	}
 
 }

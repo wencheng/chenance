@@ -78,6 +78,7 @@ import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.CategoryComboCellEditor;
+import cn.sh.fang.chenance.provider.CategoryListContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
@@ -114,6 +115,10 @@ public class MainWindow {
 
 	private CategoryTab categoryTab;
 
+	private CategoryListContentProvider catProv;
+	
+	public static final String CATEGORY_LIST = "categoryList";
+
 	static {
 		// set factory here due to a bug in max os x
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=211167
@@ -133,6 +138,7 @@ public class MainWindow {
 	private void init() {
 		accountListProv = new AccountListProvider();
 		bs = new BalanceSheetContentProvider();
+		catProv = new CategoryListContentProvider();
 	}
 
 	public static void main(String[] args) {
@@ -201,7 +207,7 @@ public class MainWindow {
 		// today's balance sheet
 		bsAccountTree.selectAccount(0);
 		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-		//bs.setDate( selectedCal.getTime() );
+		bs.setDate( selectedCal.getTime() );
 		bsTableViewer.refresh();
 	}
 
@@ -320,18 +326,21 @@ public class MainWindow {
 	 */
 	private void createTabFolder() {
 		tabFolder = new TabFolder(sShell, SWT.TOP | SWT.BORDER);
+		Control bsTab = getBalanceSheetTabControl(tabFolder);
+		
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
 		setText(item1, "Balance");
-		item1.setControl(getBalanceSheetTabControl(tabFolder));
 
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
 		setText(item2, "Category");
-		categoryTab = new CategoryTab();
-		item2.setControl(categoryTab.getCategoryTabControl(tabFolder));
+		categoryTab = new CategoryTab(this.catProv);
 
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		setText(item3, "Accounts");
 		accountTab = new AccountTab(accountListProv,bsAccountTree.model);
+
+		item1.setControl(bsTab);
+		item2.setControl(categoryTab.getCategoryTabControl(tabFolder));
 		item3.setControl(accountTab.getAccountTabControl(tabFolder) );
 
 		tabFolder.setSize(sShell.getSize());
@@ -356,6 +365,7 @@ public class MainWindow {
 				currentBalance.setText(NumberFormat.getCurrencyInstance().format(item.getCurrentBalance()));
 			}
 		});
+		//this.accountListProv.addChangeListener(new AccountListListener(this.bsAccountTree))
 		// default account selection
 		// TODO select account last saved
 		bsAccountTree.selectAccount(0);
@@ -382,9 +392,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-				Calendar ed = (Calendar) selectedCal.clone();
-				ed.add( Calendar.DATE, 1 );
-				bs.setDate( selectedCal.getTime(), selectedCal.getTime(), ed.getTime() );
+				bs.setDate( selectedCal.getTime() );
 				bsTableViewer.refresh();
 			}
 		});
@@ -595,31 +603,47 @@ public class MainWindow {
 
 		// Create the cell editors
 		final CellEditor[] editors = new CellEditor[Column.values().length];
-
 		// editors[0] = new CheckboxCellEditor(table);
+		// 日付欄
 		CalendarCellEditor dateEditor = new CalendarCellEditor(bsTable, SWT.NULL);
 		editors[Column.DATE.ordinal()] = dateEditor;
-
-		CategoryService service = new CategoryService();
-		List<Category> categoryList = service.findAll();
-		bsTableViewer.setData("categoryList", categoryList);
-		CategoryComboCellEditor e = new CategoryComboCellEditor(bsTable);
-		e.setItems(categoryList);
+		// 科目
+		final CategoryComboCellEditor e = new CategoryComboCellEditor(bsTable);
+		bsTableViewer.setData(CATEGORY_LIST, catProv.getAll());
+		e.setItems(catProv.getAll());
+		catProv.addChangeListener(new IDataAdapter<Category>(){
+			public void onAdded(Category item) {
+				e.setItems(catProv.getAll());
+//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+			}
+			public void onLoaded(Category item) {
+				e.setItems(catProv.getAll());
+//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+			}
+			public void onRemoved(Category item) {
+				e.setItems(catProv.getAll());
+//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+			}
+			public void onUpdated(Category item) {
+				e.setItems(catProv.getAll());
+//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+			}
+		});
 		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
 		editors[Column.CATEGORY.ordinal()] = e;
-
+		// 支出
 		TextCellEditor debitEditor = new TextCellEditor(bsTable);
 		((Text) debitEditor.getControl()).setTextLimit(9);
 		((Text) debitEditor.getControl())
 				.addVerifyListener(new NumberVerifyListener());
 		editors[Column.DEBIT.ordinal()] = debitEditor;
-
+		// 収入
 		TextCellEditor creditEditor = new TextCellEditor(bsTable);
 		((Text) creditEditor.getControl()).setTextLimit(9);
 		((Text) creditEditor.getControl())
 				.addVerifyListener(new NumberVerifyListener());
 		editors[Column.CREDIT.ordinal()] = creditEditor;
-
+		// 詳細
 		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(
 				bsTable);
 
@@ -672,6 +696,7 @@ public class MainWindow {
 		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
 				bsTableViewer);
 		bs.addChangeListener(bstl);
+		
 	}
 
 }
