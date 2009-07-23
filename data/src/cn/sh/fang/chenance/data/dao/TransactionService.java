@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
+
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Transaction;
 
@@ -28,6 +30,8 @@ import cn.sh.fang.chenance.data.entity.Transaction;
  * 's DAO
  */
 public class TransactionService extends BaseService {
+	
+	static Logger LOG = Logger.getLogger(TransactionService.class);
 
     @SuppressWarnings("unchecked")
 	public List<Transaction> findAll() {

@@ -93,7 +93,7 @@ public class Category extends BaseEntity {
 		this.children = cats;
 	}
 
-	public void appendChild(Category c) {
+	public void appendChildren(Category c) {
 		this.children.add(c);
 	}
 
