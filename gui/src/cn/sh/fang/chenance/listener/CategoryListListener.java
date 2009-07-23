@@ -24,10 +24,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import cn.sh.fang.chenance.CategoryTree;
 import cn.sh.fang.chenance.ChenanceDataException;
-import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.provider.CategoryListContentProvider;
-import cn.sh.fang.chenance.util.SWTUtil;
 
 public class CategoryListListener implements IDataAdapter<Category> {
 
@@ -41,7 +39,6 @@ public class CategoryListListener implements IDataAdapter<Category> {
 
 	public void onAdded(Category item) {
 		Category parent = tree.getSelected();
-		List<Category> list = new ArrayList<Category>(parent.getChildren());
 
 		int code = 0;
 		try {
@@ -49,14 +46,13 @@ public class CategoryListListener implements IDataAdapter<Category> {
 		} catch (ChenanceDataException e1) {
 			// impossible
 		}
-
 		item.setCode(code);
 		item.setParent(parent);
-		CategoryService cs = new CategoryService();
-		cs.save(item);
-//		LOG.debug(item);
+		
+		List<Category> list = parent.getChildren();
 		list.add(item);
 		parent.setChildren(list);
+//		parent.appendChildren(item);
 
 		tree.viewer.setSelection(new StructuredSelection(item));
 	}
@@ -77,11 +73,9 @@ public class CategoryListListener implements IDataAdapter<Category> {
 		}
 
 		Category parent = (Category) parentItem.getData();
-		int index = parentItem.indexOf(selectedItem);
-
-		List<Category> list = new ArrayList<Category>(parent.getChildren());
-		Category i = list.remove(index);
-		LOG.debug("remove category: " + i);
+		List<Category> list = parent.getChildren();
+		list.remove(item);
+		LOG.debug("remove category: " + item);
 		parent.setChildren(list);
 	}
 
