@@ -19,11 +19,15 @@ import static cn.sh.fang.chenance.i18n.UIMessageBundle._;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import cn.sh.fang.chenance.ChenanceDataException;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
 
 public class CategoryListContentProvider extends BaseProvider<Category> {
+	
+	static Logger LOG = Logger.getLogger(CategoryListContentProvider.class);
 
 	private Category root;
 
@@ -65,15 +69,6 @@ public class CategoryListContentProvider extends BaseProvider<Category> {
 
 	@Override
 	protected Category doAddItem() {
-		/*
-		int code = 0;
-		try {
-			code = generateCode(parent);
-		} catch (ChenanceDataException e1) {
-			// impossible
-		}
-		*/
-
 		Category c = new Category();
 		//c.setCode(code);
 		c.setCode(0);
@@ -83,10 +78,14 @@ public class CategoryListContentProvider extends BaseProvider<Category> {
 		c.setUpdater("USER");
 		cs.save(c);
 		
-		all.add(c);
-		
 		return c;
 	}
+	
+	@Override
+	protected Category doPostAddItem(Category c) {
+		cs.save(c);
+		return c;
+	}	
 
 	@Override
 	protected Category doRemoveItem(Category t) {
@@ -102,6 +101,11 @@ public class CategoryListContentProvider extends BaseProvider<Category> {
 	}
 
 	public List<Category> getAll() {
+		return all;
+	}
+
+	public List<Category> reloadAll() {
+		all = cs.findAll();
 		return all;
 	}
 

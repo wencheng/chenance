@@ -64,7 +64,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
-import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
@@ -613,19 +612,19 @@ public class MainWindow {
 		e.setItems(catProv.getAll());
 		catProv.addChangeListener(new IDataAdapter<Category>(){
 			public void onAdded(Category item) {
-				e.setItems(catProv.getAll());
+				e.setItems(catProv.reloadAll());
 //				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
 			}
 			public void onLoaded(Category item) {
-				e.setItems(catProv.getAll());
+				e.setItems(catProv.reloadAll());
 //				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
 			}
 			public void onRemoved(Category item) {
-				e.setItems(catProv.getAll());
+				e.setItems(catProv.reloadAll());
 //				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
 			}
 			public void onUpdated(Category item) {
-				e.setItems(catProv.getAll());
+				e.setItems(catProv.reloadAll());
 //				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
 			}
 		});

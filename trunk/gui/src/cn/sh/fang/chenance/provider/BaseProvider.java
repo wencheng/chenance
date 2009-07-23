@@ -43,6 +43,7 @@ public abstract class BaseProvider<T> {
 		Iterator<IDataAdapter<T>> iterator = changeListeners.iterator();
 		while (iterator.hasNext())
 			((IDataAdapter<T>) iterator.next()).onAdded(t);
+		doPostAddItem(t);
 	}
 
 	/**
@@ -67,4 +68,9 @@ public abstract class BaseProvider<T> {
 	protected abstract T doRemoveItem(T t);
 	
 	protected abstract T doUpdateItem(T t);
+
+	protected T doPostAddItem(T t) {
+		return t;
+	}
+
 }
