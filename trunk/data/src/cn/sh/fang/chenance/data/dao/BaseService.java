@@ -49,6 +49,7 @@ public abstract class BaseService {
 	
 	public BaseService() {
 		if (em == null) {
+			LOG.debug("creating em " + this);
 			em = factory.createEntityManager();
 			em.setFlushMode(FlushModeType.AUTO);
 			t = em.getTransaction();
@@ -152,7 +153,7 @@ public abstract class BaseService {
 	 */
 
 	public static void shutdown() {
-//		t.commit();
+		t.commit();
 		em.close();
 		factory.close();
 	}

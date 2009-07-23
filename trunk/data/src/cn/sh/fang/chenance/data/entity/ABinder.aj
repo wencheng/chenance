@@ -6,6 +6,8 @@ public aspect ABinder {
 	
 	pointcut bindSetters() : execution(* BaseEntity+.set*(..));
 	
+	pointcut bindAppenders() : execution(* BaseEntity+.append*(..));
+	
 	after() : bindSetters() {
 		String name = thisJoinPoint.getSignature().getName();
 		name = Character.toLowerCase(name.charAt(3)) + name.substring(4);
@@ -18,6 +20,15 @@ public aspect ABinder {
 
 		// if true, sync it
     }
+	
+	after() : bindAppenders() {
+		String name = thisJoinPoint.getSignature().getName();
+		name = Character.toLowerCase(name.charAt(6)) + name.substring(7);
+		System.err.println(name);
+		// FIXME 
+		((BaseEntity)thisJoinPoint.getThis()).changeSupport.firePropertyChange(name,
+				null, thisJoinPoint.getArgs()[0]);
+	}
 	
 	pointcut startMethod() : 
 		execution(* cn.sh.fang.chenance.util.swt.SwtTextAdapterProvider.*(..)) ||
