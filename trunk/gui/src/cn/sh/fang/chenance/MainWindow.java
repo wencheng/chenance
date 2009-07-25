@@ -68,16 +68,17 @@ import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
+import cn.sh.fang.chenance.listener.BaseDataAdapter;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
 import cn.sh.fang.chenance.listener.IDataAdapter;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
-import cn.sh.fang.chenance.provider.AccountListProvider;
+import cn.sh.fang.chenance.provider.AccountContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.CategoryComboCellEditor;
-import cn.sh.fang.chenance.provider.CategoryListContentProvider;
+import cn.sh.fang.chenance.provider.CategoryContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
@@ -94,9 +95,9 @@ public class MainWindow {
 	private TabFolder tabFolder;
 	private Table bsTable;
 
-	private AccountListProvider accountListProv;
+	private AccountContentProvider accountListProv;
 
-	BalanceSheetContentProvider bs;
+	BalanceSheetContentProvider bsProv;
 
 	private AccountTree bsAccountTree;
 
@@ -114,7 +115,11 @@ public class MainWindow {
 
 	private CategoryTab categoryTab;
 
-	private CategoryListContentProvider catProv;
+	private CategoryContentProvider catProv;
+
+	protected NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+
+	private CategoryComboCellEditor catCombo;
 	
 	public static final String CATEGORY_LIST = "categoryList";
 
@@ -135,9 +140,9 @@ public class MainWindow {
 	}
 
 	private void init() {
-		accountListProv = new AccountListProvider();
-		bs = new BalanceSheetContentProvider();
-		catProv = new CategoryListContentProvider();
+		accountListProv = new AccountContentProvider();
+		bsProv = new BalanceSheetContentProvider();
+		catProv = new CategoryContentProvider();
 	}
 
 	public static void main(String[] args) {
@@ -152,9 +157,17 @@ public class MainWindow {
 				s.run(new Runnable() {
 					public void run() {
 						if (!MAC_OS_X) {
-							BaseService.init();
+							try {
+								BaseService.init();
+							} catch (org.hibernate.exception.GenericJDBCException e) {
+								if ("90020".equals(e.getSQLState())) {
+									SWTUtil.showErrorMessage(swt.sShell, "Database may be already in use: Locked by another process.");
+									swt.sShell.dispose();
+									s.close();
+								}
+							}
 						}
-		
+
 						swt.init();
 						swt.createSShell();
 						swt.sShell.open();
@@ -206,7 +219,7 @@ public class MainWindow {
 		// today's balance sheet
 		bsAccountTree.selectAccount(0);
 		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-		bs.setDate( selectedCal.getTime() );
+		bsProv.setDate( selectedCal.getTime() );
 		bsTableViewer.refresh();
 	}
 
@@ -325,22 +338,25 @@ public class MainWindow {
 	 */
 	private void createTabFolder() {
 		tabFolder = new TabFolder(sShell, SWT.TOP | SWT.BORDER);
-		Control bsTab = getBalanceSheetTabControl(tabFolder);
-		
+
 		TabItem item1 = new TabItem(tabFolder, SWT.NULL);
 		setText(item1, "Balance");
 
 		TabItem item2 = new TabItem(tabFolder, SWT.NULL);
 		setText(item2, "Category");
-		categoryTab = new CategoryTab(this.catProv);
 
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		setText(item3, "Accounts");
-		accountTab = new AccountTab(accountListProv,bsAccountTree.model);
 
+		categoryTab = new CategoryTab(this.catProv);
+		Control catTab = categoryTab.getCategoryTabControl(tabFolder);
+		Control bsTab = getBalanceSheetTabControl(tabFolder);
+		accountTab = new AccountTab(accountListProv,bsAccountTree.model);
+		Control accTab = accountTab.getAccountTabControl(tabFolder);
+		
 		item1.setControl(bsTab);
-		item2.setControl(categoryTab.getCategoryTabControl(tabFolder));
-		item3.setControl(accountTab.getAccountTabControl(tabFolder) );
+		item2.setControl(catTab);
+		item3.setControl(accTab);
 
 		tabFolder.setSize(sShell.getSize());
 	}
@@ -352,19 +368,11 @@ public class MainWindow {
 		List<Account> accounts = accountListProv.getAccounts();
 		bsAccountTree = new AccountTree(accounts);
 		bsAccountTree.createControl(composite);
-		accountListProv.addChangeListener(new IDataAdapter<Account>(){
-			public void onAdded(Account item) {
-			}
-			public void onLoaded(Account item) {
-			}
-			public void onRemoved(Account item) {
-			}
+		accountListProv.addChangeListener(new BaseDataAdapter<Account>(){
 			public void onUpdated(Account item) {
 				bsAccountTree.viewer.refresh();
-				currentBalance.setText(NumberFormat.getCurrencyInstance().format(item.getCurrentBalance()));
 			}
 		});
-		//this.accountListProv.addChangeListener(new AccountListListener(this.bsAccountTree))
 		// default account selection
 		// TODO select account last saved
 		bsAccountTree.selectAccount(0);
@@ -372,11 +380,11 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-
 				Account a = bsAccountTree.getSelected();
 				if ( a.getId() != null ) {
-					bs.setAccount(a);
+					bsProv.setAccount(a);
 					bsTableViewer.refresh();
+					currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 				}
 			}
 		});
@@ -390,9 +398,7 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-				bs.setDate( selectedCal.getTime() );
-				bsTableViewer.refresh();
+				changeBsDateRange(Calendar.DATE);
 			}
 		});
 		// 週
@@ -402,13 +408,7 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
-				Calendar bgn = (Calendar) selectedCal.clone();
-				bgn.add( Calendar.DATE, -(bgn.get(Calendar.DAY_OF_WEEK)-bgn.getMinimalDaysInFirstWeek()) );
-				Calendar end = (Calendar) bgn.clone();
-				end.add( Calendar.DATE, 7 );
-				bs.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
-				bsTableViewer.refresh();
+				changeBsDateRange(Calendar.WEEK_OF_MONTH);
 			}
 		});
 		// 月
@@ -418,13 +418,7 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
-				Calendar bgn = (Calendar) selectedCal.clone();
-				bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
-				Calendar end = (Calendar) bgn.clone();
-				end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
-				bs.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
-				bsTableViewer.refresh();
+				changeBsDateRange(Calendar.MONTH);
 			}
 		});
 		// 年
@@ -434,16 +428,7 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
-				Calendar bgn = (Calendar) selectedCal.clone();
-				bgn.set( Calendar.MONTH, 0 );
-				bgn.set( Calendar.DATE, 1 );
-				Calendar end = (Calendar) bgn.clone();
-				end.set( Calendar.MONTH, 11 );
-				end.set( Calendar.DATE, 31 );
-				end.add( Calendar.DATE, 1 );
-				bs.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
-				bsTableViewer.refresh();
+				changeBsDateRange(Calendar.YEAR);
 			}
 		});
 		
@@ -501,9 +486,10 @@ public class MainWindow {
 				super.widgetSelected(e);
 				Transaction t = (Transaction) bsTable.getSelection()[0].getData();
 				if ( t.getDate() != null ) {
-					bs.removeItem(t);
+					bsProv.removeItem(t);
 				}
 				bsTableViewer.refresh();
+				currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 			}
 		});
 		bsTable.setMenu(mePopup);
@@ -515,7 +501,7 @@ public class MainWindow {
 					Transaction t = (Transaction) bsTable.getSelection()[0]
 							.getData();
 					if (t.getDate() == null) {
-						bs.addItem();
+						bsProv.addItem();
 						return;
 					}
 				}
@@ -543,7 +529,8 @@ public class MainWindow {
 		FormData layoutData = SWTUtil.setFormLayoutData(bsAccountTree.viewer.getTree(),
 				listDate, 10, SWT.NONE, listDate, 0, SWT.LEFT);
 		layoutData.height = 300;
-		layoutData.width = listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		layoutData.width = listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
+		LOG.debug(listDate.getSize());
 		LOG.debug(listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 		SWTUtil.setFormLayoutData(bsTable, listDate, 0, SWT.TOP, listDate, 20,
@@ -607,29 +594,25 @@ public class MainWindow {
 		CalendarCellEditor dateEditor = new CalendarCellEditor(bsTable, SWT.NULL);
 		editors[Column.DATE.ordinal()] = dateEditor;
 		// 科目
-		final CategoryComboCellEditor e = new CategoryComboCellEditor(bsTable);
+		this.catCombo = new CategoryComboCellEditor(bsTable);
+		catCombo.setItems(catProv.getAll());
 		bsTableViewer.setData(CATEGORY_LIST, catProv.getAll());
-		e.setItems(catProv.getAll());
 		catProv.addChangeListener(new IDataAdapter<Category>(){
 			public void onAdded(Category item) {
-				e.setItems(catProv.reloadAll());
-//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+				resetCategoryCombo();
 			}
 			public void onLoaded(Category item) {
-				e.setItems(catProv.reloadAll());
-//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+				resetCategoryCombo();
 			}
 			public void onRemoved(Category item) {
-				e.setItems(catProv.reloadAll());
-//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+				resetCategoryCombo();
 			}
 			public void onUpdated(Category item) {
-				e.setItems(catProv.reloadAll());
-//				bsTableViewer.setData(CATEGORY_LIST, catProv.tops);
+				resetCategoryCombo();
 			}
 		});
 		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
-		editors[Column.CATEGORY.ordinal()] = e;
+		editors[Column.CATEGORY.ordinal()] = catCombo;
 		// 支出
 		TextCellEditor debitEditor = new TextCellEditor(bsTable);
 		((Text) debitEditor.getControl()).setTextLimit(9);
@@ -664,7 +647,7 @@ public class MainWindow {
 		bsTableViewer.setCellEditors(editors);
 		// Set the cell modifier for the viewer
 		bsTableViewer.setCellModifier(new BalanceSheetCellModifier(
-				bs, bsTableViewer, accountListProv));
+				bsProv, bsTableViewer, accountListProv));
 		// Set the default sorter for the viewer
 		// tableViewer.setSorter(new ExampleTaskSorter(
 		// ExampleTaskSorter.DESCRIPTION));
@@ -688,14 +671,65 @@ public class MainWindow {
 		bslp = new BalanceSheetLabelProvider(bsTableViewer);
 		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
 
-		bsTableViewer.setContentProvider(bs);
+		bsTableViewer.setContentProvider(bsProv);
 		bsTableViewer.setLabelProvider(bslp);
-		bsTableViewer.setInput(bs);
+		bsTableViewer.setInput(bsProv);
 
 		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
 				bsTableViewer);
-		bs.addChangeListener(bstl);
+		bsProv.addChangeListener(bstl);
+		bsProv.addChangeListener(new BaseDataAdapter<Transaction>(){
+			@Override
+			public void onRemoved(Transaction item) {
+				currentBalance.setText(numberFormat.format(bsProv.getBalance()));
+			}
+			@Override
+			public void onUpdated(Transaction item) {
+				currentBalance.setText(numberFormat.format(bsProv.getBalance()));
+			}
+		});
 		
+	}
+
+
+	public void changeBsDateRange(int i) {
+		Calendar bgn;
+		Calendar end;
+		if ( i == Calendar.DATE ) {
+			bslp.setDateFormat( BalanceSheetLabelProvider.DD );
+			bsProv.setDate( selectedCal.getTime() );
+		} else if ( i == Calendar.WEEK_OF_MONTH ) {
+			bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
+			bgn = (Calendar) selectedCal.clone();
+			bgn.add( Calendar.DATE, -(bgn.get(Calendar.DAY_OF_WEEK)-bgn.getMinimalDaysInFirstWeek()) );
+			end = (Calendar) bgn.clone();
+			end.add( Calendar.DATE, 7 );
+			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
+		} else if ( i == Calendar.MONTH) {
+			bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
+			bgn = (Calendar) selectedCal.clone();
+			bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
+			end = (Calendar) bgn.clone();
+			end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
+			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
+		} else if ( i == Calendar.YEAR ) {
+			bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
+			bgn = (Calendar) selectedCal.clone();
+			bgn.set( Calendar.MONTH, 0 );
+			bgn.set( Calendar.DATE, 1 );
+			end = (Calendar) bgn.clone();
+			end.set( Calendar.MONTH, 11 );
+			end.set( Calendar.DATE, 31 );
+			end.add( Calendar.DATE, 1 );
+			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
+		}
+		bsTableViewer.refresh();
+		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
+	}
+
+	public void resetCategoryCombo() {
+		catCombo.setItems(catProv.reloadAll());
+		bsTableViewer.setData(CATEGORY_LIST, catProv.getAll());
 	}
 
 }

@@ -24,15 +24,15 @@ import org.apache.log4j.Logger;
 import cn.sh.fang.chenance.data.dao.AccountService;
 import cn.sh.fang.chenance.data.entity.Account;
 
-public class AccountListProvider extends BaseProvider<Account> {
+public class AccountContentProvider extends BaseProvider<Account> {
 	
-	static Logger LOG = Logger.getLogger(AccountListProvider.class);
+	static Logger LOG = Logger.getLogger(AccountContentProvider.class);
 
 	AccountService service = new AccountService();
 
 	List<Account> accounts;
 	
-	public AccountListProvider() {
+	public AccountContentProvider() {
 		initData();
 	}
 	

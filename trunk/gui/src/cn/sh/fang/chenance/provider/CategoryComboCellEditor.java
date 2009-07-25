@@ -114,6 +114,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 
 		comboBox = new CCombo(parent, getStyle() | SWT.APPLICATION_MODAL);
 		comboBox.setFont(parent.getFont());
+		comboBox.setVisibleItemCount(20);
 
 		populateComboBoxItems();
 
@@ -137,7 +138,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 				applyEditorValueAndDeactivate();
 			}
 		});
-
+		
 		comboBox.addTraverseListener(new TraverseListener() {
 			public void keyTraversed(TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE
@@ -148,6 +149,15 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 		});
 
 		comboBox.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				System.err.println(e.widget);
+				Event ev = new Event();
+				ev.button = 1;
+				((CCombo)e.widget).notifyListeners(SWT.MouseDown, ev);
+			}
+
+			@Override
 			public void focusLost(FocusEvent e) {
 				CategoryComboCellEditor.this.focusLost();
 			}
@@ -156,6 +166,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 		comboBox.getTable().addListener(SWT.MeasureItem, this);
 		comboBox.getTable().addListener(SWT.EraseItem, this);
 		comboBox.getTable().addListener(SWT.PaintItem, this);
+		comboBox.getTable().addListener(SWT.FocusOut, this);
 
 		return comboBox;
 	}
@@ -237,8 +248,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 			for (int i = 0; i < items.size(); i++) {
 				Category c = items.get(i);
 				if (c.getCode() % 10000 != 0) {
-					comboBox.add(c.getDisplayName(),
-							null);
+					comboBox.add(c.getDisplayName(), null);
 				} else {
 					comboBox.add(c.getDisplayName(), null);
 				}
@@ -299,9 +309,9 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 	 * @see org.eclipse.jface.viewers.CellEditor#focusLost()
 	 */
 	protected void focusLost() {
-		if (isActivated()) {
+//		if (isActivated()) {
 			applyEditorValueAndDeactivate();
-		}
+//		}
 	}
 
 	/*
@@ -318,6 +328,10 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 	}
 
 	public void handleEvent(Event e) {
+		if (e.type == SWT.FocusOut) {
+			applyEditorValueAndDeactivate();
+		}
+		
 		if (e.type == SWT.MeasureItem) {
 			Table ctable = comboBox.getTable();
 			if ( this.clientAreaWidth != ctable.getClientArea().width ) {
@@ -345,7 +359,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 
 			if ((e.detail & SWT.SELECTED) == 0) {
 				if (((Category) e.item.getData()).isRoot()) {
-					gc.setBackground(grey);
+					gc.setBackground(comboBox.getDisplay().getSystemColor(SWT.COLOR_GRAY));
 					gc.fillRectangle(0, e.y, clientWidth, e.height);
 				}
 				return; /* item not selected */
@@ -354,10 +368,15 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 			Color oldForeground = gc.getForeground();
 			Color oldBackground = gc.getBackground();
 			gc.setForeground(comboBox.getDisplay()
-					.getSystemColor(SWT.COLOR_DARK_MAGENTA));
-			gc.setBackground(comboBox.getDisplay().getSystemColor(
-					SWT.COLOR_MAGENTA));
-			gc.fillGradientRectangle(0, e.y, clientWidth, e.height, false);
+					.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+			gc.setBackground(comboBox.getDisplay()
+					.getSystemColor(SWT.COLOR_LIST_SELECTION));
+//			gc.fillGradientRectangle(0, e.y, clientWidth, e.height, false);
+			gc.fillGradientRectangle(2, e.y+1, clientWidth-7, e.height-3, true);
+			//gc.fillRoundRectangle(2, e.y+2, clientWidth-5, e.height-2, 24, 14);
+			gc.setForeground(comboBox.getDisplay()
+					.getSystemColor(SWT.COLOR_BLACK));
+			gc.drawRoundRectangle(1, e.y, clientWidth-6, e.height-2, 3, 3);
 			gc.setForeground(oldForeground);
 			gc.setBackground(oldBackground);
 			e.detail &= ~SWT.SELECTED;
@@ -366,8 +385,9 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 		if (e.type == SWT.PaintItem) {
 			// TableItem item = (TableItem)e.item;
 			// Image trailingImage = (Image)item.getData();
+//			if (trailingImage != null) {
 			Image trailingImage = plus_img;
-			if (trailingImage != null) {
+			if (((Category) e.item.getData()).isRoot()) {
 				int x = e.x + e.width + 8;
 				int itemHeight = table.getItemHeight();
 				int imageHeight = trailingImage.getBounds().height;

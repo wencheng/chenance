@@ -37,13 +37,13 @@ public class BalanceSheetCellModifier implements ICellModifier {
 	
 	TransactionService ts = new TransactionService();
 
-	private BalanceSheetContentProvider bs;
+	private BalanceSheetContentProvider bsProv;
 
-	private AccountListProvider accountListProv; 
+	private AccountContentProvider accountListProv; 
 
-	public BalanceSheetCellModifier(BalanceSheetContentProvider bs2, TableViewer bs, AccountListProvider accountListProv) {
-		this.viewer = bs;
-		this.bs = bs2;
+	public BalanceSheetCellModifier(BalanceSheetContentProvider bsProv, TableViewer viewer, AccountContentProvider accountListProv) {
+		this.viewer = viewer;
+		this.bsProv = bsProv;
 		this.accountListProv = accountListProv;
 	}
 
@@ -119,10 +119,18 @@ public class BalanceSheetCellModifier implements ICellModifier {
 			t.setCategory(l.get(i));
 			break;
 		case DEBIT:
-			t.setDebit(Integer.valueOf((String)value));
+			try {
+				t.setDebit(Integer.valueOf((String)value));
+			} catch (NumberFormatException e) {
+				t.setDebit(0);
+			}
 			break;
 		case CREDIT:
-			t.setCredit(Integer.valueOf((String)value));
+			try {
+				t.setCredit(Integer.valueOf((String)value));
+			} catch (NumberFormatException e) {
+				t.setCredit(0);
+			}
 			break;
 		default:
 		}
@@ -130,7 +138,7 @@ public class BalanceSheetCellModifier implements ICellModifier {
 		ts.save(t);
 		viewer.refresh();
 		
-		bs.itemChanged( t );
+		bsProv.itemChanged( t );
 		accountListProv.itemChanged( t.getAccount() );
 	}
 }

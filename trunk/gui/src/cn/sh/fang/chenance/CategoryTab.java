@@ -43,13 +43,13 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.listener.CategoryListListener;
-import cn.sh.fang.chenance.provider.CategoryListContentProvider;
+import cn.sh.fang.chenance.provider.CategoryContentProvider;
 import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.StyledTextObservableValue;
 
 public class CategoryTab {
 
-	private CategoryListContentProvider prov;
+	private CategoryContentProvider prov;
 
 	private CategoryTree tree;
 
@@ -61,7 +61,7 @@ public class CategoryTab {
 
 	private Button btnDel;
 
-	public CategoryTab(CategoryListContentProvider prov) {
+	public CategoryTab(CategoryContentProvider prov) {
 		this.prov = prov;
 		this.root = prov.getRoot();
 	}
@@ -170,7 +170,7 @@ public class CategoryTab {
 					return Boolean.FALSE;
 				}
 				try {
-					CategoryListContentProvider.generateCode((Category)observeSelection.getValue());
+					CategoryContentProvider.generateCode((Category)observeSelection.getValue());
 				} catch (ChenanceDataException e1) {
 					return Boolean.FALSE;
 				}

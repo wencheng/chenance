@@ -25,9 +25,9 @@ import cn.sh.fang.chenance.ChenanceDataException;
 import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
 
-public class CategoryListContentProvider extends BaseProvider<Category> {
+public class CategoryContentProvider extends BaseProvider<Category> {
 	
-	static Logger LOG = Logger.getLogger(CategoryListContentProvider.class);
+	static Logger LOG = Logger.getLogger(CategoryContentProvider.class);
 
 	private Category root;
 
@@ -37,7 +37,7 @@ public class CategoryListContentProvider extends BaseProvider<Category> {
 
 	CategoryService cs = new CategoryService();
 
-	public CategoryListContentProvider() {
+	public CategoryContentProvider() {
 		this.initData();
 	}
 
@@ -70,9 +70,7 @@ public class CategoryListContentProvider extends BaseProvider<Category> {
 	@Override
 	protected Category doAddItem() {
 		Category c = new Category();
-		//c.setCode(code);
 		c.setCode(0);
-		//c.setParent(parent);
 		c.setName(_("New Category"));
 		c.setDescription(_("Description of New Category"));
 		c.setUpdater("USER");
@@ -85,7 +83,7 @@ public class CategoryListContentProvider extends BaseProvider<Category> {
 	protected Category doPostAddItem(Category c) {
 		cs.save(c);
 		return c;
-	}	
+	}
 
 	@Override
 	protected Category doRemoveItem(Category t) {
