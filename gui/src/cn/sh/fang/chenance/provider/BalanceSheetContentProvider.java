@@ -35,7 +35,7 @@ import cn.sh.fang.chenance.data.entity.Transaction;
  */
 public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		implements IStructuredContentProvider {
-	
+
 	static final Logger LOG = Logger.getLogger( BalanceSheetContentProvider.class );
 
 	public enum Column {
@@ -60,6 +60,8 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	private Date bDate = cDate;
 
 	private Date eDate = bDate;
+
+	private int balance;
 
 	static final Transaction EMPTY = new Transaction();
 
@@ -86,7 +88,20 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	private void refresh() {
 		TransactionService ts = new TransactionService();
 		this.transactions = ts.find(account, bDate, eDate);
+		calcBalance();
 		this.transactions.add(EMPTY);
+	}
+
+	private void calcBalance() {
+		this.balance = 0;
+		for (Transaction t : transactions) {
+			this.balance -= t.getDebit();
+			this.balance += t.getCredit();
+		}
+	}
+	
+	public int getBalance() {
+		return this.balance;
 	}
 
 	/**
@@ -105,9 +120,6 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		this.cDate = cDate;
 		this.bDate = bDate;
 		this.eDate = eDate;
-		
-		LOG.debug( bDate );
-		LOG.debug( eDate );
 
 		refresh();
 	}
@@ -126,19 +138,6 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		return this.transactions;
 	}
 
-	/*
-	 * TableViewerオブジェクトのsetInputメソッドでドメインオブジェクトが渡されたときに呼び出されるメソッドである。
-	 * 
-	 * (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer, java.lang.Object, java.lang.Object)
-	 */
-	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-//		if (newInput != null)
-//			((BalanceSheetContentProvider) newInput).addChangeListener(this);
-//		if (oldInput != null)
-//			((BalanceSheetContentProvider) oldInput).removeChangeListener(this);
-	}
-
 	@Override
 	protected Transaction doAddItem() {
 		Transaction t = new Transaction();
@@ -149,26 +148,28 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		t.setAccount(this.account);
 		t.setIsConfirmed(true);
 		t.setUpdater("USER");
-		LOG.debug(this.transactions.size());
+
 		this.transactions.add(this.transactions.size()-1, t);
-		LOG.debug(this.transactions.get(0));
 		return t;
 	}
 
 	@Override
 	protected Transaction doRemoveItem(Transaction t) {
 		this.transactions.remove(t);
+		calcBalance();
 		return t;
 	}
 
 	@Override
 	protected Transaction doUpdateItem(Transaction t) {
+		calcBalance();
 		return t;
 	}
 
 	public void dispose() {
-		// TODO Auto-generated method stub
+	}
 
+	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
 	}
 
 }

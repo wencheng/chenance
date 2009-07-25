@@ -15,7 +15,6 @@
  */
 package cn.sh.fang.chenance.listener;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,8 +23,9 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import cn.sh.fang.chenance.CategoryTree;
 import cn.sh.fang.chenance.ChenanceDataException;
+import cn.sh.fang.chenance.data.dao.CategoryService;
 import cn.sh.fang.chenance.data.entity.Category;
-import cn.sh.fang.chenance.provider.CategoryListContentProvider;
+import cn.sh.fang.chenance.provider.CategoryContentProvider;
 
 public class CategoryListListener implements IDataAdapter<Category> {
 
@@ -42,7 +42,7 @@ public class CategoryListListener implements IDataAdapter<Category> {
 
 		int code = 0;
 		try {
-			code = CategoryListContentProvider.generateCode(parent);
+			code = CategoryContentProvider.generateCode(parent);
 		} catch (ChenanceDataException e1) {
 			// impossible
 		}
@@ -54,6 +54,7 @@ public class CategoryListListener implements IDataAdapter<Category> {
 		parent.setChildren(list);
 //		parent.appendChildren(item);
 
+		new CategoryService().save(item);
 		tree.viewer.setSelection(new StructuredSelection(item));
 	}
 

@@ -38,7 +38,9 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -106,19 +108,34 @@ public class AccountTree {
 	}
 
 	public TreeViewer createControl(Composite composite) {
-		Tree tree = new Tree(composite, SWT.BORDER | SWT.FULL_SELECTION
+		final Tree tree = new Tree(composite, SWT.BORDER | SWT.FULL_SELECTION
 				| SWT.SINGLE);
 		tree.setLinesVisible(true);
+		tree.addListener(SWT.Collapse, new Listener() {
+			public void handleEvent(Event e) {
+				// http://dev.eclipse.org/newslists/news.eclipse.platform.swt/msg33378.html
+				tree.setRedraw(false);
+				final TreeItem i = ((TreeItem) e.item);
+				if (i.getData() instanceof Model) {
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							i.setExpanded(true);
+							tree.setRedraw(true);
+						}
+					});
+				}
+			}
+		});
+		
 		viewer = new TreeViewer(tree);
 
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 		column1.setAlignment(SWT.LEFT);
-		//column1.setText("Land/Stadt");
-		column1.setWidth(100);
+		column1.setWidth(140);
+		
 		TreeColumn column2 = new TreeColumn(tree, SWT.RIGHT);
 		column2.setAlignment(SWT.RIGHT);
-		//column2.setText("Person");
-		column2.setWidth(93);
+		column2.setWidth(80);
 		
 		// Create a standard content provider
 		ObservableListTreeContentProvider provider = new ObservableListTreeContentProvider(

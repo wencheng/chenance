@@ -18,7 +18,6 @@ package cn.sh.fang.chenance.util.swt;
 import org.aspencloud.widgets.ImageCombo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
 public class CCombo extends ImageCombo {
 

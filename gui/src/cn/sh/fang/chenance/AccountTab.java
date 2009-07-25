@@ -40,12 +40,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import cn.sh.fang.chenance.AccountTree.Model;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.listener.AccountListListener;
-import cn.sh.fang.chenance.provider.AccountListProvider;
+import cn.sh.fang.chenance.provider.AccountContentProvider;
 import cn.sh.fang.chenance.util.SWTUtil;
 
 public class AccountTab {
 
-	private AccountListProvider prov;
+	private AccountContentProvider prov;
 
 	private AccountTree tree;
 
@@ -57,7 +57,7 @@ public class AccountTab {
 
 	private Button btnDel;
 
-	public AccountTab(AccountListProvider prov, Model model) {
+	public AccountTab(AccountContentProvider prov, Model model) {
 		this.prov = prov;
 		this.model = model;
 	}
@@ -103,7 +103,7 @@ public class AccountTab {
 		Tree tableTree = tree.viewer.getTree();
 		FormData fd = SWTUtil.setFormLayoutData(tableTree, 0, 0, 0, 10);
 		fd.height = 400;
-		fd.width = 217;
+		fd.width = 205;
 
 		fd = SWTUtil.setFormLayoutDataRight(btnDel, tableTree, 2, SWT.NONE,
 				tableTree, 0, SWT.RIGHT);
