@@ -48,13 +48,13 @@ public class Transaction extends BaseEntity {
     private Integer budget;
 
     @Column(name="debit")
-    private Integer debit;
+    private Integer debit = 0;
 
     @Column(name="credit")
-    private Integer credit;
+    private Integer credit = 0;
 
     @Column(name="balance")
-    private Integer balance;
+    private Integer balance = 0;
 
     @Column(name="is_confirmed")
     private Boolean isConfirmed;

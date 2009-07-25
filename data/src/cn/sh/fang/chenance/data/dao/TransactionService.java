@@ -171,7 +171,7 @@ public class TransactionService extends BaseService {
 	 * @return
 	 */
 	public List<Transaction> find(Account account, Date bDate, Date eDate) {
-        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0 ORDER BY _date");
+        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0 ORDER BY FORMATDATETIME(_date, 'yyyy-MM-dd'), insert_datetime");
         query.setParameter(1, account.getId());
         Calendar cal = Calendar.getInstance();
         cal.setTime( bDate );
