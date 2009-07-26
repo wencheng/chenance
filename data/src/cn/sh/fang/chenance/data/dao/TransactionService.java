@@ -40,9 +40,7 @@ public class TransactionService extends BaseService {
     }
 
     public void save(Transaction entity) {
-        int diff = updateBalance( entity );
-        Account a = entity.getAccount();
-        a.setCurrentBalance( a.getCurrentBalance() + diff );
+    	updateBalance( entity );
 
     	if (entity.getId() == null) {
             // new
@@ -58,10 +56,15 @@ public class TransactionService extends BaseService {
     }
 
     private void calcBalance(Transaction t) {
+    	// get latest balance
     	Query query;
-    	query = em.createNativeQuery( "SELECT balance FROM t_transaction WHERE account_id = ? AND _date < ? AND is_deleted = 0 ORDER BY _date DESC" );
+    	query = em.createNativeQuery( "SELECT balance FROM t_transaction" +
+    			" WHERE account_id = ? AND (_date < ? or (_date = ? and insert_datetime < ?)) AND is_deleted = 0" +
+    			" ORDER BY _date DESC, insert_datetime DESC" );
     	query.setParameter(1, t.getAccount().getId());
     	query.setParameter(2, t.getDate());
+    	query.setParameter(3, t.getDate());
+    	query.setParameter(4, t.getInsertDatetime());
     	List<Number> l = query.getResultList();
 
     	int i;
@@ -82,9 +85,10 @@ public class TransactionService extends BaseService {
      * @return difference between before and after
      */
     private int updateBalance(Transaction t) {
-    	int curr = t.getCredit() - t.getDebit();
-		int diff = curr;
+    	int currDiff = t.getCredit() - t.getDebit();
+		int diff = 0;
 
+		// update balances if _date is modified
     	if ( t.getId() != null ) {
     		Query query
     			= em.createNativeQuery( "SELECT debit, credit, _date FROM t_transaction WHERE id = ?" )
@@ -92,62 +96,96 @@ public class TransactionService extends BaseService {
     		Object[] oldTrans = (Object[]) query.getSingleResult();
 
     		Date olddate = (Date) oldTrans[2];
-    		int oldbalance = (Integer)oldTrans[1] - (Integer)oldTrans[0];
-    		diff = curr - oldbalance;
-
-			LOG.debug( t.getDate() );
-			LOG.debug( olddate );
+    		int oldDiff = (Integer)oldTrans[1] - (Integer)oldTrans[0];
+    		diff = currDiff - oldDiff;
+    		
+			LOG.debug( "_date after modify: " + t.getDate() );
+			LOG.debug( "_date before modify: " + olddate );
+			LOG.debug( "diff: " + diff );
+			LOG.debug( "old diff: " + oldDiff );
 
 			if ( t.getDate().compareTo(olddate) < 0 ) {
 	    		// move to earlier
 	    		// add with current balance
-	    		updateBalance(t.getAccount().getId(), t.getDate(), olddate, curr );
+				LOG.debug("updating 1");
+	    		updateBalance(t.getAccount().getId(), t.getDate(), t.getInsertDatetime(), olddate, currDiff);
 	    	} else if ( t.getDate().compareTo(olddate) > 0 ) {
 	    		// move to later
 	    		// minus old balance
-	    		updateBalance(t.getAccount().getId(), olddate, t.getDate(), oldbalance );
+	    		LOG.debug("updating 2");
+	    		updateBalance(t.getAccount().getId(), olddate, t.getInsertDatetime(), t.getDate(), -oldDiff);
 	    	}
     	}
 
-   		// update with diff
-    	updateBalance(t.getAccount().getId(), t.getDate(), diff );
-
-    	t.setBalance( t.getBalance() + diff );
+		// update future transactions' balances and account's balance if current balance is modified
+    	if ( diff != 0 ) {
+    		updateTransactionBalance( t, diff );
+    	}
 
     	return diff;
     }
 
     /**
-     * _date > bdate AND _date < edate
+     * All transactions which is between
+     * bdate + insert_datetime
+     * and
+     * edate + insert_datetime
+     * will be updated.
      * 
      * @param accountId
      * @param bdate
      * @param edate
      * @param diff
      */
-    public void updateBalance(Integer accountId, Date bdate, Date edate, int diff) {
+    public void updateBalance(Integer accountId, Date bdate, Date insertDate, Date edate, int diff) {
     	Query query;
-    	query = em.createQuery( "UPDATE Transaction SET balance = balance + ? WHERE account.id = ? AND _date > ? AND _date < ? AND is_deleted = 0" );
-   		query.setParameter( 1, diff );
+    	query = em.createQuery( "UPDATE Transaction SET balance = balance + ?" +
+    			" WHERE account.id = ?" +
+    			" AND (_date > ? or (_date = ? and insert_datetime > ?))" +
+    			" AND (_date < ? or (_date = ? and insert_datetime < ?))" +
+    			" AND is_deleted = 0" );
+   		query.setParameter(1, diff );
     	query.setParameter(2, accountId);
     	query.setParameter(3, bdate);
-    	query.setParameter(4, edate);
+    	query.setParameter(4, bdate);
+    	query.setParameter(5, insertDate);
+    	query.setParameter(6, edate);
+    	query.setParameter(7, edate);
+    	query.setParameter(8, insertDate);
     	query.executeUpdate();
     }
 
-    public void updateBalance(Integer accountId, Date date, int diff) {
+    /**
+     * All transactions which is later than <code>date</code> and <code>insertDate</code>
+     * will be updated.
+     * 
+     * @param accountId
+     * @param date
+     * @param insertDate
+     * @param diff
+     */
+    public void updateTransactionBalance(Transaction t, int diff) {
     	Query query;
-    	query = em.createQuery( "UPDATE Transaction SET balance = balance + ? WHERE account.id = ? AND _date > ? AND is_deleted = 0" );
-   		query.setParameter( 1, diff );
-    	query.setParameter(2, accountId);
-    	query.setParameter(3, date);
+    	query = em.createQuery( "UPDATE Transaction SET balance = balance + ? WHERE account.id = ?" +
+    			" AND (_date > ? or (_date = ? and insert_datetime > ?)) AND is_deleted = 0" );
+   		query.setParameter(1, diff );
+    	query.setParameter(2, t.getAccount().getId());
+    	query.setParameter(3, t.getDate());
+    	query.setParameter(4, t.getDate());
+    	query.setParameter(5, t.getInsertDatetime());
     	query.executeUpdate();
+
+		// update account's balance
+        Account a = t.getAccount();
+        a.setCurrentBalance( a.getCurrentBalance() + diff );
+        new AccountService().save(a);
     }
 
     public void remove(Integer id, String updater) {
         Transaction entity = find(id);
         if (entity != null) {
-            //em.remove(entity);
+            updateTransactionBalance( entity, -(entity.getCredit() - entity.getDebit()) );
+
             entity.setDeleted(true);
             entity.setUpdater(updater);
             em.merge(entity);
