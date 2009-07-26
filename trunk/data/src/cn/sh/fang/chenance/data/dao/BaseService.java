@@ -63,19 +63,27 @@ public abstract class BaseService {
 	}
 
 	public static void init() {
+		createTable();
+
+
 		try {
-			conn = DriverManager.getConnection(jdbcUrl);
+			if (conn == null) {
+				conn = DriverManager.getConnection(jdbcUrl);
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		createTable();
-
 		float oldVer = getLocalDataVersion();
 		float newVer = getCurrentDataVersion();
 		if ( oldVer < newVer ) {
 			updateData(oldVer, newVer);
+		}
+		
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			LOG.warn(e);
 		}
 		
 		HashMap<String, String> props = new HashMap<String, String>();
@@ -131,6 +139,14 @@ public abstract class BaseService {
 				}
 			}
 		}
+		
+		try {
+			conn.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		LOG.warn("Updating database finished");
 	}
 	
@@ -141,6 +157,13 @@ public abstract class BaseService {
 		int i = stmt.executeUpdate(
 				"update t_transaction set _date = formatdatetime(_date,'yyyy-MM-dd 00:00:00')");
 		LOG.warn(i + " record(s) of t_transaction updated.");
+
+		updateVersion(stmt, "1.1");	
+	}
+
+	private static void updateVersion(Statement stmt, String ver) throws SQLException {
+		 stmt.executeUpdate("update t_setting set value = '" + ver + "' where key = 'chenance.data.version'");
+		 LOG.warn("Updated to " + ver);
 	}
 
 	public static void createTable() {
@@ -156,15 +179,14 @@ public abstract class BaseService {
 			// ignore
 		}
 
-		Connection conn = null;
-		Statement stmt = null;
 		try {
 			conn = DriverManager.getConnection(jdbcUrl);
 		} catch (SQLException e) {
-			// TODO error message
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return;
 		}
+
+		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 		} catch (SQLException e) {
@@ -200,11 +222,6 @@ public abstract class BaseService {
 		} finally {
 			try {
 				stmt.close();
-			} catch (SQLException e) {
-				// TODO LOG thisp
-			}
-			try {
-				conn.close();
 			} catch (SQLException e) {
 				// TODO LOG thisp
 			}
