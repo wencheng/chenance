@@ -19,8 +19,8 @@
   </singleInstance>
   <classPath>
     <mainClass>cn.sh.fang.chenance.MainWindow</mainClass>
-    <cp>chenance-gui-0.1.jar</cp>
-    <cp>chenance-data-1.0.jar</cp>
+    <cp>chenance-gui-${chenance.gui.version}.jar</cp>
+    <cp>chenance-data-${chenance.data.version}.jar</cp>
     <cp>lib/hibernate-entitymanager-3.2.1.ga.jar</cp>
     <cp>lib/hibernate-annotations-3.2.1.ga.jar</cp>
     <cp>lib/hibernate-3.2.1.ga.jar</cp>
