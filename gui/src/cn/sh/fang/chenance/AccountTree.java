@@ -110,7 +110,7 @@ public class AccountTree {
 	public TreeViewer createControl(Composite composite) {
 		final Tree tree = new Tree(composite, SWT.BORDER | SWT.FULL_SELECTION
 				| SWT.SINGLE);
-		tree.setLinesVisible(true);
+//		tree.setLinesVisible(true);
 		tree.addListener(SWT.Collapse, new Listener() {
 			public void handleEvent(Event e) {
 				// http://dev.eclipse.org/newslists/news.eclipse.platform.swt/msg33378.html
