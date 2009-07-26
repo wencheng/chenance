@@ -4,14 +4,21 @@
 
 RequestExecutionLevel user
 
-name "${chenance.name}"
+!define VERSION ${chenance.version.short}
 !define GUI_JAR chenance-gui-${chenance.gui.version}.jar
 !define DATA_JAR chenance-data-${chenance.data.version}.jar
 # define the name of the installer
-outfile "chenance-${chenance.version.short}-setup.exe"
+!define INST_FILE "chenance-${chenance.version.short}-setup.exe"
+!define LIB_URL http://chenance.googlecode.com/files/lib.zip
+;!define SWT_URL http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip&url=http://download.eclipse.org/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip&mirror_id=1
+!define SWT_URL http://ftp.jaist.ac.jp/pub/eclipse/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip
 
-# define the directory to install to, the desktop in this case as specified  
-# by the predefined $DESKTOP variable
+!define JRE_VERSION "5.0"
+!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=22933&/jre-1_5_0_16-windows-i586-p.exe"
+!define JAVAEXE "javaw.exe"
+
+name "${chenance.name}"
+outfile ${INST_FILE}
 installDir $PROGRAMFILES\Chenance
 
 !define MUI_LICENSEPAGE_TEXT_TOP "License and Agreements"
@@ -20,6 +27,7 @@ installDir $PROGRAMFILES\Chenance
 !define LICENSE_FILE "License.rtf"
 !insertmacro MUI_PAGE_LICENSE ${LICENSE_FILE}
 !insertmacro MUI_PAGE_DIRECTORY
+#!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 
 !define REG_UNINSTALL "Software\Microsoft\Windows\CurrentVersion\Uninstall\Chenance"
@@ -27,8 +35,11 @@ installDir $PROGRAMFILES\Chenance
 # default section
 section
  
-# define the output path for this file
-setOutPath $INSTDIR
+    ReadRegStr $R0 HKLM "$REG_UNINSTALL" "DisplayVersion"
+    StrCmp $R0 "${VERSION}" UPGRADE
+    
+    # define the output path for this file
+    setOutPath $INSTDIR
 
     # read the value from the registry into the $0 register
     ;readRegStr $0 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" CurrentVersion
@@ -37,34 +48,40 @@ setOutPath $INSTDIR
     ;messageBox MB_OK "version: $0"
     
     call GetJRE
-    call GetLib
-    call GetSwt
+    IfFileExists "$INSTDIR\lib" +2
+      call GetLib
+    IfFileExists "$INSTDIR\lib\swt.jar" +2
+      call GetSwt
 
     # define what to install and place it in the output path
     file chenance.exe
     file ${GUI_JAR}
     file ${DATA_JAR}
+    file ${INST_FILE}
 
-createShortCut "$Desktop\Chenance.lnk" "$INSTDIR\chenance.exe"
+    createShortCut "$Desktop\Chenance.lnk" "$INSTDIR\chenance.exe"
 
-WriteUninstaller $INSTDIR\uninstall.exe
+    WriteUninstaller $INSTDIR\uninstall.exe
+    WriteRegStr HKLM "${REG_UNINSTALL}" \
+        "DisplayIcon" "$\"$INSTDIR\chenance.exe$\", 1"
+    WriteRegStr HKLM "${REG_UNINSTALL}" \
+        "DisplayName" "Chenance - a Personal Finance Manager"
+    WriteRegStr HKLM "${REG_UNINSTALL}" \
+         "Publisher" "http://code.google.com/p/chenance/"
+    WriteRegStr HKLM "${REG_UNINSTALL}" \
+        "DisplayVersion" "${VERSION}"
+    WriteRegStr HKLM "${REG_UNINSTALL}" \
+        "UninstallString" "$INSTDIR\uninstall.exe"
+    WriteRegDWord HKLM "${REG_UNINSTALL}" \
+        "NoModify" 0
+    WriteRegDWord HKLM "${REG_UNINSTALL}" \
+        "NoRepair" 0
+    WriteRegStr HKLM "${REG_UNINSTALL}" \
+        "ModifyPath" '"$INSTDIR\${INST_FILE}"'
+    ;WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Chenance" \
+    ;                 "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
 
-WriteRegStr HKLM "${REG_UNINSTALL}" \
-                 "DisplayIcon" "$\"$INSTDIR\chenance.exe$\", 1"
-WriteRegStr HKLM "${REG_UNINSTALL}" \
-                 "DisplayName" "Chenance - a Personal Finance Manager"
-WriteRegStr HKLM "${REG_UNINSTALL}" \
-                 "Publisher" "http://code.google.com/p/chenance/"
-WriteRegStr HKLM "${REG_UNINSTALL}" \
-                 "UninstallString" "$INSTDIR\uninstall.exe"
-
-
-  WriteRegDWord HKLM "${REG_UNINSTALL}" "NoModify" 0
-  WriteRegDWord HKLM "${REG_UNINSTALL}" "NoRepair" 0
-  WriteRegStr HKLM "${REG_UNINSTALL}" "ModifyPath" '"$EXEDIR\${InstFile}"'
-
-;WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Chenance" \
-;                 "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+  UPGRADE:
 
 sectionEnd
 
@@ -74,15 +91,6 @@ delete "$DESKTOP\Chenance.lnk"
 ;Rmdir "$STARTMENU\Programs\myApp"
 DeleteRegKey HKLM "${REG_UNINSTALL}"
 sectionEnd
-
-!define LIB_URL http://chenance.googlecode.com/files/lib.zip
-;!define SWT_URL http://www.eclipse.org/downloads/download.php?file=/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip&url=http://download.eclipse.org/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip&mirror_id=1
-
-!define SWT_URL http://ftp.jaist.ac.jp/pub/eclipse/eclipse/downloads/drops/R-3.5-200906111540/swt-3.5-win32-win32-x86.zip
-
-!define JRE_VERSION "5.0"
-!define JRE_URL "http://javadl.sun.com/webapps/download/AutoDL?BundleId=22933&/jre-1_5_0_16-windows-i586-p.exe"
-!define JAVAEXE "javaw.exe"
 
 Function GetLib
     StrCpy $2 "$TEMP\lib.zip"
