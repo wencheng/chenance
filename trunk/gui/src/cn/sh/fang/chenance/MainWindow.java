@@ -675,16 +675,19 @@ public class MainWindow {
 		bsTableViewer.setLabelProvider(bslp);
 		bsTableViewer.setInput(bsProv);
 
-		BalanceSheetTransactionListener bstl = new BalanceSheetTransactionListener(
-				bsTableViewer);
-		bsProv.addChangeListener(bstl);
+		bsProv.addChangeListener(new BalanceSheetTransactionListener(
+				bsTableViewer, bsProv));
 		bsProv.addChangeListener(new BaseDataAdapter<Transaction>(){
 			@Override
 			public void onRemoved(Transaction item) {
+				bsTableViewer.refresh();
+				bsAccountTree.viewer.refresh();
 				currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 			}
 			@Override
 			public void onUpdated(Transaction item) {
+				bsTableViewer.refresh();
+				bsAccountTree.viewer.refresh();
 				currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 			}
 		});

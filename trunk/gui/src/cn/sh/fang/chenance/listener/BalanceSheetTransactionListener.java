@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.TableViewer;
 
 import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Transaction;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 
 public class BalanceSheetTransactionListener implements
@@ -29,8 +30,11 @@ public class BalanceSheetTransactionListener implements
 	
 	TransactionService ts = new TransactionService();
 
-	public BalanceSheetTransactionListener(TableViewer tableViewer) {
+	private BalanceSheetContentProvider prov;
+
+	public BalanceSheetTransactionListener(TableViewer tableViewer, BalanceSheetContentProvider prov) {
 		this.viewer = tableViewer;
+		this.prov = prov;
 	}
 
 	public void onAdded(Transaction t) {
@@ -44,10 +48,12 @@ public class BalanceSheetTransactionListener implements
 	public void onRemoved(Transaction t) {
 		ts.remove(t.getId(), t.getUpdater());
 		this.viewer.remove(t);
+		this.prov.refresh();
 	}
 
 	public void onUpdated(Transaction t) {
 		ts.save(t);
+		this.prov.refresh();
 	}
 
 	public void onLoaded(Transaction item) {
