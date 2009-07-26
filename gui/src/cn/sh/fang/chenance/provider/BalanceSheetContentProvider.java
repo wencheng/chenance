@@ -85,7 +85,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		refresh();
 	}
 	
-	private void refresh() {
+	public void refresh() {
 		TransactionService ts = new TransactionService();
 		this.transactions = ts.find(account, bDate, eDate);
 		calcBalance();

@@ -137,7 +137,5 @@ public class BalanceSheetCellModifier implements ICellModifier {
 
 		bsProv.itemChanged( t );
 		accountListProv.itemChanged( t.getAccount() );
-
-		viewer.refresh();
 	}
 }

@@ -25,17 +25,17 @@ public abstract class BaseProvider<T> {
 	private ArrayList<IDataAdapter<T>> changeListeners = new ArrayList<IDataAdapter<T>>();
 
 	/**
-	 * @param viewer
+	 * @param lstn
 	 */
-	public void addChangeListener(IDataAdapter<T> viewer) {
-		changeListeners.add(viewer);
+	public void addChangeListener(IDataAdapter<T> lstn) {
+		changeListeners.add(lstn);
 	}
 
 	/**
 	 * @param viewer
 	 */
-	public void removeChangeListener(IDataAdapter<T> viewer) {
-		changeListeners.remove(viewer);
+	public void removeChangeListener(IDataAdapter<T> lstn) {
+		changeListeners.remove(lstn);
 	}
 
 	public void addItem() {
