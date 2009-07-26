@@ -57,7 +57,7 @@ section
     file chenance.exe
     file ${GUI_JAR}
     file ${DATA_JAR}
-    file ${INST_FILE}
+    ;file ${INST_FILE}
 
     createShortCut "$Desktop\Chenance.lnk" "$INSTDIR\chenance.exe"
 
