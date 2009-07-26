@@ -5,12 +5,12 @@
 	<groupId>cn.sh.fang.chenance</groupId>
 	<artifactId>chenance-data</artifactId>
 	<name></name>
-	<version>1.0</version>
+	<version>1.1</version>
 	<description></description>
 	<parent>
     	<groupId>cn.sh.fang</groupId>
     	<artifactId>chenance</artifactId>
-    	<version>0.1</version>
+    	<version>0.2</version>
     	<relativePath>../chenance</relativePath>
 	</parent>
 	<repositories>
@@ -148,6 +148,7 @@
 				<configuration>
 					<archive>
 						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib</classpathPrefix>
 						</manifest>
