@@ -64,6 +64,10 @@ public class Transaction extends BaseEntity {
     }
     
     public void setDate(java.util.Date Date) {
+    	Date.setHours(0);
+    	Date.setMinutes(0);
+    	Date.setSeconds(0);
+    	Date.setTime(Date.getTime()/1000*1000);
         this.Date = Date;
     }
     

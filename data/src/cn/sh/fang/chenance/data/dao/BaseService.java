@@ -19,8 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -47,6 +50,8 @@ public abstract class BaseService {
 	//public static String jdbcUrl = "jdbc:sqlite:" + filepath;
 	public static String jdbcUrl = "jdbc:h2:" + filepath + ";USER=sa";
 	
+	static Connection conn;
+	
 	public BaseService() {
 		if (em == null) {
 			LOG.debug("creating em " + this);
@@ -55,6 +60,87 @@ public abstract class BaseService {
 			t = em.getTransaction();
 			t.begin();
 		}
+	}
+
+	public static void init() {
+		try {
+			conn = DriverManager.getConnection(jdbcUrl);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		createTable();
+
+		float oldVer = getLocalDataVersion();
+		float newVer = getCurrentDataVersion();
+		if ( oldVer < newVer ) {
+			updateData(oldVer, newVer);
+		}
+		
+		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("hibernate.connection.url", jdbcUrl);
+		factory = Persistence
+				.createEntityManagerFactory("chenance-data", props);
+	}
+
+	private static float getCurrentDataVersion() {
+        Package pkg = BaseService.class.getPackage();
+        String implVersion = pkg.getImplementationVersion();
+        LOG.debug("impl-ver:" + implVersion);
+        if ( implVersion != null ) {
+        	return Float.valueOf(implVersion);
+        } else {
+        	return 0;
+        }
+	}
+
+	private static float getLocalDataVersion() {
+		String sql = "select key, value from t_setting where key = 'chenance.data.version'"; 
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			if (rs.next()) {
+				return rs.getFloat(2);
+			} else {
+				return Integer.MAX_VALUE;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	private static void updateData(float oldVer, float newVer) {
+//		"select key, value from t_setting where key = 'chenance.version'";
+		LOG.warn("Updating database from version " + oldVer + " to " + newVer);
+		
+		Method[] ms = BaseService.class.getDeclaredMethods();
+		for (Method m : ms) {
+			LOG.debug("has " + m.getName());
+			if (m.getName().startsWith("doUpdate" + String.valueOf(oldVer).replace('.', '_'))) {
+				LOG.debug("Invoke " + m.getName());
+
+				try {
+					m.invoke(null, new Object[]{});
+				} catch (IllegalArgumentException e) {
+				} catch (IllegalAccessException e) {
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		LOG.warn("Updating database finished");
+	}
+	
+	protected static void doUpdate1_0to1_1() throws SQLException {
+		LOG.warn("Updating database from version 1.0 to 1.1");
+		
+		Statement stmt = conn.createStatement();
+		int i = stmt.executeUpdate(
+				"update t_transaction set _date = formatdatetime(_date,'yyyy-MM-dd 00:00:00')");
+		LOG.warn(i + " record(s) of t_transaction updated.");
 	}
 
 	public static void createTable() {
@@ -162,12 +248,4 @@ public abstract class BaseService {
 		t.commit();
 	}
 
-	public static void init() {
-		createTable();
-		
-		HashMap<String, String> props = new HashMap<String, String>();
-		props.put("hibernate.connection.url", jdbcUrl);
-		factory = Persistence
-				.createEntityManagerFactory("chenance-data", props);
-	}
 }
