@@ -47,6 +47,7 @@ public class CategoryService extends BaseService {
         Category entity = find(id);
         if (entity != null) {
             //em.remove(entity);
+            entity.setParent(null);
             entity.setDeleted(true);
             entity.setUpdater(updater);
             em.merge(entity);

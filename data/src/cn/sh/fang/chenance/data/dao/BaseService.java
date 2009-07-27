@@ -63,8 +63,14 @@ public abstract class BaseService {
 	}
 
 	public static void init() {
-		createTable();
+		try {
+			//Class.forName("org.sqlite.JDBC");
+			Class.forName("org.h2.Driver");
+		} catch (ClassNotFoundException e) {
+			// ignore
+		}
 
+		createTable();
 
 		try {
 			if (conn == null) {
@@ -171,13 +177,6 @@ public abstract class BaseService {
 			return;
 		}
 		LOG.warn("data file not exists");
-
-		try {
-			//Class.forName("org.sqlite.JDBC");
-			Class.forName("org.h2.Driver");
-		} catch (ClassNotFoundException e) {
-			// ignore
-		}
 
 		try {
 			conn = DriverManager.getConnection(jdbcUrl);
