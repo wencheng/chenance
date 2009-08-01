@@ -89,7 +89,7 @@ public class CategoryContentProvider extends BaseProvider<Category> {
 	protected Category doRemoveItem(Category t) {
 		cs.remove(t.getId(), "USER");
 		all.remove(t);
-		return null;
+		return t;
 	}
 
 	@Override
