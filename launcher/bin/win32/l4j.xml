@@ -21,6 +21,8 @@
     <mainClass>cn.sh.fang.chenance.MainWindow</mainClass>
     <cp>chenance-gui-${chenance.gui.version}.jar</cp>
     <cp>chenance-data-${chenance.data.version}.jar</cp>
+    <cp>lib/databinding-1.2.1-swt.jar</cp>
+	<!-- 
     <cp>lib/hibernate-entitymanager-3.2.1.ga.jar</cp>
     <cp>lib/hibernate-annotations-3.2.1.ga.jar</cp>
     <cp>lib/hibernate-3.2.1.ga.jar</cp>
@@ -44,10 +46,10 @@
     <cp>lib/common-3.4.0.jar</cp>
     <cp>lib/osgi-3.4.3.jar</cp>
     <cp>lib/databinding-1.1.1.jar</cp>
-    <cp>lib/databinding-1.2.1.jar</cp>
     <cp>lib/beans-1.1.1.jar</cp>
     <cp>lib/swt.jar</cp>
     <cp>lib/aspectjrt-1.6.5.jar</cp>
+   	-->
   </classPath>
   <jre>
     <path></path>
