@@ -15,6 +15,7 @@
  */
 package cn.sh.fang.chenance.data.dao;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +63,7 @@ public abstract class BaseService {
 		}
 	}
 
-	public static void init() {
+	public static void init() throws SQLException {
 		try {
 			//Class.forName("org.sqlite.JDBC");
 			Class.forName("org.h2.Driver");
@@ -172,25 +173,22 @@ public abstract class BaseService {
 		 LOG.warn("Updated to " + ver);
 	}
 
-	public static void createTable() {
-		if (new File(filepath+".data.db").exists()) {
-			return;
+	public static void createTable() throws SQLException {
+		if ( new File(filepath + ".data.db").exists() == false ) {
+			LOG.warn("data file not exists");
 		}
-		LOG.warn("data file not exists");
 
 		try {
 			conn = DriverManager.getConnection(jdbcUrl);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
 
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 		} catch (SQLException e) {
-			// TODO error message
-			e.printStackTrace();
+			throw e;
 		}
 
 		String basedir = "/sql/";
@@ -213,8 +211,7 @@ public abstract class BaseService {
 			}
 			conn.commit();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -222,7 +219,7 @@ public abstract class BaseService {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
-				// TODO LOG thisp
+				LOG.warn(e);
 			}
 		}
 	}
@@ -231,9 +228,10 @@ public abstract class BaseService {
 			throws IOException {
 		StringBuffer buf = new StringBuffer();
 		InputStreamReader in = new InputStreamReader(is,encoding);
+		BufferedReader r = new BufferedReader(in);
 		try {
-			for (int c = in.read(); c != -1; c = in.read()) {
-				buf.append((char) c);
+			for (String s = r.readLine(); s != null; s = r.readLine()) {
+				buf.append(s).append('\n');
 			}
 			return buf.toString();
 		} catch (IOException e) {
