@@ -20,7 +20,8 @@
       		<directory>../chenance-gui/lib</directory>
       		<outputDirectory>Chenance.app/Contents/Resources/Java</outputDirectory>
       		<excludes>
-      			<exclude>swt.jar</exclude>
+      			<exclude>README.txt</exclude>
+      			<exclude>javabuilder.*</exclude>
       		</excludes>
       		<filtered>true</filtered>
     	</fileSet>
@@ -44,7 +45,7 @@
 				<unpack>false</unpack>
 				<dependencySets>
 					<dependencySet>
-						<outputDirectory>Chenance.app/Contents/Resources/Java</outputDirectory>
+						<outputDirectory>Chenance.app/Contents/Resources/Java/lib</outputDirectory>
 					</dependencySet>
 				</dependencySets>
 			</binaries>
