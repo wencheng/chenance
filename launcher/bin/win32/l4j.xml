@@ -21,35 +21,6 @@
     <mainClass>cn.sh.fang.chenance.MainWindow</mainClass>
     <cp>chenance-gui-${chenance.gui.version}.jar</cp>
     <cp>chenance-data-${chenance.data.version}.jar</cp>
-    <cp>lib/databinding-1.2.1-swt.jar</cp>
-	<!-- 
-    <cp>lib/hibernate-entitymanager-3.2.1.ga.jar</cp>
-    <cp>lib/hibernate-annotations-3.2.1.ga.jar</cp>
-    <cp>lib/hibernate-3.2.1.ga.jar</cp>
-    <cp>lib/ehcache-1.2.3.jar</cp>
-    <cp>lib/commons-logging-1.1.1.jar</cp>
-    <cp>lib/commons-collections-3.2.1.jar</cp>
-    <cp>lib/jta-1.0.1B.jar</cp>
-    <cp>lib/asm-attrs-1.5.3.jar</cp>
-    <cp>lib/dom4j-1.6.1.jar</cp>
-    <cp>lib/antlr-2.7.6.jar</cp>
-    <cp>lib/cglib-2.1_3.jar</cp>
-    <cp>lib/asm-1.5.3.jar</cp>
-    <cp>lib/persistence-api-1.0.jar</cp>
-    <cp>lib/javassist-3.3.ga.jar</cp>
-    <cp>lib/jboss-archive-browsing-5.0.0alpha-200607201-119.jar</cp>
-    <cp>lib/commons-beanutils-1.8.0.jar</cp>
-    <cp>lib/log4j-1.2.13.jar</cp>
-    <cp>lib/jface-3.4.2.jar</cp>
-    <cp>lib/runtime-3.4.0.jar</cp>
-    <cp>lib/commands-3.4.0.jar</cp>
-    <cp>lib/common-3.4.0.jar</cp>
-    <cp>lib/osgi-3.4.3.jar</cp>
-    <cp>lib/databinding-1.1.1.jar</cp>
-    <cp>lib/beans-1.1.1.jar</cp>
-    <cp>lib/swt.jar</cp>
-    <cp>lib/aspectjrt-1.6.5.jar</cp>
-   	-->
   </classPath>
   <jre>
     <path></path>
