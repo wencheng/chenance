@@ -3,11 +3,11 @@
 <plist version="0.9">
 <dict>
   <key>CFBundleName</key>
-  <string>WikiTeX</string>
+  <string>${chenance.name}</string>
   <key>CFBundleIdentifier</key>
-  <string>com.devdaily.opensource.jelly.Main</string>
+  <string>cn.sh.fang.chenance</string>
   <key>CFBundleVersion</key>
-  <string>0.92</string>
+  <string>${chenance.version}</string>
   <key>CFBundleAllowMixedLocalizations</key>
   <string>true</string>
   <key>CFBundleExecutable</key>
@@ -17,15 +17,17 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>0.92</string>
+  <string>${chenance.version.short}</string>
   <key>CFBundleSignature</key>
   <string>????</string>
-  <key>CFBundleGetInfoString</key>
-  <string>WikiText by Alvin Alexander, Version 0.92</string>
+  		<key>CFBundleGetInfoString</key>
+		<string>
+			Chenance ${chenance.version} - Copyright (c) ${year} by Wencheng FANG
+		</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleIconFile</key>
-  <string>the-cat.jpg</string>
+  <string>chenance.icns<</string>
   <key>Java</key>
   <dict>
 <!--  <key>WorkingDirectory</key>
@@ -35,6 +37,44 @@
     <string>cn.sh.fang.chenance.MainWindow</string>
     <key>JVMVersion</key>
     <string>1.5+</string>
+    <key>ClassPath</key>
+    <array>
+		<string>$JAVAROOT/chenance-gui-${chenance.gui.version}.jar</string>
+		<string>$JAVAROOT/chenance-data-${chenance.data.version}.jar</string>
+		<string>$JAVAROOT/swt/swt-3.4.2.jar</string>
+		<string>$JAVAROOT/antlr-2.7.6.jar</string>
+		<string>$JAVAROOT/asm-1.5.3.jar</string>
+		<string>$JAVAROOT/asm-attrs-1.5.3.jar</string>
+		<string>$JAVAROOT/aspectjrt-1.6.5.jar</string>
+		<string>$JAVAROOT/beans-1.1.1.jar</string>
+		<string>$JAVAROOT/cglib-2.1_3.jar</string>
+		<string>$JAVAROOT/commands-3.4.0.jar</string>
+		<string>$JAVAROOT/common-3.4.0.jar</string>
+		<string>$JAVAROOT/commons-beanutils-1.8.0.jar</string>
+		<string>$JAVAROOT/commons-collections-3.2.1.jar</string>
+		<string>$JAVAROOT/commons-io-1.4.jar</string>
+		<string>$JAVAROOT/commons-logging-1.1.1.jar</string>
+		<string>$JAVAROOT/databinding-1.1.1.jar</string>
+		<string>$JAVAROOT/databinding-1.2.1.jar</string>
+		<string>$JAVAROOT/dom4j-1.6.1.jar</string>
+		<string>$JAVAROOT/ehcache-1.2.3.jar</string>
+		<string>$JAVAROOT/h2-1.0.71.jar</string>
+		<string>$JAVAROOT/hibernate-3.2.1.ga.jar</string>
+		<string>$JAVAROOT/hibernate-annotations-3.2.1.ga.jar</string>
+		<string>$JAVAROOT/hibernate-entitymanager-3.2.1.ga.jar</string>
+		<string>$JAVAROOT/javassist-3.3.ga.jar</string>
+		<string>$JAVAROOT/jboss-archive-browsing-5.0.0alpha-200607201-119.jar</string>
+		<string>$JAVAROOT/jface-3.4.2.jar</string>
+		<string>$JAVAROOT/jta-1.0.1B.jar</string>
+		<string>$JAVAROOT/log4j-1.2.13.jar</string>
+		<string>$JAVAROOT/nestedvm-1.0.jar</string>
+		<string>$JAVAROOT/osgi-3.4.3.jar</string>
+		<string>$JAVAROOT/persistence-api-1.0.jar</string>
+		<string>$JAVAROOT/runtime-3.4.0.jar</string>
+		<string>$JAVAROOT/sqlite-jdbc-3.6.16.jar</string>
+		<string>$JAVAROOT/beansbinding-1.2.1-swt.jar</string>
+		<string>$JAVAROOT/javabuilder.clazz.0.1.DEV.2008.09.03.jar</string>
+    </array>
     <key>Properties</key>
     <dict>
           <key>apple.laf.useScreenMenuBar</key>
@@ -47,42 +87,6 @@
       <string>-XstartOnFirstThread</string>
       <string>-Xmx256m</string>
     </array>
-    <key>ClassPath</key>
-    <array>
-      <string>$JAVAROOT/swt/swt.jar</string>
-<string>$JAVAROOT/antlr-2.7.6.jar</string>
-<string>$JAVAROOT/asm-1.5.3.jar</string>
-<string>$JAVAROOT/asm-attrs-1.5.3.jar</string>
-<string>$JAVAROOT/beans-1.1.1.jar</string>
-<string>$JAVAROOT/cglib-2.1_3.jar</string>
-<string>$JAVAROOT/chenance-data-1.0.jar</string>
-<string>$JAVAROOT/chenance-gui-0.1.jar</string>
-<string>$JAVAROOT/commands-3.4.0.jar</string>
-<string>$JAVAROOT/common-3.4.0.jar</string>
-<string>$JAVAROOT/commons-beanutils-1.8.0.jar</string>
-<string>$JAVAROOT/commons-collections-3.2.1.jar</string>
-<string>$JAVAROOT/commons-io-1.4.jar</string>
-<string>$JAVAROOT/commons-logging-1.1.1.jar</string>
-<string>$JAVAROOT/databinding-1.1.1.jar</string>
-<string>$JAVAROOT/databinding-1.2.1.jar</string>
-<string>$JAVAROOT/dom4j-1.6.1.jar</string>
-<string>$JAVAROOT/ehcache-1.2.3.jar</string>
-<string>$JAVAROOT/h2-1.0.71.jar</string>
-<string>$JAVAROOT/hibernate-3.2.1.ga.jar</string>
-<string>$JAVAROOT/hibernate-annotations-3.2.1.ga.jar</string>
-<string>$JAVAROOT/hibernate-entitymanager-3.2.1.ga.jar</string>
-<string>$JAVAROOT/javassist-3.3.ga.jar</string>
-<string>$JAVAROOT/jboss-archive-browsing-5.0.0alpha-200607201-119.jar</string>
-<string>$JAVAROOT/jface-3.4.2.jar</string>
-<string>$JAVAROOT/jta-1.0.1B.jar</string>
-<string>$JAVAROOT/log4j-1.2.13.jar</string>
-<string>$JAVAROOT/nestedvm-1.0.jar</string>
-<string>$JAVAROOT/osgi-3.4.3.jar</string>
-<string>$JAVAROOT/persistence-api-1.0.jar</string>
-<string>$JAVAROOT/runtime-3.4.0.jar</string>
-<string>$JAVAROOT/sqlite-jdbc-3.6.16.jar</string>
-<string>$JAVAROOT/beansbinding-1.2.1-swt.jar</string>
-<string>$JAVAROOT/javabuilder.clazz.0.1.DEV.2008.09.03.jar</string>
-    </array>
   </dict>
 </dict>
+</plist>

@@ -9,7 +9,10 @@
       		<directory>bin/macosx</directory>
       		<outputDirectory>Chenance.app/Contents</outputDirectory>
       		<excludes>
+      		<!-- 
       			<exclude>MacOS/chenance</exclude>
+      		 -->
+      		    <exclude>MacOS/Info2.plist</exclude>
       		</excludes>
       		<filtered>true</filtered>
     	</fileSet>
