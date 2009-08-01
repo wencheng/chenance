@@ -9,22 +9,17 @@
       		<directory>bin/macosx</directory>
       		<outputDirectory>Chenance.app/Contents</outputDirectory>
       		<excludes>
-      		<!-- 
-      			<exclude>MacOS/chenance</exclude>
-      		 -->
       		    <exclude>MacOS/Info2.plist</exclude>
       		</excludes>
       		<filtered>true</filtered>
     	</fileSet>
+    	<!-- 
     	<fileSet>
       		<directory>../chenance-gui/lib</directory>
       		<outputDirectory>Chenance.app/Contents/Resources/Java</outputDirectory>
-      		<excludes>
-      			<exclude>README.txt</exclude>
-      			<exclude>javabuilder.*</exclude>
-      		</excludes>
       		<filtered>true</filtered>
     	</fileSet>
+    	 -->
   	</fileSets>
   	<files>
   		<file>
