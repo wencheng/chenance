@@ -1,6 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.eclipse.jface</groupId>
-  <artifactId>databinding</artifactId>
-  <version>1.2.1</version>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.eclipse.jface</groupId>
+	<artifactId>databinding</artifactId>
+	<version>1.2.1</version>
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>databinding</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core.databinding
+			</groupId>
+			<artifactId>beans</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+	</dependencies>
 </project>
