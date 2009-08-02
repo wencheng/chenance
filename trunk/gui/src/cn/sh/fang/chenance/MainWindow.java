@@ -17,6 +17,7 @@ package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 
+import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -129,7 +131,12 @@ public class MainWindow {
 		MAC_OS_X = System.getProperty("os.name").toLowerCase().startsWith(
 				"mac os x");
 		if (MAC_OS_X) {
-			BaseService.init();
+			try {
+				BaseService.init();
+			} catch (SQLException e) {
+				LOG.error(e);
+				System.exit(0);
+			}
 		}
 	}
 
@@ -146,8 +153,9 @@ public class MainWindow {
 	}
 
 	public static void main(String[] args) {
+		Display.setAppName("Chenance");
 		final Display display = new Display();
-		
+
 		try {
 		Realm.runWithDefault(SWTObservables.getRealm(display),
 				new Runnable() {
@@ -165,6 +173,11 @@ public class MainWindow {
 									swt.sShell.dispose();
 									s.close();
 								}
+							} catch (SQLException e) {
+								LOG.error(e);
+								SWTUtil.showErrorMessage(swt.sShell, "Database error.");
+								swt.sShell.dispose();
+								s.close();
 							}
 						}
 
@@ -325,7 +338,11 @@ public class MainWindow {
 		textData.bottom = new FormAttachment(100);
 		tabFolder.setLayoutData(textData);
 
-		sShell.setSize(this.tabFolder.computeSize(1000, 600));
+		tabFolder.pack();
+//		sShell.setSize(this.tabFolder.computeSize(1000, 600));
+		Point tabSize = this.tabFolder.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		tabSize.y += 20;
+		sShell.setSize(tabSize);
 	}
 
 	private void createControls() {
@@ -381,7 +398,7 @@ public class MainWindow {
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				Account a = bsAccountTree.getSelected();
-				if ( a.getId() != null ) {
+				if ( a != null && a.getId() != null ) {
 					bsProv.setAccount(a);
 					bsTableViewer.refresh();
 					currentBalance.setText(numberFormat.format(bsProv.getBalance()));
@@ -525,13 +542,21 @@ public class MainWindow {
 //		SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
 //		SWT.NONE).width = 80;
 
+		Point calSize = listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		LOG.debug("cal size:" + calSize);
+
 		// アカウント
+		int treeX = bsAccountTree.viewer.getTree().computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		LOG.debug("account X:" + treeX);
 		FormData layoutData = SWTUtil.setFormLayoutData(bsAccountTree.viewer.getTree(),
 				listDate, 10, SWT.NONE, listDate, 0, SWT.LEFT);
-		layoutData.height = 300;
-		layoutData.width = listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT).x-20;
-		LOG.debug(listDate.getSize());
-		LOG.debug(listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		layoutData.height = 400 - calSize.y - 10;
+		if ( calSize.x > treeX ) {
+			layoutData.width = calSize.x;
+		} else {
+			listDate.setSize(treeX, calSize.y);
+			SWTUtil.setFormLayoutData(listDate, 0, 10, 0, 10).width = treeX;
+		}
 
 		SWTUtil.setFormLayoutData(bsTable, listDate, 0, SWT.TOP, listDate, 20,
 				SWT.NONE).height = 400;
@@ -550,7 +575,7 @@ public class MainWindow {
 				SWT.RIGHT).width = 80;
 		SWTUtil.setFormLayoutDataRight(label, bsTable, 10, SWT.NONE, currentBalance, -100,
 				SWT.RIGHT);
-
+		
 		return composite;
 	}
 
