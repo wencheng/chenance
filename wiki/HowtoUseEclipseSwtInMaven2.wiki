@@ -3,7 +3,8 @@
 
 = Introduction =
 
-
+ * *TESTED*: Windows and Mac OS X
+ * *NON TESTED*: Linux
 
 
 = Details =
