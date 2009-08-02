@@ -174,9 +174,10 @@ public abstract class BaseService {
 	}
 
 	public static void createTable() throws SQLException {
-		if ( new File(filepath + ".data.db").exists() == false ) {
-			LOG.warn("data file not exists");
+		if ( new File(filepath + ".data.db").exists() ) {
+			return;
 		}
+		LOG.warn("data file not exists, start creating table ...");
 
 		try {
 			conn = DriverManager.getConnection(jdbcUrl);
