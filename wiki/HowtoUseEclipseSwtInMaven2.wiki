@@ -1,0 +1,80 @@
+#labels Phase-Implementation
+# Howto use eclipse swt in maven2
+
+= Introduction =
+
+
+
+
+= Details =
+
+{{{
+<project>
+        ...
+	<repositories>
+                ...
+		<repository>
+			<id>googlecode</id>
+			<name>
+				on googlecode
+			</name>
+			<url>http://chenance.googlecode.com/svn/maven2
+			</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+        <dependencies>
+                ...
+		<!-- swt from chenance.googlecode.com -->
+		<dependency>
+			<groupId>${swt.os-specific-group-id}
+			</groupId>
+			<artifactId>${swt.os-specific-dep}</artifactId>
+			<version>${swt.version}</version>
+		</dependency>
+        </dependencies>
+	<profiles>
+		<profile>
+			<id>unix</id>
+			<activation>
+				<os>
+					<family>unix</family>
+					<name>linux</name>
+				</os>
+			</activation>
+			<properties>
+				<swt.os-specific-group-id>org.eclipse.swt</swt.os-specific-group-id>
+				<swt.os-specific-dep>swt-linux-gtk</swt.os-specific-dep>
+				<swt.version>3.5.0</swt.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+					<arch>x86</arch>
+				</os>
+			</activation>
+			<properties>
+				<swt.os-specific-group-id>org.eclipse.swt</swt.os-specific-group-id>
+				<swt.os-specific-dep>swt-win32</swt.os-specific-dep>
+				<swt.version>3.4.2</swt.version>
+			</properties>
+		</profile>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os>
+					<family>mac os x</family>
+				</os>
+			</activation>
+			<properties>
+				<swt.os-specific-group-id>org.eclipse.swt</swt.os-specific-group-id>
+				<swt.os-specific-dep>swt-macosx</swt.os-specific-dep>
+				<swt.version>3.5.0</swt.version>
+			</properties>
+		</profile>
+	</profiles>
+</project>
+}}}
