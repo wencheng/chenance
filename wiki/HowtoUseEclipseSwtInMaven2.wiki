@@ -1,5 +1,5 @@
+#summary Howto use eclipse swt in maven2
 #labels Phase-Implementation
-# Howto use eclipse swt in maven2
 
 = Introduction =
 
