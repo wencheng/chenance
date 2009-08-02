@@ -342,7 +342,8 @@ public class MainWindow {
 //		sShell.setSize(this.tabFolder.computeSize(1000, 600));
 		Point tabSize = this.tabFolder.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		tabSize.y += 20;
-		sShell.setSize(tabSize);
+		sShell.pack();
+//		sShell.setSize(tabSize);
 	}
 
 	private void createControls() {

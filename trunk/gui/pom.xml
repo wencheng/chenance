@@ -117,7 +117,7 @@
 				<swt.os-specific-group-id>org.eclipse.swt
 				</swt.os-specific-group-id>
 				<swt.os-specific-dep>swt-win32</swt.os-specific-dep>
-				<swt.version>3.4.2</swt.version>
+				<swt.version>3.5.0</swt.version>
 			</properties>
 		</profile>
 		<profile>
