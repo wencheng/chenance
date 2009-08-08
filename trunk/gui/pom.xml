@@ -56,10 +56,10 @@
 		</dependency>
 		<!-- swt from chenance.googlecode.com -->
 		<dependency>
-			<groupId>${swt.os-specific-group-id}
-			</groupId>
-			<artifactId>${swt.os-specific-dep}</artifactId>
+			<groupId>org.eclipse.swt</groupId>
+			<artifactId>swt</artifactId>
 			<version>${swt.version}</version>
+			<classifier>${swt.os-specific-classifier}</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jface</groupId>
@@ -98,10 +98,7 @@
 				</os>
 			</activation>
 			<properties>
-				<swt.os-specific-group-id>org.eclipse.swt
-				</swt.os-specific-group-id>
-				<swt.os-specific-dep>swt-linux-gtk
-				</swt.os-specific-dep>
+                <swt.os-specific-classifier>gtk-linux</swt.os-specific-classifier>
 				<swt.version>3.5.0</swt.version>
 			</properties>
 		</profile>
@@ -114,9 +111,7 @@
 				</os>
 			</activation>
 			<properties>
-				<swt.os-specific-group-id>org.eclipse.swt
-				</swt.os-specific-group-id>
-				<swt.os-specific-dep>swt-win32</swt.os-specific-dep>
+                <swt.os-specific-classifier>win32</swt.os-specific-classifier>
 				<swt.version>3.5.0</swt.version>
 			</properties>
 		</profile>
@@ -128,9 +123,7 @@
 				</os>
 			</activation>
 			<properties>
-				<swt.os-specific-group-id>org.eclipse.swt
-				</swt.os-specific-group-id>
-				<swt.os-specific-dep>swt-macosx</swt.os-specific-dep>
+                <swt.os-specific-classifier>macosx</swt.os-specific-classifier>
 				<swt.version>3.5.0</swt.version>
 			</properties>
 		</profile>
