@@ -1,40 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.sh.fang</groupId>
 	<artifactId>chenance</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>../chenance-gui</module>
 		<module>../chenance-data</module>
 	</modules>
 	<repositories>
-        <repository>
-            <id>chenance</id>
-            <url>http://chenance.googlecode.com/svn/maven2</url>
-        </repository>
+		<repository>
+			<id>chenance</id>
+			<url>http://chenance.googlecode.com/svn/maven2</url>
+		</repository>
 		<repository>
 			<id>foxtrot</id>
 			<url>http://maven.atlassian.com/repository/public</url>
 		</repository>
 	</repositories>
+	<properties>
+		<year>2009</year>
+		<chenance.name>Chenance</chenance.name>
+		<chenance.version>${project.version}</chenance.version>
+		<chenance.version.txt>${project.version} BETA</chenance.version.txt>
+		<chenance.version.short>0.3</chenance.version.short>
+		<chenance.gui.version>1.1</chenance.gui.version>
+		<chenance.data.version>1.1</chenance.data.version>
+		<swt.version>3.5.0</swt.version>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
-                <!-- run this non-recursively -->
-            	<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+				<!-- run this non-recursively -->
+				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 				<artifactId>launch4j-plugin</artifactId>
-				<version>1.0.0.2</version> 
+				<version>1.0.0.2</version>
 				<executions>
 					<execution>
 						<phase>assembly</phase>
-                        <inherited>false</inherited>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
+						<inherited>false</inherited>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
 						<configuration>
 							<headerType>gui</headerType>
 							<icon>bin/win32/chenance.ico</icon>
@@ -45,13 +54,13 @@
 							<chdir>.</chdir>
 							<customProcName>true</customProcName>
 							<dontWrapJar>true</dontWrapJar>
-							<errTitle>Chenance</errTitle>
+							<errTitle>${chenance.name}</errTitle>
 							<classPath>
 								<mainClass>
 									cn.sh.fang.chenance.MainWindow
 								</mainClass>
 								<preCp>
-									chenance-gui-${chenance.version.short}.jar;chenance-data-${chenance.data.version}.jar
+									chenance-gui-${chenance.gui.version}.jar;chenance-data-${chenance.data.version}.jar
 								</preCp>
 							</classPath>
 							<singleInstance>
@@ -64,19 +73,19 @@
 								<minVersion>1.5.0</minVersion>
 							</jre>
 							<versionInfo>
-								<fileVersion>0.1.0.0</fileVersion>
-								<txtFileVersion>0.1.0.0</txtFileVersion>
+								<fileVersion>1.0.0.0</fileVersion>
+								<txtFileVersion>1.0.0.0</txtFileVersion>
 								<fileDescription>
 									Chenance executable launcher
 								</fileDescription>
 								<copyright>
-									Copyright (C)2008 Wencheng FANG
+									Copyright (c) ${year} Wencheng FANG
 								</copyright>
-								<productVersion>${version}.0.0</productVersion>
+								<productVersion>${chenance.version}.0.0</productVersion>
 								<txtProductVersion>
-									${version}
+									${chenance.version.txt}
 								</txtProductVersion>
-								<productName>Chenance</productName>
+								<productName>${chenance.name}</productName>
 								<internalName>chenance-launch</internalName>
 								<originalFilename>
 									chenance.exe
@@ -92,9 +101,6 @@
 				<executions>
 					<execution>
 						<configuration>
-					        <filters>
-            					<filter>bundle.properties</filter>
-          					</filters>
 							<descriptors>
 								<descriptor>
 									assembly/assembly-win32.xml

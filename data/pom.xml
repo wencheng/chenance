@@ -10,7 +10,7 @@
 	<parent>
     	<groupId>cn.sh.fang</groupId>
     	<artifactId>chenance</artifactId>
-    	<version>0.2</version>
+    	<version>0.3</version>
     	<relativePath>../chenance</relativePath>
 	</parent>
 	<repositories>

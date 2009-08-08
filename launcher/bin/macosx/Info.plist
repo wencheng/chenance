@@ -21,7 +21,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>NSHumanReadableCopyright</key>
-		<string>Copyright (c) 2008, Wencheng FANG</string>
+		<string>Copyright (c) ${year}, Wencheng FANG</string>
 		<key>CFBundleGetInfoString</key>
 		<string>
 			Chenance ${chenance.version} - Copyright (c) ${year} by Wencheng FANG
