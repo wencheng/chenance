@@ -56,7 +56,7 @@
 		</dependency>
 		<!-- swt from chenance.googlecode.com -->
 		<dependency>
-			<groupId>org.eclipse.swt</groupId>
+			<groupId>org.eclipse</groupId>
 			<artifactId>swt</artifactId>
 			<version>${swt.version}</version>
 			<classifier>${swt.os-specific-classifier}</classifier>
