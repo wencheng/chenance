@@ -12,36 +12,37 @@
 		<module>../chenance-data</module>
 	</modules>
 	<repositories>
+        <repository>
+            <id>chenance</id>
+            <url>http://chenance.googlecode.com/svn/maven2</url>
+        </repository>
 		<repository>
 			<id>foxtrot</id>
 			<url>http://maven.atlassian.com/repository/public</url>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-      <pluginRepository>
-          <id>akathist-repository</id>
-          <name>Akathist Repository</name>
-          <url>http://www.9stmaryrd.com/maven</url>
-      </pluginRepository>
-    </pluginRepositories>
 	<build>
 		<plugins>
 			<plugin>
-				<inherited>false</inherited>
-				<groupId>com.akathist.maven.plugins.launch4j</groupId>
-				<artifactId>launch4j-maven-plugin</artifactId>
+                <!-- run this non-recursively -->
+            	<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+				<artifactId>launch4j-plugin</artifactId>
+				<version>1.0.0.2</version> 
 				<executions>
 					<execution>
-						<phase>deploy</phase>
-						<goals>
-							<goal>launch4j</goal>
-						</goals>
+						<phase>assembly</phase>
+                        <inherited>false</inherited>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
 						<configuration>
 							<headerType>gui</headerType>
+							<icon>bin/win32/chenance.ico</icon>
 							<outfile>
 								${basedir}/bin/win32/chenance.exe
 							</outfile>
-							<jar>dummy.jar</jar>
+							<jar>.</jar>
+							<chdir>.</chdir>
 							<customProcName>true</customProcName>
 							<dontWrapJar>true</dontWrapJar>
 							<errTitle>Chenance</errTitle>
@@ -76,7 +77,7 @@
 									${version}
 								</txtProductVersion>
 								<productName>Chenance</productName>
-								<internalName>ccne</internalName>
+								<internalName>chenance-launch</internalName>
 								<originalFilename>
 									chenance.exe
 								</originalFilename>
