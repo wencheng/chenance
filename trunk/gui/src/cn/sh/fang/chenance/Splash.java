@@ -15,6 +15,12 @@
  */
 package cn.sh.fang.chenance;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.net.URL;
+import java.util.Date;
+import java.util.Random;
+
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -47,45 +53,56 @@ public class Splash implements MouseListener, MouseMoveListener {
 	public Splash(Display display) {
 		this.display = display;
 	}
-	
+
+	Image getSplashImage() {
+		URL url = this.getClass().getClassLoader().getResource("splash");
+		File dir = null;
+		dir = new File(url.getFile());
+		String[] l = dir.list(new FilenameFilter(){
+			public boolean accept(File dir, String name) {
+				LOG.debug(name);
+				return name.endsWith(".png");
+			}
+		});
+
+		return new Image(null, this.getClass().getClassLoader()
+				.getResourceAsStream("splash/" + l[new Random(new Date().getTime()).nextInt(l.length)]));
+	}
+
 	private void init() {
-		shell = new Shell( display, SWT.NO_TRIM );
-		final Image image = new Image( null, 
-				this.getClass().getClassLoader().getResourceAsStream(
-//						"cn/sh/fang/chenance/splash.gif" ));
-						"splash/1921_morgan_dollar_chapman_obv.jpg" ));
-						
-		//define a region 
+		shell = new Shell(display, SWT.ON_TOP | SWT.NO_TRIM);
+		final Image image = getSplashImage();
+
+		// define a region
 		Region region = new Region();
 		Rectangle pixel = new Rectangle(0, 0, 1, 1);
 		Rectangle bounds = image.getBounds();
 		ImageData id = image.getImageData();
 		int trans = id.transparentPixel;
-		if ( trans != 0xffffff ) {
-			// mac why? 0xffffff = 16777215
-			trans = 0xffffff;
-		}
-		LOG.debug(trans);
-		LOG.debug(id.getPixel(0, 0));
-		
+		trans = 0xffffff;
+		LOG.debug("transparentPixel: " + trans);
+		LOG.debug("(0,0): " + id.getPixel(0, 0));
+
 		for (int y = 0; y < bounds.height; y++) {
 			for (int x = 0; x < bounds.width; x++) {
-				if ( id.getPixel(x, y) != trans ) {
+				int p = id.getPixel(x, y);
+				if ( p != trans	) {
 					pixel.x = x;
 					pixel.y = y;
 					region.add(pixel);
 				}
 			}
 		}
-		
-		//define the shape of the shell using setRegion
+
+		// define the shape of the shell using setRegion
 		shell.setRegion(region);
 		shell.setSize(bounds.width, bounds.height);
 		Rectangle size = region.getBounds();
 		Rectangle b = display.getPrimaryMonitor().getBounds();
 		LOG.debug(b);
 		LOG.debug(size);
-		shell.setLocation( b.x+(b.width-size.width)/2, b.y+(b.height-size.height)/2 );
+		shell.setLocation(b.x + (b.width - size.width) / 2, b.y
+				+ (b.height - size.height) / 2);
 
 		shell.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
@@ -96,54 +113,54 @@ public class Splash implements MouseListener, MouseMoveListener {
 		shell.addMouseListener(this);
 		shell.addMouseMoveListener(this);
 	}
-	
+
 	public void close() {
-		synchronized ( isRunning ) {
-			if ( isRunning ) {
+		synchronized (isRunning) {
+			if (isRunning) {
 				isRunning = false;
 				display.wake();
 			}
 		}
 	}
-	
+
 	public void run(Runnable runnable) {
 		isRunning = true;
-		
+
 		init();
-		
-		if ( ! isRunning ) {
+
+		if (!isRunning) {
 			return;
 		}
-		
+
 		shell.setVisible(true);
 
-//		runnable.run();
-		display.asyncExec( runnable );
-		while ( isRunning ) {
-			if ( !display.readAndDispatch() ) {
+		// runnable.run();
+		display.asyncExec(runnable);
+		while (isRunning) {
+			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
 		}
-		
-		shell.setVisible( false );
+
+		shell.setVisible(false);
 
 	}
 
 	public static void main(String[] args) {
 		Display display = new Display();
 
-		final Splash s = new Splash( display );
-		s.run( new Runnable() {
+		final Splash s = new Splash(display);
+		s.run(new Runnable() {
 			public void run() {
 				System.out.println("run()");
 				try {
-					Thread.sleep( 5000 );
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				System.out.println("run() end");
-				
+
 				s.close();
 			}
 		});
@@ -157,7 +174,7 @@ public class Splash implements MouseListener, MouseMoveListener {
 
 	public void mouseDown(MouseEvent e) {
 		isMoving = true;
-		point = new Point( e.x, e.y );
+		point = new Point(e.x, e.y);
 	}
 
 	public void mouseUp(MouseEvent e) {
@@ -165,9 +182,9 @@ public class Splash implements MouseListener, MouseMoveListener {
 	}
 
 	public void mouseMove(MouseEvent e) {
-		if ( isMoving ) {
+		if (isMoving) {
 			Point p = shell.getLocation();
-			shell.setLocation( p.x+e.x-point.x, p.y+e.y-point.y );
+			shell.setLocation(p.x + e.x - point.x, p.y + e.y - point.y);
 		}
 	}
 
