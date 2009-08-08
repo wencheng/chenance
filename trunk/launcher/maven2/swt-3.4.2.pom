@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?><project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.eclipse.swt</groupId>
-  <artifactId>swt-win32</artifactId>
-  <version>3.5.0</version>
+  <groupId>org.eclipse</groupId>
+  <artifactId>swt</artifactId>
+  <version>3.4.2</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>jface</artifactId>
-			<version>3.5.0</version>
+			<version>3.4.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>runtime</artifactId>
-			<version>3.5.0</version>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
 			<artifactId>commands</artifactId>
-			<version>3.5.0</version>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.equinox</groupId>
 			<artifactId>common</artifactId>
-			<version>3.5.0</version>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>osgi</artifactId>
-			<version>3.5.0</version>
+			<version>3.4.3</version>
 		</dependency>
 	</dependencies>
 </project>
