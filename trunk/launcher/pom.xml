@@ -48,7 +48,7 @@
 							<headerType>gui</headerType>
 							<icon>bin/win32/chenance.ico</icon>
 							<outfile>
-								${basedir}/bin/win32/chenance.exe
+								${project.build.directory}/chenance.exe
 							</outfile>
 							<jar>.</jar>
 							<chdir>.</chdir>
