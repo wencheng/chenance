@@ -17,10 +17,17 @@ package cn.sh.fang.chenance;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Random;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -56,17 +63,43 @@ public class Splash implements MouseListener, MouseMoveListener {
 
 	Image getSplashImage() {
 		URL url = this.getClass().getClassLoader().getResource("splash");
-		File dir = null;
-		dir = new File(url.getFile());
-		String[] l = dir.list(new FilenameFilter(){
-			public boolean accept(File dir, String name) {
-				LOG.debug(name);
-				return name.endsWith(".png");
+		LOG.debug(url);
+		
+		ArrayList<String> l = new ArrayList<String>();
+		if ( url.getProtocol().startsWith("jar") ) {
+			// Get the jar file
+			JarURLConnection conn = null;
+			JarFile jarfile = null;
+			try {
+				conn = (JarURLConnection)url.openConnection();
+				jarfile = conn.getJarFile();
+			} catch (IOException e1) {
+				// ignore
+				e1.printStackTrace();
 			}
-		});
+			Enumeration<JarEntry> e = jarfile.entries();
+			while (e.hasMoreElements()) {
+				String j = e.nextElement().getName();
+				if ( j.startsWith("splash") && j.endsWith(".png")) {
+					l.add(j);
+				}
+			}
 
-		return new Image(null, this.getClass().getClassLoader()
-				.getResourceAsStream("splash/" + l[new Random(new Date().getTime()).nextInt(l.length)]));
+			return new Image(null, this.getClass().getClassLoader().getResourceAsStream(
+					l.get(new Random(new Date().getTime()).nextInt(l.size()))));
+		} else {
+			File dir = null;
+			dir = new File(url.getFile());
+			CollectionUtils.addAll(l, dir.list(new FilenameFilter(){
+				public boolean accept(File dir, String name) {
+					LOG.debug(name);
+					return name.endsWith(".png");
+				}
+			}));
+
+			return new Image(null, this.getClass().getClassLoader().getResourceAsStream(
+					"splash/" + l.get(new Random(new Date().getTime()).nextInt(l.size()))));
+		}
 	}
 
 	private void init() {
