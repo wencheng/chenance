@@ -5,7 +5,7 @@
 	<groupId>cn.sh.fang.chenance</groupId>
 	<artifactId>chenance-data</artifactId>
 	<name></name>
-	<version>1.1</version>
+	<version>1.2</version>
 	<description></description>
 	<parent>
     	<groupId>cn.sh.fang</groupId>
@@ -76,6 +76,11 @@
 			<artifactId>aspectjrt</artifactId>
 			<version>1.6.5</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>4.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -132,7 +137,7 @@
 									src/cn/sh/fang/chenance/data/sql/drop.sql
 								</srcFile>
 								<srcFile>
-									src/cn/sh/fang/chenance/data/sql/db-${version}.sql
+									src/cn/sh/fang/chenance/data/sql/db.sql
 								</srcFile>
 							</srcFiles>
 							<fileset>

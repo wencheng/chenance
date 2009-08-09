@@ -1,0 +1,1 @@
+update t_transaction set _date = formatdatetime(_date,'yyyy-MM-dd 00:00:00');

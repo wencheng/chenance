@@ -1,0 +1,1 @@
+ALTER TABLE t_account ADD COLUMN closing_day INT DEFAULT 31;

@@ -115,7 +115,28 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		ed.add( Calendar.DATE, 1 );
 		setDate(date, date, ed.getTime());
 	}
-	
+
+	public void setMonth(Date date) {
+		Calendar bgn = Calendar.getInstance();
+		bgn.setTime(date);
+		Calendar end = (Calendar) bgn.clone();
+		
+		if (account.getClosingDay() == 31) {
+			bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
+			end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
+		} else if ( bgn.get( Calendar.DATE ) > account.getClosingDay() ) {
+			bgn.set( Calendar.DATE, account.getClosingDay()+1 );
+			end.add( Calendar.MONTH, 1 );
+			end.set( Calendar.DATE, account.getClosingDay()+1 );
+		} else {
+			bgn.add( Calendar.MONTH, -1 );
+			bgn.set( Calendar.DATE, account.getClosingDay()+1 );
+			end.set( Calendar.DATE, account.getClosingDay()+1 );
+		}
+		
+		setDate(date, bgn.getTime(), end.getTime());
+	}
+
 	public void setDate(Date cDate, Date bDate, Date eDate) {
 		this.cDate = cDate;
 		this.bDate = bDate;
