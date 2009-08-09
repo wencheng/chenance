@@ -4,7 +4,7 @@
 	<groupId>cn.sh.fang.chenance</groupId>
 	<artifactId>chenance-gui</artifactId>
 	<name></name>
-	<version>1.1</version>
+	<version>1.2</version>
 	<description></description>
 	<parent>
 		<groupId>cn.sh.fang</groupId>

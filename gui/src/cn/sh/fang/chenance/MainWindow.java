@@ -736,11 +736,7 @@ public class MainWindow {
 			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
 		} else if ( i == Calendar.MONTH) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
-			bgn = (Calendar) selectedCal.clone();
-			bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
-			end = (Calendar) bgn.clone();
-			end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
-			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
+			bsProv.setMonth( selectedCal.getTime() );
 		} else if ( i == Calendar.YEAR ) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
 			bgn = (Calendar) selectedCal.clone();

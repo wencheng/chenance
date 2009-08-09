@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 
 import cn.sh.fang.chenance.AccountTree.Model;
 import cn.sh.fang.chenance.data.entity.Account;
@@ -116,6 +117,21 @@ public class AccountTab {
 
 		return composite;
 	}
+	
+	void bindString(DataBindingContext cnxt, IObservableValue observeSelection, Control control, String beanName) {
+		bind(cnxt, observeSelection, control, beanName, java.lang.String.class);
+	}
+	
+	void bind(DataBindingContext cnxt, IObservableValue observeSelection, Control uiControl, String beanName, Class beanFieldType) {
+		IObservableValue w3 = SWTObservables.observeText(
+				uiControl, SWT.Modify);
+		IObservableValue v3 = BeansObservables
+				.observeDetailValue(Realm.getDefault(),
+						observeSelection, beanName,
+						beanFieldType);
+		cnxt.bindValue(w3, v3, null, null);
+
+	}
 
 	/**
 	 * Binds form fields with selected item in the tree
@@ -127,22 +143,13 @@ public class AccountTab {
 				.observeSingleSelection(tree.viewer);
 
 		// "name" field
-		IObservableValue w1 = SWTObservables.observeText(
-				this.form.tName, SWT.Modify);
-		IObservableValue v1 = BeansObservables
-				.observeDetailValue(Realm.getDefault(),
-						observeSelection, "name",
-						java.lang.String.class);
-		bindingContext.bindValue(w1, v1, null, null);
+		bindString(bindingContext, observeSelection, this.form.tName, "name");
+
+		// "closing day" field
+		bind(bindingContext, observeSelection, this.form.tClosingDay, "closingDay", Integer.class);
 
 		// "description" field
-		IObservableValue w2 = SWTObservables.observeText(
-				this.form.memo, SWT.Modify);
-		IObservableValue v2 = BeansObservables
-				.observeDetailValue(Realm.getDefault(),
-						observeSelection, "description",
-						java.lang.String.class);
-		bindingContext.bindValue(w2, v2, null, null);
+		bindString(bindingContext, observeSelection, this.form.memo, "description");
 
 		// "save" button
 		IObservableValue isSavable = new ComputedValue(Boolean.TYPE) {

@@ -26,8 +26,8 @@
 		<chenance.version>${project.version}</chenance.version>
 		<chenance.version.txt>${project.version} BETA</chenance.version.txt>
 		<chenance.version.short>0.3</chenance.version.short>
-		<chenance.gui.version>1.1</chenance.gui.version>
-		<chenance.data.version>1.1</chenance.data.version>
+		<chenance.gui.version>1.2</chenance.gui.version>
+		<chenance.data.version>1.2</chenance.data.version>
 		<swt.version>3.5.0</swt.version>
 	</properties>
 	<build>

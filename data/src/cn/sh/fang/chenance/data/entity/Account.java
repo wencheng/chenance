@@ -59,6 +59,9 @@ public class Account extends BaseEntity {
     @Column(name="currency")
     private Integer currency;
 
+    @Column(name="closing_day")
+    private Integer closingDay;
+
     public String getName() {
         return this.name;
     }
@@ -146,5 +149,13 @@ public class Account extends BaseEntity {
     public void setStartBalance(Integer startBalance) {
         this.startBalance = startBalance;
     }
+
+	public Integer getClosingDay() {
+		return closingDay;
+	}
     
+	public void setClosingDay(Integer closingDay) {
+		this.closingDay = closingDay;
+	}
+
 }

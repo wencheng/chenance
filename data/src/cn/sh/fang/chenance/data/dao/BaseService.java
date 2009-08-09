@@ -27,6 +27,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.persistence.EntityManager;
@@ -46,13 +47,15 @@ public abstract class BaseService {
 	static EntityManagerFactory factory;
 	static protected EntityManager em;
 	static EntityTransaction t;
-	//public static String filepath = System.getProperty("user.home") + "/chenance.db";
-	public static String filepath = System.getProperty("user.home") + "/chenance/db";
-	//public static String jdbcUrl = "jdbc:sqlite:" + filepath;
+	// public static String filepath = System.getProperty("user.home") +
+	// "/chenance.db";
+	public static String filepath = System.getProperty("user.home")
+			+ "/chenance/db";
+	// public static String jdbcUrl = "jdbc:sqlite:" + filepath;
 	public static String jdbcUrl = "jdbc:h2:" + filepath + ";USER=sa";
-	
+
 	static Connection conn;
-	
+
 	public BaseService() {
 		if (em == null) {
 			LOG.debug("creating em " + this);
@@ -65,7 +68,7 @@ public abstract class BaseService {
 
 	public static void init() throws SQLException {
 		try {
-			//Class.forName("org.sqlite.JDBC");
+			// Class.forName("org.sqlite.JDBC");
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e) {
 			// ignore
@@ -81,100 +84,103 @@ public abstract class BaseService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		float oldVer = getLocalDataVersion();
-		float newVer = getCurrentDataVersion();
-		if ( oldVer < newVer ) {
+		String oldVer = getLocalDataVersion();
+		String newVer = getCurrentDataVersion();
+		if (Float.valueOf(oldVer) < Float.valueOf(newVer)) {
 			updateData(oldVer, newVer);
 		}
-		
+
 		try {
 			conn.close();
 		} catch (SQLException e) {
 			LOG.warn(e);
 		}
-		
+
 		HashMap<String, String> props = new HashMap<String, String>();
 		props.put("hibernate.connection.url", jdbcUrl);
 		factory = Persistence
 				.createEntityManagerFactory("chenance-data", props);
 	}
 
-	private static float getCurrentDataVersion() {
-        Package pkg = BaseService.class.getPackage();
-        String implVersion = pkg.getImplementationVersion();
-        LOG.debug("impl-ver:" + implVersion);
-        if ( implVersion != null ) {
-        	return Float.valueOf(implVersion);
-        } else {
-        	return 0;
-        }
-	}
-
-	private static float getLocalDataVersion() {
-		String sql = "select key, value from t_setting where key = 'chenance.data.version'"; 
+	private static String getCurrentDataVersion() {
+		BufferedReader r = new BufferedReader(
+				new InputStreamReader(BaseService.class.getResourceAsStream("/META-INF/VERSION")));
+		String ver = null;
 		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(sql);
-			if (rs.next()) {
-				return rs.getFloat(2);
-			} else {
-				return Integer.MAX_VALUE;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 0;
+			ver = r.readLine();
+		} catch (IOException e) {
+			LOG.error(e);
+		}
+		LOG.debug("impl-ver:" + ver);
+		return ver;
+	}
+
+	private static String getLocalDataVersion() throws SQLException {
+		String sql = "select key, value from t_setting where key = 'chenance.data.version'";
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery(sql);
+		if (rs.next()) {
+			return rs.getString(2);
+		} else {
+			return "99999";
 		}
 	}
 
-	private static void updateData(float oldVer, float newVer) {
-//		"select key, value from t_setting where key = 'chenance.version'";
-		LOG.warn("Updating database from version " + oldVer + " to " + newVer);
-		
-		Method[] ms = BaseService.class.getDeclaredMethods();
-		for (Method m : ms) {
-			LOG.debug("has " + m.getName());
-			if (m.getName().startsWith("doUpdate" + String.valueOf(oldVer).replace('.', '_'))) {
-				LOG.debug("Invoke " + m.getName());
+	static String[] vers = { "1.0", "1.1", "1.2" };
 
-				try {
-					m.invoke(null, new Object[]{});
-				} catch (IllegalArgumentException e) {
-				} catch (IllegalAccessException e) {
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
+	private static void updateData(String oldVer, String newVer)
+			throws SQLException {
+		// "select key, value from t_setting where key = 'chenance.version'";
+		LOG.warn("Updating database from version " + oldVer + " to " + newVer);
+
+		ArrayList<String> a = new ArrayList<String>();
+		org.apache.commons.collections.CollectionUtils.addAll(a, vers);
+		int i = a.indexOf(oldVer);
+
+		for (int j = i; j < vers.length - 1; j++) {
+			execUpdateSql(vers[j], vers[j + 1]);
 		}
-		
+
 		try {
 			conn.commit();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
+		updateVersion(newVer);
+
 		LOG.warn("Updating database finished");
 	}
-	
-	protected static void doUpdate1_0to1_1() throws SQLException {
-		LOG.warn("Updating database from version 1.0 to 1.1");
-		
-		Statement stmt = conn.createStatement();
-		int i = stmt.executeUpdate(
-				"update t_transaction set _date = formatdatetime(_date,'yyyy-MM-dd 00:00:00')");
-		LOG.warn(i + " record(s) of t_transaction updated.");
 
-		updateVersion(stmt, "1.1");	
+	protected static void execUpdateSql(String from, String to)
+			throws SQLException {
+		LOG.warn("Updating database from version " + from + " to " + to);
+
+		Statement stmt = conn.createStatement();
+
+		String sql = null;
+		try {
+			sql = readAsString(BaseService.class
+					.getResourceAsStream("/sql/upgrades/" + from + "-" + to
+							+ ".sql"), "Shift-JIS");
+			LOG.debug(sql);
+
+			stmt.executeUpdate(sql);
+		} catch (IOException e) {
+			LOG.error(e);
+		}
 	}
 
-	private static void updateVersion(Statement stmt, String ver) throws SQLException {
-		 stmt.executeUpdate("update t_setting set value = '" + ver + "' where key = 'chenance.data.version'");
-		 LOG.warn("Updated to " + ver);
+	private static void updateVersion(String ver) throws SQLException {
+		Statement stmt = conn.createStatement();
+		stmt.executeUpdate("update t_setting set value = '" + ver
+				+ "' where key = 'chenance.data.version'");
+		LOG.warn("Updated to " + ver);
 	}
 
 	public static void createTable() throws SQLException {
-		if ( new File(filepath + ".data.db").exists() ) {
+		if (new File(filepath + ".data.db").exists()) {
 			return;
 		}
 		LOG.warn("data file not exists, start creating table ...");
@@ -196,12 +202,9 @@ public abstract class BaseService {
 		String[] files = new String[] { "db.sql", "common-columns/Account.sql",
 				"common-columns/Category.sql",
 				"common-columns/RepeatPayment.sql",
-				"common-columns/Transaction.sql",
-				"common-columns/Asset.sql", 
+				"common-columns/Transaction.sql", "common-columns/Asset.sql",
 				"common-columns/Investment.sql",
-				"common-columns/Breakdown.sql",
-				"common-columns/Loan.sql",
-				 };
+				"common-columns/Breakdown.sql", "common-columns/Loan.sql", };
 		try {
 			String sql;
 			for (String f : files) {
@@ -228,7 +231,7 @@ public abstract class BaseService {
 	public static String readAsString(InputStream is, String encoding)
 			throws IOException {
 		StringBuffer buf = new StringBuffer();
-		InputStreamReader in = new InputStreamReader(is,encoding);
+		InputStreamReader in = new InputStreamReader(is, encoding);
 		BufferedReader r = new BufferedReader(in);
 		try {
 			for (String s = r.readLine(); s != null; s = r.readLine()) {
@@ -247,8 +250,8 @@ public abstract class BaseService {
 	}
 
 	/*
-	 * @PersistenceContext public void setEntityManager(EntityManager arg) { em =
-	 * arg; }
+	 * @PersistenceContext public void setEntityManager(EntityManager arg) { em
+	 * = arg; }
 	 * 
 	 * public EntityManager getEntityManager() { return em; }
 	 */

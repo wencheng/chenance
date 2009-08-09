@@ -48,8 +48,6 @@ public class AccountEditForm {
 		EMPTY_ACCOUNT.setName("");
 	}
 
-//	private Account account;
-	
 	Group grp;
 	Label lblName;
 	public Text tName;
@@ -61,8 +59,8 @@ public class AccountEditForm {
 	private Combo type;
 	private Label lblCurrency;
 	private Combo currency;
-	private Label lblDay;
-	private Text day;
+	private Label lblClosingDay;
+	Text tClosingDay;
 	private Label lblBankName;
 	private Text bankName;
 	private Label lblBranchName;
@@ -77,29 +75,10 @@ public class AccountEditForm {
 	public Text start;
 	private Label lblMemo;
 	private ExpandBar bar;
+	private Label lblClosingDay2;
 
 	public AccountEditForm() {
-//		account = new Account();
-//		try {
-//			PropertyUtils.copyProperties(this.account, EMPTY_ACCOUNT);
-//		} catch (IllegalAccessException e) {
-//		} catch (InvocationTargetException e) {
-//		} catch (NoSuchMethodException e) {
-//		}
 	}
-
-//	public Account getAccount() {
-//		return account;
-//	}
-//
-//	public void setAccount(Account account) {
-//		try {
-//			PropertyUtils.copyProperties(this.account, account);
-//		} catch (IllegalAccessException e) {
-//		} catch (InvocationTargetException e) {
-//		} catch (NoSuchMethodException e) {
-//		}
-//	}
 
 	public Control createControl(Composite parent) {
 		grp = new Group(parent, SWT.NONE);
@@ -110,7 +89,6 @@ public class AccountEditForm {
 		setText(lblName, "Account Name:");
 		lblName.pack();
 		tName = new Text(grp, SWT.BORDER);
-//		account.setName("");
 		
 		// The bindValue method call binds the text element with the model
 //		Realm.runWithDefault(SWTObservables.getRealm(Display.getCurrent()),
@@ -146,10 +124,14 @@ public class AccountEditForm {
 		currency.pack();
 		currency.select(1);
 
-		this.lblDay = new Label(grp, SWT.NONE);
-		setText(lblDay, "Closing Day:");
-		lblDay.pack();
-		this.day = new Text(grp, SWT.BORDER);
+		this.lblClosingDay = new Label(grp, SWT.NONE);
+		setText(lblClosingDay, "Closing Day:");
+		lblClosingDay.pack();
+		this.tClosingDay = new Text(grp, SWT.BORDER | SWT.RIGHT );
+		this.tClosingDay.setTextLimit(2);
+		this.lblClosingDay2 = new Label(grp, SWT.NONE);
+		setText(lblClosingDay2, "th");
+		lblClosingDay2.pack();
 
 		// right side
 		this.lblBankName = new Label(grp, SWT.NONE);
@@ -177,7 +159,7 @@ public class AccountEditForm {
 		setText(lblInterestR, "%");
 		lblInterestR.pack();
 		this.interestPer = new Combo(grp, SWT.READ_ONLY);
-		interestPer.setItems(new String[] { _("One Year"), _("One Month") });
+		interestPer.setItems(new String[] { _("per Year"), _("per Month") });
 		interestPer.select(0);
 
 		this.lblStart = new Label(grp, SWT.NONE);
@@ -289,17 +271,18 @@ public class AccountEditForm {
 				SWT.LEFT);
 		setFormLayoutData(lblCurrency, lblType, 20, SWT.NONE, lblName, 0,
 				SWT.LEFT);
-		setFormLayoutData(lblDay, lblCurrency, 20, SWT.NONE, lblName, 0,
+		setFormLayoutData(lblClosingDay, lblCurrency, 20, SWT.NONE, lblName, 0,
 				SWT.LEFT);
 
 		Control c = computeSize(new Control[] { lblName, lblNamePh, lblType,
-				lblCurrency, lblDay });
+				lblCurrency, lblClosingDay });
 
 		setFormLayoutData(tName, lblName, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
 		setFormLayoutData(namePh, lblNamePh, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
 		setFormLayoutData(type, lblType, 0, SWT.TOP, c, 10, SWT.NONE);
 		setFormLayoutData(currency, lblCurrency, 0, SWT.TOP, c, 10, SWT.NONE);
-		setFormLayoutData(day, lblDay, 0, SWT.TOP, c, 10, SWT.NONE).width = 80;
+		setFormLayoutData(tClosingDay, lblClosingDay, 0, SWT.TOP, c, 10, SWT.NONE).width = 40;
+		setFormLayoutData(lblClosingDay2, lblClosingDay, 0, SWT.TOP, tClosingDay, 5, SWT.NONE).width = 40;
 
 		// right side
 		setFormLayoutData(lblBankName, tName, 0, SWT.TOP, tName, 50, SWT.NONE);
@@ -326,7 +309,7 @@ public class AccountEditForm {
 		setFormLayoutData(start, lblStart, 0, SWT.TOP, d, 5, SWT.NONE).width = 80;
 
 		// bottom
-		setFormLayoutData(lblMemo, lblDay, 20, SWT.NONE, lblName, 0, SWT.LEFT);
+		setFormLayoutData(lblMemo, lblClosingDay, 20, SWT.NONE, lblName, 0, SWT.LEFT);
 		FormData fd = setFormLayoutData(memo, lblMemo, 0, SWT.NONE, lblName, 0,
 				SWT.LEFT);
 		fd.width = grp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - 20;

@@ -15,7 +15,8 @@ CREATE TABLE t_account (
   interest_rate INT,
   start_balance INT DEFAULT 0,
   current_balance INT DEFAULT 0 NOT NULL,
-  currency INT DEFAULT 1
+  currency INT DEFAULT 1,
+  closing_day INT DEFAULT 1
 );
 
 INSERT INTO t_account (id, name, description)
