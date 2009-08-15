@@ -233,7 +233,7 @@ public class MainWindow {
 		// today's balance sheet
 		bsAccountTree.selectAccount(0);
 		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-		bsProv.setDate( selectedCal.getTime() );
+		bsProv.setDate( selectedCal.getTime(), Calendar.DATE );
 		bsTableViewer.refresh();
 	}
 
@@ -427,7 +427,7 @@ public class MainWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				changeBsDateRange(Calendar.WEEK_OF_MONTH);
+				changeBsDateRange(Calendar.WEEK_OF_YEAR);
 			}
 		});
 		// 月
@@ -723,31 +723,18 @@ public class MainWindow {
 
 
 	public void changeBsDateRange(int i) {
-		Calendar bgn;
-		Calendar end;
 		if ( i == Calendar.DATE ) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.DD );
-			bsProv.setDate( selectedCal.getTime() );
-		} else if ( i == Calendar.WEEK_OF_MONTH ) {
+			bsProv.setDate( selectedCal.getTime(), i );
+		} else if ( i == Calendar.WEEK_OF_YEAR ) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
-			bgn = (Calendar) selectedCal.clone();
-			bgn.add( Calendar.DATE, -(bgn.get(Calendar.DAY_OF_WEEK)-bgn.getMinimalDaysInFirstWeek()) );
-			end = (Calendar) bgn.clone();
-			end.add( Calendar.DATE, 7 );
-			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
+			bsProv.setDate( selectedCal.getTime(), i );
 		} else if ( i == Calendar.MONTH) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.MMDD );
-			bsProv.setMonth( selectedCal.getTime() );
+			bsProv.setDate( selectedCal.getTime(), i );
 		} else if ( i == Calendar.YEAR ) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.YYYYMMDD );
-			bgn = (Calendar) selectedCal.clone();
-			bgn.set( Calendar.MONTH, 0 );
-			bgn.set( Calendar.DATE, 1 );
-			end = (Calendar) bgn.clone();
-			end.set( Calendar.MONTH, 11 );
-			end.set( Calendar.DATE, 31 );
-			end.add( Calendar.DATE, 1 );
-			bsProv.setDate( selectedCal.getTime(), bgn.getTime(), end.getTime() );
+			bsProv.setDate( selectedCal.getTime(), i );
 		}
 		bsTableViewer.refresh();
 		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
