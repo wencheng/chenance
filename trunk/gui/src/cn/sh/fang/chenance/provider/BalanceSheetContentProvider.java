@@ -124,6 +124,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		if (account.getClosingDay() == 31) {
 			bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
 			end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
+			end.add( Calendar.DATE, 1 );
 		} else if ( bgn.get( Calendar.DATE ) > account.getClosingDay() ) {
 			bgn.set( Calendar.DATE, account.getClosingDay()+1 );
 			end.add( Calendar.MONTH, 1 );
