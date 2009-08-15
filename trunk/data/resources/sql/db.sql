@@ -5,7 +5,7 @@
 
 -- define: t_account
 CREATE TABLE t_account (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(50) NOT NULL UNIQUE,
   description VARCHAR(200),
   bank_name VARCHAR(100),
@@ -17,6 +17,10 @@ CREATE TABLE t_account (
   current_balance INT DEFAULT 0 NOT NULL,
   currency INT DEFAULT 1,
   closing_day INT DEFAULT 1
+  , insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL
 );
 
 INSERT INTO t_account (id, name, description)
@@ -29,11 +33,15 @@ INSERT INTO t_account (id, name, description, bank_name)
 
 -- define: t_category
 CREATE TABLE t_category (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   code BIGINT NOT NULL,
   name VARCHAR(50) NOT NULL,
   description VARCHAR(200),
   parent_id BIGINT,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (parent_id)
     REFERENCES t_category (id)
 );
@@ -56,12 +64,16 @@ INSERT INTO t_category (id, name, description, code, parent_id)
 
 -- define: t_repeat_payment
 CREATE TABLE t_repeat_payment (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   category_id BIGINT,
   amount INT NOT NULL,
   period INT NOT NULL,
   period_unit INT NOT NULL,
-  auto_confirm BOOLEAN DEFAULT false NOT NULL,
+  auto_confirm BOOLEAN DEFAULT 0 NOT NULL,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (category_id)
     REFERENCES t_category (id)
 );
@@ -70,9 +82,9 @@ CREATE TABLE t_repeat_payment (
 
 -- define: t_transaction
 CREATE TABLE t_transaction (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id BIGINT NOT NULL,
-  _date TIMESTAMP NOT NULL,
+  _date long NOT NULL,
   category_id BIGINT NOT NULL,
   budget INT,
   debit INT NOT NULL,
@@ -81,6 +93,10 @@ CREATE TABLE t_transaction (
   is_confirmed BOOLEAN DEFAULT true NOT NULL,
   repeat_payment_id BIGINT,
   from_or_to BIGINT,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (category_id)
     REFERENCES t_category (id),
   FOREIGN KEY (account_id)
@@ -95,13 +111,17 @@ CREATE TABLE t_transaction (
 
 -- define: t_investment
 CREATE TABLE t_investment (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   transaction_id BIGINT NOT NULL,
   is_buy_or_sell BOOLEAN NOT NULL,
   price INT NOT NULL,
   quantity INT NOT NULL,
   amount INT NOT NULL,
   related_id BIGINT,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (transaction_id)
     REFERENCES t_transaction (id),
   FOREIGN KEY (related_id)
@@ -112,13 +132,17 @@ CREATE TABLE t_investment (
 
 -- define: t_receipt_item
 CREATE TABLE t_breakdown (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   transaction_id BIGINT NOT NULL,
   item_name VARCHAR(50) NOT NULL,
   category_id BIGINT,
   price INT,
   quantity INT,
   amount INT NOT NULL,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (transaction_id)
     REFERENCES t_transaction (id)
 );
@@ -127,13 +151,17 @@ CREATE TABLE t_breakdown (
 
 -- define: t_asset
 CREATE TABLE t_asset (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   transaction_id BIGINT NOT NULL,
   item_name VARCHAR(50),
   item_description VARCHAR(1000),
   depreciation_rate INT,
   depreciation_period INT,
   depreciation_period_unit INT,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (transaction_id)
     REFERENCES t_transaction (id)
 );
@@ -141,10 +169,14 @@ CREATE TABLE t_asset (
 
 
 CREATE TABLE t_loan (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   transaction_id BIGINT NOT NULL,
   interest INT,
   interest_rate INT,
+  insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  update_datetime LONG DEFAULT (strftime('%s','now')*1000),
+  updater VARCHAR(50) DEFAULT '' NOT NULL,
+  is_deleted BOOLEAN DEFAULT 0 NOT NULL,
   FOREIGN KEY (transaction_id)
     REFERENCES t_transaction (id)
 );
@@ -152,7 +184,7 @@ CREATE TABLE t_loan (
 
 -- define: t_setting
 CREATE TABLE t_setting (
-  id IDENTITY NOT NULL PRIMARY KEY,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   key VARCHAR(100) NOT NULL UNIQUE,
   value VARCHAR
 );

@@ -16,6 +16,7 @@
 		<class>cn.sh.fang.chenance.data.entity.Transaction</class>
 		<class>cn.sh.fang.chenance.data.entity.BaseEntity</class>
 		<properties>
+			<!-- 
 			<property name="hibernate.connection.username" value="sa" />
 			<property name="hibernate.connection.password" value="" />
 			<property name="hibernate.connection.driver_class"
@@ -24,10 +25,12 @@
 				value="jdbc:h2:tcp://localhost/test" />
 			<property name="hibernate.dialect"
 				value="org.hibernate.dialect.HSQLDialect" />
-			<property name="hibernate.connection.autocommit" value="true" />
-			<!-- 
-				<property name="hibernate.hbm2ddl.auto" value="create"/>
+			<property name="hibernate.hbm2ddl.auto" value="create"/>
+			<property name="hibernate.format_sql" value="true"/>
+			<property name="hibernate.show_sql" value="true"/>
 			-->
+			<property name="hibernate.query.substitutions" value="true=1, false=0"/>
+			<property name="hibernate.connection.autocommit" value="true" />
 		</properties>
 	</persistence-unit>
 </persistence>

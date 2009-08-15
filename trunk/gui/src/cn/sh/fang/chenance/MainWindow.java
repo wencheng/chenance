@@ -135,6 +135,7 @@ public class MainWindow {
 				BaseService.init();
 			} catch (SQLException e) {
 				LOG.error(e);
+				e.printStackTrace();
 				System.exit(0);
 			}
 		}

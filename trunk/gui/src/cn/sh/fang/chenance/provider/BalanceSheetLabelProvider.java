@@ -73,7 +73,7 @@ public class BalanceSheetLabelProvider
 		
 		switch (col) {
 			case DATE:
-				result = dateFormat.format(t.getDate());
+				result = dateFormat.format(t.getDate().getTime());
 				break;
 			case CATEGORY:
 				result = t.getCategory() != null ? t.getCategory().getDisplayName() : "";

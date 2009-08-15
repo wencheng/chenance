@@ -17,16 +17,17 @@ package cn.sh.fang.chenance.data.dao;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,6 +38,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
+import org.h2.tools.Csv;
 
 //@Transactional(propagation=Propagation.MANDATORY)
 //@Transactional
@@ -47,12 +49,11 @@ public abstract class BaseService {
 	static EntityManagerFactory factory;
 	static protected EntityManager em;
 	static EntityTransaction t;
-	// public static String filepath = System.getProperty("user.home") +
-	// "/chenance.db";
-	public static String filepath = System.getProperty("user.home")
-			+ "/chenance/db";
-	// public static String jdbcUrl = "jdbc:sqlite:" + filepath;
-	public static String jdbcUrl = "jdbc:h2:" + filepath + ";USER=sa";
+	public static String filepath = System.getProperty("user.home") + "/chenance.db";
+	public static String jdbcUrl = "jdbc:sqlite:" + filepath;
+	public static String driverClass = "org.sqlite.JDBC";
+	
+	static boolean needMigrate = false;
 
 	static Connection conn;
 
@@ -67,23 +68,48 @@ public abstract class BaseService {
 	}
 
 	public static void init() throws SQLException {
+		// 1.2 -> 1.3, h2sql -> sqlite3 migration
+		if (new File(System.getProperty("user.home") + "/chenance/db.data.db").exists()) {
+			LOG.warn("v1.2 data file found, starting migration ...");
+
+			needMigrate = true;
+			
+			try {
+				Class.forName("org.h2.Driver");
+			} catch (ClassNotFoundException e) {
+				// ignore
+			}
+			conn = DriverManager.getConnection("jdbc:h2:" + System.getProperty("user.home") + "/chenance/db;user=sa");
+			
+			save1_2Data();
+			
+			conn.close();
+			
+			// backup
+//			new File(System.getProperty("user.home") + "/chenance/").renameTo(new File(System.getProperty("user.home") + "/chenance.bak/"));
+		}
+		
 		try {
-			// Class.forName("org.sqlite.JDBC");
-			Class.forName("org.h2.Driver");
+			Class.forName(driverClass);
 		} catch (ClassNotFoundException e) {
 			// ignore
 		}
 
-		createTable();
+		if (new File(filepath).exists() == false ) {
+			LOG.warn("data file not exists, start creating table ...");
 
-		try {
-			if (conn == null) {
-				conn = DriverManager.getConnection(jdbcUrl);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			conn = DriverManager.getConnection(jdbcUrl);
+			createTable();
+		} else {
+			conn = DriverManager.getConnection(jdbcUrl);
 		}
+
+		if ( needMigrate ) {
+			LOG.warn("merging old data ...");
+			migrateData();
+			LOG.warn("migration finished!");
+		}
+		
 		String oldVer = getLocalDataVersion();
 		String newVer = getCurrentDataVersion();
 		if (Float.valueOf(oldVer) < Float.valueOf(newVer)) {
@@ -95,11 +121,126 @@ public abstract class BaseService {
 		} catch (SQLException e) {
 			LOG.warn(e);
 		}
-
+		
 		HashMap<String, String> props = new HashMap<String, String>();
+		props.put("hibernate.connection.driver_class", driverClass);
 		props.put("hibernate.connection.url", jdbcUrl);
+		props.put("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect");
 		factory = Persistence
 				.createEntityManagerFactory("chenance-data", props);
+	}
+
+	private static void migrateData() throws SQLException {
+		String csv;
+		try {
+			Statement stmt = conn.createStatement();
+			
+			csv = readAsString(new FileInputStream(System.getProperty("user.home") + "/chenance/account.csv"), "UTF-8");
+			String[] lines = csv.split("\n");
+			LOG.debug(lines);
+
+			stmt.execute("delete from t_account");
+			
+			for (String s : lines) {
+				if ( s == lines[0] ) {
+					continue;
+				}
+				LOG.debug(s);
+				String sql = "insert into t_account values(";
+				
+				String[] datas = s.split(",");
+				for (int i = 0; i < datas.length; i++) {
+					if (datas[i].equals("")) {
+						sql += "null,";
+					} else if ( i == 12 || i == 13 ) {
+						sql += String.valueOf(new SimpleDateFormat("\"yyyy-MM-dd HH:mm:ss.SSS\"").parse(datas[i]).getTime());
+						sql += ",";
+					} else if ( i == 15 ) {
+						sql += datas[i].equals("\"FALSE\"")?"0":"1";
+					} else if (i == 0 || (i >= 7 && i <= 11 )) {
+						sql += datas[i].replaceAll("\"", "") + ",";
+					} else {
+						sql += datas[i] + ",";
+					}
+				}
+				
+				sql += ")";
+				LOG.debug(sql);
+				stmt.execute(sql);
+			}
+			stmt.execute("update sqlite_sequence set seq = (select max(id) from t_account) where name = 't_account'");
+
+			csv = readAsString(new FileInputStream(System.getProperty("user.home") + "/chenance/category.csv"), "UTF-8");
+			lines = csv.split("\n");
+			LOG.debug(lines);
+			stmt.execute("delete from t_category");
+			for (String s : lines) {
+				if ( s == lines[0] ) {
+					continue;
+				}
+				LOG.debug(s);
+				String sql = "insert into t_category values(";
+				
+				String[] datas = s.split(",");
+				for (int i = 0; i < datas.length; i++) {
+					if (datas[i].equals("")) {
+						sql += "null,";
+					} else if ( i == 5 || i == 6 ) {
+						sql += String.valueOf(new SimpleDateFormat("\"yyyy-MM-dd HH:mm:ss.SSS\"").parse(datas[i]).getTime());
+						sql += ",";
+					} else if ( i == 8 ) {
+						sql += datas[i].equals("\"FALSE\"")?"0":"1";
+					} else if (i == 0 || i == 1 || i == 4 || i == 5 ) {
+						sql += datas[i].replaceAll("\"", "") + ",";
+					} else {
+						sql += datas[i] + ",";
+					}
+				}
+				
+				sql += ")";
+				LOG.debug(sql);
+				stmt.execute(sql);
+			}
+			stmt.execute("update sqlite_sequence set seq = (select max(id) from t_category) where name = 't_category'");
+
+			csv = readAsString(new FileInputStream(System.getProperty("user.home") + "/chenance/transaction.csv"), "UTF-8");
+			lines = csv.split("\n");
+			LOG.debug(lines);
+			stmt.execute("delete from t_transaction");
+			for (String s : lines) {
+				if ( s == lines[0] ) {
+					continue;
+				}
+				LOG.debug(s);
+				String sql = "insert into t_transaction values(";
+				
+				String[] datas = s.split(",");
+				for (int i = 0; i < datas.length; i++) {
+					if (datas[i].equals("")) {
+						sql += "null,";
+					} else if ( i == 11 || i == 12 ) {
+						sql += String.valueOf(new SimpleDateFormat("\"yyyy-MM-dd HH:mm:ss.SSS\"").parse(datas[i]).getTime());
+						sql += ",";
+					} else if ( i == 14 ) {
+						sql += datas[i].equals("\"FALSE\"")?"0":"1";
+					} else if (i >= 0 && i <= 10 ) {
+						sql += datas[i].replaceAll("\"", "") + ",";
+					} else {
+						sql += datas[i] + ",";
+					}
+				}
+				
+				sql += ")";
+				LOG.debug(sql);
+				stmt.execute(sql);
+			}
+			stmt.execute("update sqlite_sequence set seq = (select max(id) from t_transaction) where name = 't_transaction'");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private static String getCurrentDataVersion() {
@@ -124,6 +265,26 @@ public abstract class BaseService {
 		} else {
 			return "99999";
 		}
+	}
+	
+	private static void save1_2Data() throws SQLException {
+		Statement stmt = conn.createStatement();
+		String sql = "select * from t_account";
+		ResultSet rs = stmt.executeQuery(sql);
+		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/account.csv", rs, null);
+		rs.close();
+
+		sql = "select * from t_category";
+		rs = stmt.executeQuery(sql);
+		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/category.csv", rs, null);
+		rs.close();
+	
+		sql = "select * from t_transaction";
+		rs = stmt.executeQuery(sql);
+		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/transaction.csv", rs, null);
+		rs.close();
+
+		stmt.close();
 	}
 
 	static String[] vers = { "1.0", "1.1", "1.2" };
@@ -180,42 +341,21 @@ public abstract class BaseService {
 	}
 
 	public static void createTable() throws SQLException {
-		if (new File(filepath + ".data.db").exists()) {
-			return;
-		}
-		LOG.warn("data file not exists, start creating table ...");
+		Statement stmt = conn.createStatement();
 
-		try {
-			conn = DriverManager.getConnection(jdbcUrl);
-		} catch (SQLException e) {
-			throw e;
-		}
-
-		Statement stmt = null;
-		try {
-			stmt = conn.createStatement();
-		} catch (SQLException e) {
-			throw e;
-		}
-
-		String basedir = "/sql/";
-		String[] files = new String[] { "db.sql", "common-columns/Account.sql",
-				"common-columns/Category.sql",
-				"common-columns/RepeatPayment.sql",
-				"common-columns/Transaction.sql", "common-columns/Asset.sql",
-				"common-columns/Investment.sql",
-				"common-columns/Breakdown.sql", "common-columns/Loan.sql", };
 		try {
 			String sql;
-			for (String f : files) {
-				sql = readAsString(BaseService.class
-						.getResourceAsStream(basedir + f), "Shift-JIS");
-				LOG.debug(sql);
-				stmt.execute(sql);
+			sql = readAsString(BaseService.class
+					.getResourceAsStream("/sql/db.sql"), "Shift-JIS");
+			String[] sqls = sql.split(";");
+
+			for (String s : sqls) {
+				if ( s == sqls[sqls.length-1] ) {
+					break;
+				}
+				LOG.debug(s);
+				stmt.execute(s);
 			}
-			conn.commit();
-		} catch (SQLException e) {
-			throw e;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

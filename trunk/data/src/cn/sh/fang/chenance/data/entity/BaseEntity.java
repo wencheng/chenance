@@ -39,7 +39,8 @@ public class BaseEntity implements Serializable {
 	@Transient
 	PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
-	@Column(name="INSERT_DATETIME", updatable=false)
+	@Column(name="INSERT_DATETIME", insertable=false, updatable=false)
+	@Generated(GenerationTime.INSERT)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date insertDatetime;
 

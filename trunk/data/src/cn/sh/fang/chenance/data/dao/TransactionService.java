@@ -52,11 +52,14 @@ public class TransactionService extends BaseService {
     		calcBalance(entity);
     		LOG.debug( "balance: " + entity.getBalance() );
             em.merge(entity);
+            em.flush();
         }
     }
 
     private void calcBalance(Transaction t) {
     	// get latest balance
+    	LOG.debug( String.format( "old balance date %s", t.getDate() ) );
+    	
     	Query query;
     	query = em.createNativeQuery( "SELECT balance FROM t_transaction" +
     			" WHERE account_id = ? AND (_date < ? or (_date = ? and insert_datetime < ?)) AND is_deleted = 0" +
@@ -65,13 +68,13 @@ public class TransactionService extends BaseService {
     	query.setParameter(2, t.getDate());
     	query.setParameter(3, t.getDate());
     	query.setParameter(4, t.getInsertDatetime());
-    	List<Number> l = query.getResultList();
-
+    	List<Integer> l = query.getResultList();
+    	
     	int i;
     	if ( l.size() <= 0 ) {
     		i = 0;
     	} else {
-    		i = l.get(0).intValue();
+    		i = l.get(0);
     	}
     	LOG.debug( String.format( "balance before %s: %d", t.getDate(), i ) );
     	
@@ -91,11 +94,11 @@ public class TransactionService extends BaseService {
 		// update balances if _date is modified
     	if ( t.getId() != null ) {
     		Query query
-    			= em.createNativeQuery( "SELECT debit, credit, _date FROM t_transaction WHERE id = ?" )
+    			= em.createNativeQuery( "SELECT debit, credit, _date || '' FROM t_transaction WHERE id = ?" )
     			.setParameter(1, t.getId());
     		Object[] oldTrans = (Object[]) query.getSingleResult();
 
-    		Date olddate = (Date) oldTrans[2];
+    		Date olddate = new Date(Long.valueOf((String)oldTrans[2]));
     		int oldDiff = (Integer)oldTrans[1] - (Integer)oldTrans[0];
     		diff = currDiff - oldDiff;
     		
@@ -104,16 +107,16 @@ public class TransactionService extends BaseService {
 			LOG.debug( "diff: " + diff );
 			LOG.debug( "old diff: " + oldDiff );
 
-			if ( t.getDate().compareTo(olddate) < 0 ) {
+			if ( t.getDate().getTime().compareTo(olddate) < 0 ) {
 	    		// move to earlier
 	    		// add with current balance
 				LOG.debug("updating 1");
-	    		updateBalance(t.getAccount().getId(), t.getDate(), t.getInsertDatetime(), olddate, currDiff);
-	    	} else if ( t.getDate().compareTo(olddate) > 0 ) {
+	    		updateBalance(t.getAccount().getId(), t.getDate().getTime(), t.getInsertDatetime(), olddate, currDiff);
+	    	} else if ( t.getDate().getTime().compareTo(olddate) > 0 ) {
 	    		// move to later
 	    		// minus old balance
 	    		LOG.debug("updating 2");
-	    		updateBalance(t.getAccount().getId(), olddate, t.getInsertDatetime(), t.getDate(), -oldDiff);
+	    		updateBalance(t.getAccount().getId(), olddate, t.getInsertDatetime(), t.getDate().getTime(), -oldDiff);
 	    	}
     	}
 
@@ -209,7 +212,8 @@ public class TransactionService extends BaseService {
 	 * @return
 	 */
 	public List<Transaction> find(Account account, Date bDate, Date eDate) {
-        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0 ORDER BY FORMATDATETIME(_date, 'yyyy-MM-dd'), insert_datetime");
+        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0" +
+        		" ORDER BY _date, insert_datetime");
         query.setParameter(1, account.getId());
         Calendar cal = Calendar.getInstance();
         cal.setTime( bDate );
@@ -217,13 +221,13 @@ public class TransactionService extends BaseService {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        query.setParameter(2, cal.getTime() );
+        query.setParameter(2, cal.getTimeInMillis()/1000*1000 );
         cal.setTime( eDate );
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        query.setParameter(3, cal.getTime() );
+        query.setParameter(3, cal.getTimeInMillis()/1000*1000 );
         return query.getResultList();
 	}
 

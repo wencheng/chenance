@@ -58,9 +58,8 @@ public class AccountService extends BaseService {
 
 	public boolean isUsableName(String name) {
 		// FIXME change is_deleted to part of PK 
-        //Query query = em.createQuery("SELECT e FROM Account e WHERE name = ? AND is_deleted = 0");
 		Query query = em.createQuery("SELECT e FROM Account e WHERE name = ?");
-        query.setParameter(1, name);
+		query.setParameter(1, name);
         return query.getResultList().isEmpty();
 	}
 
