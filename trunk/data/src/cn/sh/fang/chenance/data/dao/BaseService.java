@@ -84,9 +84,6 @@ public abstract class BaseService {
 			save1_2Data();
 			
 			conn.close();
-			
-			// backup
-//			new File(System.getProperty("user.home") + "/chenance/").renameTo(new File(System.getProperty("user.home") + "/chenance.bak/"));
 		}
 		
 		try {
@@ -107,6 +104,10 @@ public abstract class BaseService {
 		if ( needMigrate ) {
 			LOG.warn("merging old data ...");
 			migrateData();
+			
+			// backup
+			new File(System.getProperty("user.home") + "/chenance/").renameTo(new File(System.getProperty("user.home") + "/chenance.bak/"));
+
 			LOG.warn("migration finished!");
 		}
 		
@@ -149,6 +150,12 @@ public abstract class BaseService {
 				String sql = "insert into t_account values(";
 				
 				String[] datas = s.split(",");
+				String[] datas2 = new String[datas.length+1];
+				for (int i = 0; i < datas.length; i++) {
+					datas2[i<=10?i:i+1] = datas[i];
+				}
+				datas = datas2;
+				datas[11] = "31";
 				for (int i = 0; i < datas.length; i++) {
 					if (datas[i].equals("")) {
 						sql += "null,";
@@ -157,7 +164,7 @@ public abstract class BaseService {
 						sql += ",";
 					} else if ( i == 15 ) {
 						sql += datas[i].equals("\"FALSE\"")?"0":"1";
-					} else if (i == 0 || (i >= 7 && i <= 11 )) {
+					} else if (i == 0 || (i >= 7 && i <= 10 )) {
 						sql += datas[i].replaceAll("\"", "") + ",";
 					} else {
 						sql += datas[i] + ",";
@@ -218,11 +225,13 @@ public abstract class BaseService {
 				for (int i = 0; i < datas.length; i++) {
 					if (datas[i].equals("")) {
 						sql += "null,";
-					} else if ( i == 11 || i == 12 ) {
-						sql += String.valueOf(new SimpleDateFormat("\"yyyy-MM-dd HH:mm:ss.SSS\"").parse(datas[i]).getTime());
+					} else if ( i == 2 || i == 11 || i == 12 ) {
+						sql += String.valueOf(new SimpleDateFormat("\"yyyy-MM-dd HH:mm:ss.S\"").parse(datas[i]).getTime());
 						sql += ",";
 					} else if ( i == 14 ) {
 						sql += datas[i].equals("\"FALSE\"")?"0":"1";
+					} else if (i == 8 ) { 
+						sql += datas[i].equals("\"FALSE\"")?"0,":"1,";
 					} else if (i >= 0 && i <= 10 ) {
 						sql += datas[i].replaceAll("\"", "") + ",";
 					} else {
@@ -271,17 +280,17 @@ public abstract class BaseService {
 		Statement stmt = conn.createStatement();
 		String sql = "select * from t_account";
 		ResultSet rs = stmt.executeQuery(sql);
-		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/account.csv", rs, null);
+		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/account.csv", rs, "UTF-8");
 		rs.close();
 
 		sql = "select * from t_category";
 		rs = stmt.executeQuery(sql);
-		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/category.csv", rs, null);
+		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/category.csv", rs, "UTF-8");
 		rs.close();
 	
 		sql = "select * from t_transaction";
 		rs = stmt.executeQuery(sql);
-		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/transaction.csv", rs, null);
+		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/transaction.csv", rs, "UTF-8");
 		rs.close();
 
 		stmt.close();

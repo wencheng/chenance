@@ -43,7 +43,7 @@ public class Transaction extends BaseEntity {
 
     @Column(name="_date")
     @Temporal(TemporalType.TIMESTAMP)
-    private java.util.Calendar Date;
+    private java.util.Date Date;
 
     @Column(name="budget")
     private Integer budget;
@@ -60,11 +60,7 @@ public class Transaction extends BaseEntity {
     @Column(name="is_confirmed")
     private Boolean isConfirmed;
 
-//    public java.util.Date getDate() {
-//        return this.Date;
-//    }
-    
-    public java.util.Calendar getDate() {
+    public java.util.Date getDate() {
         return this.Date;
     }
     
@@ -73,8 +69,7 @@ public class Transaction extends BaseEntity {
     	Date.setMinutes(0);
     	Date.setSeconds(0);
     	Date.setTime(Date.getTime()/1000*1000);
-        this.Date = java.util.Calendar.getInstance();
-        this.Date.setTime(Date);
+        this.Date = Date;
     }
     
     public Integer getDebit() {

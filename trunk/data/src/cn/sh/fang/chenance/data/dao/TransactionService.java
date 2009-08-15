@@ -107,16 +107,16 @@ public class TransactionService extends BaseService {
 			LOG.debug( "diff: " + diff );
 			LOG.debug( "old diff: " + oldDiff );
 
-			if ( t.getDate().getTime().compareTo(olddate) < 0 ) {
+			if ( t.getDate().compareTo(olddate) < 0 ) {
 	    		// move to earlier
 	    		// add with current balance
 				LOG.debug("updating 1");
-	    		updateBalance(t.getAccount().getId(), t.getDate().getTime(), t.getInsertDatetime(), olddate, currDiff);
-	    	} else if ( t.getDate().getTime().compareTo(olddate) > 0 ) {
+	    		updateBalance(t.getAccount().getId(), t.getDate(), t.getInsertDatetime(), olddate, currDiff);
+	    	} else if ( t.getDate().compareTo(olddate) > 0 ) {
 	    		// move to later
 	    		// minus old balance
 	    		LOG.debug("updating 2");
-	    		updateBalance(t.getAccount().getId(), olddate, t.getInsertDatetime(), t.getDate().getTime(), -oldDiff);
+	    		updateBalance(t.getAccount().getId(), olddate, t.getInsertDatetime(), t.getDate(), -oldDiff);
 	    	}
     	}
 
