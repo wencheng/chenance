@@ -63,6 +63,8 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 
 	private int balance;
 
+	private int dateRange;
+
 	static final Transaction EMPTY = new Transaction();
 
 	/**
@@ -85,11 +87,81 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		refresh();
 	}
 	
+	public void setDate(Date date, int range) {
+		this.cDate = date;
+		this.dateRange = range;
+		refresh();
+	}
+
 	public void refresh() {
+		resetDateRange();
+		
 		TransactionService ts = new TransactionService();
 		this.transactions = ts.find(account, bDate, eDate);
 		calcBalance();
 		this.transactions.add(EMPTY);
+	}
+
+	/**
+	 * Hour, minute, second will be ignored
+	 * 
+	 * @param date
+	 */
+	private void resetDateRange() {
+		Calendar bgn;
+		Calendar end;
+
+		if ( this.dateRange == Calendar.DATE ) {
+			end = Calendar.getInstance();
+			end.setTime(cDate);
+			end.add( Calendar.DATE, 1 );
+
+			this.bDate = cDate;
+			this.eDate = end.getTime();
+		} else if ( this.dateRange == Calendar.MONTH ) {
+			bgn = Calendar.getInstance();
+			bgn.setTime(cDate);
+			end = (Calendar) bgn.clone();
+			
+			if (account.getClosingDay() == 31) {
+				bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
+				end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
+				end.add( Calendar.DATE, 1 );
+			} else if ( bgn.get( Calendar.DATE ) > account.getClosingDay() ) {
+				bgn.set( Calendar.DATE, account.getClosingDay()+1 );
+				end.add( Calendar.MONTH, 1 );
+				end.set( Calendar.DATE, account.getClosingDay()+1 );
+			} else {
+				bgn.add( Calendar.MONTH, -1 );
+				bgn.set( Calendar.DATE, account.getClosingDay()+1 );
+				end.set( Calendar.DATE, account.getClosingDay()+1 );
+			}
+			
+			this.bDate = bgn.getTime();
+			this.eDate = end.getTime();
+		} else if ( this.dateRange == Calendar.WEEK_OF_YEAR ) {
+			bgn = Calendar.getInstance();
+			bgn.setTime(cDate);
+			bgn.add( Calendar.DATE, -(bgn.get(Calendar.DAY_OF_WEEK)-bgn.getMinimalDaysInFirstWeek()) );
+			end = (Calendar) bgn.clone();
+			end.add( Calendar.DATE, 7 );
+
+			this.bDate = bgn.getTime();
+			this.eDate = end.getTime();
+		} else if ( this.dateRange == Calendar.YEAR ) {
+			bgn = Calendar.getInstance();
+			bgn.setTime(cDate);
+			bgn.set( Calendar.MONTH, 0 );
+			bgn.set( Calendar.DATE, 1 );
+			end = (Calendar) bgn.clone();
+			end.set( Calendar.MONTH, 11 );
+			end.set( Calendar.DATE, 31 );
+			end.add( Calendar.DATE, 1 );
+
+			this.bDate = bgn.getTime();
+			this.eDate = end.getTime();
+		}
+
 	}
 
 	private void calcBalance() {
@@ -102,48 +174,6 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	
 	public int getBalance() {
 		return this.balance;
-	}
-
-	/**
-	 * Hour, minute, second will be ignored
-	 * 
-	 * @param date
-	 */
-	public void setDate(Date date) {
-		Calendar ed = Calendar.getInstance();
-		ed.setTime(date);
-		ed.add( Calendar.DATE, 1 );
-		setDate(date, date, ed.getTime());
-	}
-
-	public void setMonth(Date date) {
-		Calendar bgn = Calendar.getInstance();
-		bgn.setTime(date);
-		Calendar end = (Calendar) bgn.clone();
-		
-		if (account.getClosingDay() == 31) {
-			bgn.set( Calendar.DATE, bgn.getActualMinimum(Calendar.DATE) );
-			end.set( Calendar.DATE, bgn.getActualMaximum(Calendar.DATE) );
-			end.add( Calendar.DATE, 1 );
-		} else if ( bgn.get( Calendar.DATE ) > account.getClosingDay() ) {
-			bgn.set( Calendar.DATE, account.getClosingDay()+1 );
-			end.add( Calendar.MONTH, 1 );
-			end.set( Calendar.DATE, account.getClosingDay()+1 );
-		} else {
-			bgn.add( Calendar.MONTH, -1 );
-			bgn.set( Calendar.DATE, account.getClosingDay()+1 );
-			end.set( Calendar.DATE, account.getClosingDay()+1 );
-		}
-		
-		setDate(date, bgn.getTime(), end.getTime());
-	}
-
-	public void setDate(Date cDate, Date bDate, Date eDate) {
-		this.cDate = cDate;
-		this.bDate = bDate;
-		this.eDate = eDate;
-
-		refresh();
 	}
 
 	/**
