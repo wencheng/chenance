@@ -38,6 +38,7 @@ public class AccountContentProvider extends BaseProvider<Account> {
 	
 	private void initData() {
 		this.accounts = service.findAll();
+		LOG.debug(accounts);
 	}
 	
 	public List<Account> getAccounts() {
