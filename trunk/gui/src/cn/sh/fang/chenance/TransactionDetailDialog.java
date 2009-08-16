@@ -155,6 +155,7 @@ public class TransactionDetailDialog extends Dialog {
 				ct.combo = new Combo( parent, SWT.BORDER );
 				ct.text = new Text( parent, SWT.BORDER );
 				ct.btn = new Button( parent, SWT.BORDER );
+				ct.btn.setText("-");
 				ct.btn.addSelectionListener(new SelectionAdapter() {
 					@Override
 					public void widgetSelected(SelectionEvent e) {
@@ -167,20 +168,9 @@ public class TransactionDetailDialog extends Dialog {
 					}
 				});
 				ct.btn.setData(ct);
-				if ( breakdowns.size() <= 0 ) {
-					setFormLayoutData( ct.combo, btnAdd, 10, SWT.NONE, btnAdd, 0, SWT.LEFT ).width = 100;
-					setFormLayoutData( ct.text, btnAdd, 10, SWT.NONE, ct.combo, 10, SWT.NONE );
-					setFormLayoutData( ct.btn, btnAdd, 10, SWT.NONE, ct.text, 10, SWT.NONE );
-				} else {
-					ComboText last = breakdowns.get( breakdowns.size()-1 );
-					setFormLayoutData( ct.combo, last.combo, 10, SWT.NONE, last.combo, 0, SWT.LEFT ).width = 100;
-					setFormLayoutData( ct.text, ct.combo, 0, SWT.TOP, last.text, 0, SWT.LEFT );
-					setFormLayoutData( ct.btn, ct.combo, 0, SWT.TOP, ct.text, 10, SWT.NONE );
-				}
-				parent.pack();
-//				parent.layout();
-				TransactionDetailDialog.this.getShell().pack();
 				breakdowns.add( ct );
+
+				reLayout();
 			}
 		});
 	}
@@ -191,14 +181,12 @@ public class TransactionDetailDialog extends Dialog {
 		for ( ComboText ct : breakdowns ) {
 			if ( isFirst ) {
 				setFormLayoutData( ct.combo, btnAdd, 10, SWT.NONE, btnAdd, 0, SWT.LEFT ).width = 100;
-				setFormLayoutData( ct.text, btnAdd, 10, SWT.NONE, ct.combo, 10, SWT.NONE );
-				setFormLayoutData( ct.btn, btnAdd, 10, SWT.NONE, ct.text, 10, SWT.NONE );
 				isFirst = false;
 			} else {
 				setFormLayoutData( ct.combo, last.combo, 10, SWT.NONE, last.combo, 0, SWT.LEFT ).width = 100;
-				setFormLayoutData( ct.text, ct.combo, 0, SWT.TOP, last.text, 0, SWT.LEFT );
-				setFormLayoutData( ct.btn, ct.combo, 0, SWT.TOP, ct.text, 10, SWT.NONE );
 			}
+			setFormLayoutData( ct.text, ct.combo, 0, SWT.TOP, ct.combo, 10, SWT.NONE ).width = 80;
+			setFormLayoutData( ct.btn, ct.text, -5, SWT.TOP, ct.text, 10, SWT.NONE );
 			last = ct;
 		}
 		parent.pack();
