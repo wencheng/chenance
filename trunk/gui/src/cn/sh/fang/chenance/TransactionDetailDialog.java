@@ -95,8 +95,8 @@ public class TransactionDetailDialog extends Dialog {
 
 		lblBreakdown = new Label( this.parent, SWT.NONE );
 		setText( lblBreakdown, "Breakdown:\n" +
-				"(+) Credit\n" +
-				"(-) Debit" );
+				"(+) for Credit\n" +
+				"(-) for Debit" );
 		this.btnAdd = new Button( this.parent, SWT.PUSH);
 		setText( btnAdd, "Add" );
 

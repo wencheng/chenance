@@ -18,6 +18,7 @@ package cn.sh.fang.chenance.provider;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.aspencloud.widgets.ImageCombo;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
@@ -47,7 +48,6 @@ import org.eclipse.swt.widgets.TableItem;
 import cn.sh.fang.chenance.MainWindow;
 import cn.sh.fang.chenance.data.entity.Category;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
-import cn.sh.fang.chenance.util.swt.CCombo;
 
 /**
  * <p>
@@ -66,7 +66,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 
 	int selection;
 
-	CCombo comboBox;
+	ImageCombo comboBox;
 
 	private Table table;
 
@@ -112,7 +112,7 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 	 */
 	protected Control createControl(Composite parent) {
 
-		comboBox = new CCombo(parent, getStyle() | SWT.APPLICATION_MODAL);
+		comboBox = new ImageCombo(parent, getStyle() | SWT.APPLICATION_MODAL);
 		comboBox.setFont(parent.getFont());
 		comboBox.setVisibleItemCount(20);
 
@@ -151,10 +151,9 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 		comboBox.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				System.err.println(e.widget);
 				Event ev = new Event();
 				ev.button = 1;
-				((CCombo)e.widget).notifyListeners(SWT.MouseDown, ev);
+				((ImageCombo)e.widget).notifyListeners(SWT.MouseDown, ev);
 			}
 
 			@Override
@@ -349,8 +348,8 @@ public class CategoryComboCellEditor extends CellEditor implements Listener {
 			int clientWidth = Math.max(
 					comboBox.getTable().getClientArea().width, this.table
 							.getColumn(Column.CATEGORY.ordinal()).getWidth());
-			Color grey = new Color(comboBox.getForeground().getDevice(), 0xC0,
-					0xC0, 0xC0);
+//			Color grey = new Color(comboBox.getForeground().getDevice(), 0xC0,
+//					0xC0, 0xC0);
 
 			e.detail &= ~SWT.HOT;
 			if ((e.detail & SWT.HOT) == 0) {

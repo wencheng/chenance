@@ -128,7 +128,7 @@ public class ImageCombo extends Composite {
 		super(parent, style = checkStyle(style));
 
 		int textStyle = SWT.SINGLE;
-		if (gtk)
+//		if (gtk)
 			textStyle |= SWT.BORDER;
 		if ((style & SWT.READ_ONLY) != 0)
 			textStyle |= SWT.READ_ONLY;
@@ -423,6 +423,7 @@ public class ImageCombo extends Composite {
 			textWidth = Math.max(gc.stringExtent(items[i]).x, textWidth);
 		}
 		gc.dispose();
+		
 		Point textSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
 		Point arrowSize = arrow.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
 		Point listSize = table.computeSize(wHint, SWT.DEFAULT, changed);
@@ -1030,7 +1031,8 @@ public class ImageCombo extends Composite {
 		int width = rect.width;
 		int height = rect.height;
 		Point arrowSize = arrow.computeSize(SWT.DEFAULT, height, changed);
-		text.setBounds(0, 0, width - arrowSize.x, height);
+//		text.setBounds(0, (int)Math.floor((height - text.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed).y) / 2.0) , width - arrowSize.x, height);
+		text.setBounds(0, 0 , width - arrowSize.x, height);
 		arrow.setBounds(width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
 	}
 
@@ -1804,4 +1806,9 @@ public class ImageCombo extends Composite {
 		}
 		}
 	}
+	
+	public Table getTable() {
+		return this.table;
+	}
+	
 }
