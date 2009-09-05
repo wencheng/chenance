@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -124,6 +125,8 @@ public class MainWindow {
 	private CategoryComboCellEditor catCombo;
 	
 	public static final String CATEGORY_LIST = "categoryList";
+
+	public static final String TITLE = "Chenance";
 
 	static {
 		// set factory here due to a bug in max os x
@@ -381,7 +384,7 @@ public class MainWindow {
 	}
 
 	private Control getBalanceSheetTabControl(TabFolder tabFolder) {
-		Composite composite = new Composite(tabFolder, SWT.NONE);
+		final Composite composite = new Composite(tabFolder, SWT.NONE);
 		
 		// 口座ツリー
 		List<Account> accounts = accountListProv.getAccounts();
@@ -473,6 +476,7 @@ public class MainWindow {
 		// バランスシート
 		bsTable = new Table(composite, SWT.SINGLE | SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+		
 		bsTable.setLinesVisible(true);
 		bsTable.setHeaderVisible(true);
 		// カラム
@@ -540,10 +544,6 @@ public class MainWindow {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 
-//		SWTUtil.setFormLayoutData(listDate, 0, 10, 0, 10).width = 105;
-//		SWTUtil.setFormLayoutData(today, listDate, 0, SWT.TOP, listDate, 20,
-//		SWT.NONE).width = 80;
-
 		Point calSize = listDate.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		LOG.debug("cal size:" + calSize);
 
@@ -564,6 +564,15 @@ public class MainWindow {
 				SWT.NONE).height = 400;
 		bsTable.setSize(tabFolder.getSize());
 
+		// resize the row height using a MeasureItem listener
+		bsTable.addListener(SWT.MeasureItem, new Listener() {
+			int y = new Button(composite, SWT.PUSH).computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+			public void handleEvent(Event event) {
+				// height cannot be per row so simply set
+				event.height = y;
+			}
+		});
+
 		SWTUtil.setFormLayoutData(oneDay, bsTable, 0, SWT.TOP, bsTable, 10,
 				SWT.NONE).width = 80;
 		SWTUtil.setFormLayoutData(oneWeek, oneDay, 10, SWT.NONE, oneDay, 0,
@@ -574,8 +583,8 @@ public class MainWindow {
 				SWT.LEFT).width = 80;
 
 		SWTUtil.setFormLayoutDataRight(currentBalance, bsTable, 10, SWT.NONE, bsTable, -20,
-				SWT.RIGHT).width = 80;
-		SWTUtil.setFormLayoutDataRight(label, bsTable, 10, SWT.NONE, currentBalance, -100,
+				SWT.RIGHT).width = 100;
+		SWTUtil.setFormLayoutDataRight(label, bsTable, 10, SWT.NONE, currentBalance, -150,
 				SWT.RIGHT);
 		
 		return composite;
@@ -592,8 +601,6 @@ public class MainWindow {
 			protected boolean isEditorActivationEvent(
 					ColumnViewerEditorActivationEvent event) {
 				ViewerCell cell = (ViewerCell) event.getSource();
-				// Transaction t =
-				// (Transaction)((TableItem)cell.getItem()).getData();
 
 				if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION) {
 					MouseEvent e = ((MouseEvent) event.sourceEvent);

@@ -17,7 +17,7 @@ package cn.sh.fang.chenance.data.entity;
 
 import javax.persistence.*;
 
-@Table(name="t_receipt_item")
+@Table(name="t_breakdown")
 @Entity
 public class Breakdown extends BaseEntity {
 

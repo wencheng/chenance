@@ -22,6 +22,11 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -35,12 +40,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import cn.sh.fang.chenance.data.dao.BreakdownService;
 import cn.sh.fang.chenance.data.dao.RepeatPaymentService;
+import cn.sh.fang.chenance.data.entity.Breakdown;
 import cn.sh.fang.chenance.data.entity.RepeatPayment;
 import cn.sh.fang.chenance.data.entity.Transaction;
+import cn.sh.fang.chenance.i18n.UIMessageBundle;
 
 public class TransactionDetailDialog extends Dialog {
 	
@@ -53,6 +62,7 @@ public class TransactionDetailDialog extends Dialog {
 	private Label lblBreakdown;
 	private List<ComboText> breakdowns = new ArrayList<ComboText>();
 	private Button chkConfirmed;
+	private DataBindingContext cnxt = new DataBindingContext();
 
 	public TransactionDetailDialog(Shell shell, Transaction t) {
 		super(shell);
@@ -84,12 +94,17 @@ public class TransactionDetailDialog extends Dialog {
 		setText( chkAutoConfirm, "Auto Confirm" );
 
 		lblBreakdown = new Label( this.parent, SWT.NONE );
-		setText( lblBreakdown, "Breakdown:" );
+		setText( lblBreakdown, "Breakdown:\n" +
+				"(+) Credit\n" +
+				"(-) Debit" );
 		this.btnAdd = new Button( this.parent, SWT.PUSH);
 		setText( btnAdd, "Add" );
 
 		internalLayout();
+
 		setDefaultValues();
+		reLayoutWithoutPack();
+
 		addListeners();
 
 		return parent;
@@ -135,6 +150,10 @@ public class TransactionDetailDialog extends Dialog {
 			chkAutoConfirm.setEnabled( false );
 			chkConfirmed.setEnabled( false );
 		}
+		
+		for ( Breakdown b : new BreakdownService().findAll(t) ) {
+			addBreakdown(b);
+		}
 	}
 
 	private void addListeners() {
@@ -151,50 +170,84 @@ public class TransactionDetailDialog extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				super.widgetSelected(arg0);
-				ComboText ct = new ComboText();
-				ct.combo = new Combo( parent, SWT.BORDER );
-				ct.text = new Text( parent, SWT.BORDER );
-				ct.btn = new Button( parent, SWT.BORDER );
-				ct.btn.setText("-");
-				ct.btn.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						ComboText c = (ComboText) e.widget.getData();
-						c.combo.dispose();
-						c.text.dispose();
-						breakdowns.remove(c);
-						e.widget.dispose();
-						reLayout();
-					}
-				});
-				ct.btn.setData(ct);
-				breakdowns.add( ct );
 
+				Breakdown bd = new Breakdown();
+				bd.setTransaction(t);
+				bd.setItemName("Unset");
+				bd.setAmount(0);
+				bd.setUpdater("");
+				
+				addBreakdown(bd);
 				reLayout();
 			}
 		});
 	}
 	
+	private ComboText addBreakdown(Breakdown breakdown) {
+		ComboText ct = new ComboText();
+		ct.breakdown = breakdown;
+		ct.category = new Combo( parent, SWT.BORDER );
+		ct.amount = new Text( parent, SWT.BORDER | SWT.RIGHT );
+		ct.btnDelete = new Button( parent, SWT.BORDER );
+		ct.btnDelete.setText("-");
+		ct.btnDelete.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ComboText c = (ComboText) e.widget.getData();
+				c.category.dispose();
+				c.amount.dispose();
+				c.btnDelete.dispose();
+
+				//breakdowns.remove(c);
+				c.breakdown.setDeleted(true);
+				
+				reLayout();
+			}
+		});
+		ct.btnDelete.setData(ct);
+
+		// bind amount
+        IObservableValue observeWidget = SWTObservables.observeText(ct.amount, SWT.Modify);
+        IObservableValue observeValue = BeansObservables.observeValue(ct.breakdown, "amount");
+        cnxt.bindValue(observeWidget, observeValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), null);
+
+        breakdowns.add(ct);
+		return ct;
+	}
+	
 	protected void reLayout() {
+		reLayoutWithoutPack();
+		TransactionDetailDialog.this.getShell().pack();
+	}
+	
+	protected void reLayoutWithoutPack() {
 		boolean isFirst = true;
 		ComboText last = null;
 		for ( ComboText ct : breakdowns ) {
+			if (ct.breakdown.isDeleted()) {
+				continue;
+			}
+			
 			if ( isFirst ) {
-				setFormLayoutData( ct.combo, btnAdd, 10, SWT.NONE, btnAdd, 0, SWT.LEFT ).width = 100;
+				setFormLayoutData( ct.category, btnAdd, 10, SWT.NONE, btnAdd, 0, SWT.LEFT ).width = 100;
 				isFirst = false;
 			} else {
-				setFormLayoutData( ct.combo, last.combo, 10, SWT.NONE, last.combo, 0, SWT.LEFT ).width = 100;
+				setFormLayoutData( ct.category, last.category, 10, SWT.NONE, last.category, 0, SWT.LEFT ).width = 100;
 			}
-			setFormLayoutData( ct.text, ct.combo, 0, SWT.TOP, ct.combo, 10, SWT.NONE ).width = 80;
-			setFormLayoutData( ct.btn, ct.text, -5, SWT.TOP, ct.text, 10, SWT.NONE );
+			setFormLayoutData( ct.amount, ct.category, 0, SWT.TOP, ct.category, 10, SWT.NONE ).width = 80;
+			setFormLayoutData( ct.btnDelete, ct.amount, -5, SWT.TOP, ct.amount, 10, SWT.NONE );
 			last = ct;
 		}
-		parent.pack();
-		TransactionDetailDialog.this.getShell().pack();
+//		parent.pack();
+//		TransactionDetailDialog.this.getShell().pack();
 	}
 
 	@Override
 	protected void okPressed() {
+		if ( calcSum() == SWT.CANCEL ) {
+			return;
+		}
+
 		if ( chkRepeat.getSelection() ) {
 			RepeatPayment r = null;
 			if ( t.getRepeatPayment() == null ) {
@@ -209,7 +262,47 @@ public class TransactionDetailDialog extends Dialog {
 			new RepeatPaymentService().save( r );
 		}
 		
+		BreakdownService bs = new BreakdownService();
+		for ( ComboText ct : this.breakdowns ) {
+			Breakdown bd = ct.breakdown;
+			if ( bd.getId() != null || bd.getId() == null && bd.isDeleted() == false ) {
+				bs.save(bd);
+			}
+		}
+
 		super.okPressed();
+	}
+
+	private int calcSum() {
+		int credit = 0;
+		int debit = 0;
+		for ( ComboText ct : this.breakdowns ) {
+			Breakdown bd = ct.breakdown;
+			if ( bd.getId() != null || bd.getId() == null && bd.isDeleted() == false ) {
+				if ( bd.getAmount() > 0 ) {
+					debit += bd.getAmount();
+				} else {
+					credit -= bd.getAmount();
+				}
+			}
+		}
+		
+		if ( credit - debit != t.getCredit() - t.getDebit()) {
+			MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell(), SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
+			mb.setText(MainWindow.TITLE);
+			mb.setMessage( UIMessageBundle._("Total amount of breakdowns you entered DOES NOT match the amount of transaction.\n\n" +
+					"Would you like to update the amount of transaction?") );
+			
+			int ans = mb.open();
+			if ( ans == SWT.YES ) {
+				this.t.setDebit(debit);
+				this.t.setCredit(credit);
+			}
+			
+			return ans;
+		} else {
+			return SWT.OK;
+		}
 	}
 
 	public Transaction getTransaction() {
@@ -217,9 +310,10 @@ public class TransactionDetailDialog extends Dialog {
 	}
 	
 	class ComboText {
-		Combo combo;
-		Text text;
-		Button btn;
+		Combo category;
+		Text amount;
+		Button btnDelete;
+		Breakdown breakdown;
 	}
 	
 	public final static void main(String[] args) {
