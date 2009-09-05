@@ -16,21 +16,18 @@
 package cn.sh.fang.chenance.provider;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 import cn.sh.fang.chenance.TransactionDetailDialog;
 import cn.sh.fang.chenance.data.entity.Transaction;
+import cn.sh.fang.chenance.util.swt.DialogCellEditor;
 
 public class BalanceSheetDetailCellEditor extends DialogCellEditor {
 
 	final static Logger LOG = Logger.getLogger(BalanceSheetDetailCellEditor.class);
-	
+
 	public BalanceSheetDetailCellEditor(Composite table) {
 		super(table);
 	}
@@ -39,8 +36,8 @@ public class BalanceSheetDetailCellEditor extends DialogCellEditor {
 	protected void updateContents(Object value) {
 		super.updateContents(value);
 		LOG.debug(value);
-		Transaction t = (Transaction)value;
-		getDefaultLabel().setText( BalanceSheetLabelProvider.getDetailLabel(t) );
+		Transaction t = (Transaction) value;
+		getDefaultLabel().setText(BalanceSheetLabelProvider.getDetailLabel(t));
 	}
 
 	@Override
@@ -57,9 +54,10 @@ public class BalanceSheetDetailCellEditor extends DialogCellEditor {
 
 	@Override
 	protected Object openDialogBox(Control c) {
-		TransactionDetailDialog diag = new TransactionDetailDialog( c.getShell(), (Transaction)getValue() );
+		TransactionDetailDialog diag = new TransactionDetailDialog(
+				c.getShell(), (Transaction) getValue());
 		int ret = diag.open();
-		if ( ret == SWT.OK ) {
+		if (ret == SWT.OK) {
 			return diag.getTransaction();
 		} else {
 			return getValue();

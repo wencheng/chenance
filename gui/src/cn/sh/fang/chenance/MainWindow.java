@@ -564,15 +564,6 @@ public class MainWindow {
 				SWT.NONE).height = 400;
 		bsTable.setSize(tabFolder.getSize());
 
-		// resize the row height using a MeasureItem listener
-		bsTable.addListener(SWT.MeasureItem, new Listener() {
-			int y = new Button(composite, SWT.PUSH).computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-			public void handleEvent(Event event) {
-				// height cannot be per row so simply set
-				event.height = y;
-			}
-		});
-
 		SWTUtil.setFormLayoutData(oneDay, bsTable, 0, SWT.TOP, bsTable, 10,
 				SWT.NONE).width = 80;
 		SWTUtil.setFormLayoutData(oneWeek, oneDay, 10, SWT.NONE, oneDay, 0,
@@ -662,6 +653,13 @@ public class MainWindow {
 		// 詳細
 		editors[Column.DETAIL.ordinal()] = new BalanceSheetDetailCellEditor(
 				bsTable);
+		// resize the row height using a MeasureItem listener
+		bsTable.addListener(SWT.MeasureItem, new Listener() {
+			public void handleEvent(Event event) {
+				// height cannot be per row so simply set
+				event.height = 24;
+			}
+		});
 
 		bsTable.addSelectionListener(new SelectionAdapter() {
 			@Override
