@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.sh.fang</groupId>
 	<artifactId>chenance</artifactId>
-	<version>0.3</version>
+	<version>0.4</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>../chenance-gui</module>
@@ -26,8 +26,8 @@
 		<chenance.version>${project.version}</chenance.version>
 		<chenance.version.txt>${project.version} BETA</chenance.version.txt>
 		<chenance.version.short>${project.version}</chenance.version.short>
-		<chenance.gui.version>1.2</chenance.gui.version>
-		<chenance.data.version>1.2</chenance.data.version>
+		<chenance.gui.version>1.3</chenance.gui.version>
+		<chenance.data.version>1.3</chenance.data.version>
 		<swt.version>3.5.0</swt.version>
 	</properties>
 	<build>
