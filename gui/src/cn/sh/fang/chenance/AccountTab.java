@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.Widget;
 
 import cn.sh.fang.chenance.AccountTree.Model;
 import cn.sh.fang.chenance.data.entity.Account;
@@ -118,11 +117,11 @@ public class AccountTab {
 		return composite;
 	}
 	
-	void bindString(DataBindingContext cnxt, IObservableValue observeSelection, Control control, String beanName) {
+	static void bindString(DataBindingContext cnxt, IObservableValue observeSelection, Control control, String beanName) {
 		bind(cnxt, observeSelection, control, beanName, java.lang.String.class);
 	}
 	
-	void bind(DataBindingContext cnxt, IObservableValue observeSelection, Control uiControl, String beanName, Class beanFieldType) {
+	static void bind(DataBindingContext cnxt, IObservableValue observeSelection, Control uiControl, String beanName, Class beanFieldType) {
 		IObservableValue w3 = SWTObservables.observeText(
 				uiControl, SWT.Modify);
 		IObservableValue v3 = BeansObservables
@@ -130,7 +129,6 @@ public class AccountTab {
 						observeSelection, beanName,
 						beanFieldType);
 		cnxt.bindValue(w3, v3, null, null);
-
 	}
 
 	/**

@@ -15,10 +15,13 @@
  */
 package cn.sh.fang.chenance.data.dao;
 
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+
 import javax.persistence.Query;
+
 import cn.sh.fang.chenance.data.entity.Breakdown;
+import cn.sh.fang.chenance.data.entity.Transaction;
 
 /**
  * 's DAO
@@ -27,7 +30,7 @@ public class BreakdownService extends BaseService {
 
     @SuppressWarnings("unchecked")
 	public List<Breakdown> findAll() {
-        Query query = em.createQuery("SELECT e FROM ReceiptItem e WHERE is_deleted = 0");
+        Query query = em.createQuery("SELECT e FROM Breakdown e WHERE is_deleted = 0");
         return query.getResultList();
     }
 
@@ -55,5 +58,11 @@ public class BreakdownService extends BaseService {
     public Breakdown find(Integer id) {
         return em.find(Breakdown.class, id);
     }
+
+	public List<Breakdown> findAll(Transaction t) {
+        Query query = em.createQuery("SELECT e FROM Breakdown e WHERE is_deleted = 0 and transaction_id = ?");
+        query.setParameter(1, t.getId());
+        return query.getResultList();
+	}
 
 }
