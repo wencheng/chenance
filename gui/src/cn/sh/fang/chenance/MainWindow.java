@@ -639,13 +639,13 @@ public class MainWindow {
 		// e.addListener(new ActivateNextCellEditorListener(tableViewer));
 		editors[Column.CATEGORY.ordinal()] = catCombo;
 		// 支出
-		TextCellEditor debitEditor = new TextCellEditor(bsTable);
+		TextCellEditor debitEditor = new TextCellEditor(bsTable, SWT.RIGHT);
 		((Text) debitEditor.getControl()).setTextLimit(9);
 		((Text) debitEditor.getControl())
 				.addVerifyListener(new NumberVerifyListener());
 		editors[Column.DEBIT.ordinal()] = debitEditor;
 		// 収入
-		TextCellEditor creditEditor = new TextCellEditor(bsTable);
+		TextCellEditor creditEditor = new TextCellEditor(bsTable, SWT.RIGHT);
 		((Text) creditEditor.getControl()).setTextLimit(9);
 		((Text) creditEditor.getControl())
 				.addVerifyListener(new NumberVerifyListener());
