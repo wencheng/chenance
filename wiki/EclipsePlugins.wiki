@@ -13,18 +13,19 @@ Add your content here.  Format your content with:
   * Headings, paragraphs, and lists
   * Automatic links to other wiki pages
 
+=== Required ===
+m2eclipse
+http://m2eclipse.sonatype.org/update/
+
+AJDT 1.6.0
+http://download.eclipse.org/tools/ajdt/34/update
+
+=== Optional ===
 Subclipse
 http://subclipse.tigris.org/update_1.6.x
 
 Subversion package for Mac OS X
 http://www.open.collab.net/downloads/apple/?_=d
-
-m2eclipse
-http://m2eclipse.sonatype.org/update/
-
-eclipse.ini
--vm
-C:\Program Files\Java\jdk1.6.0_06\bin\java.exe
 
 Jigloo
 http://cloudgarden1.com/update-site
@@ -38,22 +39,13 @@ http://jiemamy.sourceforge.jp/eclipse/
 JadClipse
 http://sourceforge.net/projects/jadclipse/
 
-AJDT 1.6.0
-http://download.eclipse.org/tools/ajdt/34/update
+=== Others ===
+eclipse.ini
+-vm
+C:\Program Files\Java\jdk1.6.0_06\bin\java.exe
 
 Use JFace's databinding
 http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.jface.examples.databinding/src/org/eclipse/jface/examples/databinding/snippets/Snippet009TableViewer.java?view=markup
 
-SWT 3.4
+SWT
 http://www.eclipse.org/swt/
-
-JFace
-jface
-core.runtime
-core.commands
-equinox.common
-
-Databinding
-core.databinding
-core.databinding.beans
-jface.databinding
