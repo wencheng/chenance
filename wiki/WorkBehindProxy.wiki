@@ -22,7 +22,7 @@ http-proxy-port = yyyy
 <settings>
   <proxies>
     <proxy>
-      <active/>
+      <active>yes</active>
       <protocol>http</protocol>
       <username></username>
       <password></password>
