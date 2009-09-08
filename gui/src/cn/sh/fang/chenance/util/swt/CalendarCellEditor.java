@@ -108,7 +108,7 @@ public class CalendarCellEditor extends CellEditor implements Listener {
 
 	public void handleEvent(Event e) {
 		if ( e.widget == cal ) {
-			Rectangle rect = cal.getBounds();
+//			Rectangle rect = cal.getBounds();
         	cal.setBounds(0,0,222,171);
         	popup.setVisible(true);
 		}
@@ -128,7 +128,8 @@ public class CalendarCellEditor extends CellEditor implements Listener {
         	LOG.debug("item "+tiRect);
         	Point p = table.toDisplay(tiRect.x,tiRect.y);
         	LOG.debug("p "+p);
-        	popup.setBounds(p.x+tiRect.width,p.y+tiRect.height,222,171);
+//        	popup.setBounds(p.x+tiRect.width,p.y+tiRect.height,222,171);
+        	popup.setBounds(p.x, p.y+tiRect.height, 222, 171);
         	cal.setBounds(0,0,222,171);
         	popup.setVisible(true);
 		}
