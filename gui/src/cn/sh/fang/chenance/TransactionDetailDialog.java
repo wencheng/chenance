@@ -177,8 +177,11 @@ public class TransactionDetailDialog extends Dialog {
 				bd.setAmount(0);
 				bd.setUpdater("");
 				
-				addBreakdown(bd);
+				ComboText ct = addBreakdown(bd);
 				reLayout();
+
+				ct.amount.forceFocus();
+				ct.amount.selectAll();
 			}
 		});
 	}
@@ -211,7 +214,7 @@ public class TransactionDetailDialog extends Dialog {
         IObservableValue observeValue = BeansObservables.observeValue(ct.breakdown, "amount");
         cnxt.bindValue(observeWidget, observeValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), null);
 
-        breakdowns.add(ct);
+		breakdowns.add(ct);
 		return ct;
 	}
 	
