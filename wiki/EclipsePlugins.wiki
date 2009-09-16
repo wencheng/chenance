@@ -21,6 +21,9 @@ AJDT 1.6.0
 http://download.eclipse.org/tools/ajdt/34/update
 
 === Optional ===
+Emacs+
+http://www.mulgasoft.com/emacsplus/update-site
+
 Subclipse
 http://subclipse.tigris.org/update_1.6.x
 
