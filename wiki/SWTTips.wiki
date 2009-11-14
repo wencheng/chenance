@@ -1,0 +1,12 @@
+#summary Tips for SWT programming
+
+= Introduction =
+
+DateChooser <br>
+http://www.eclipse.org/nebula/widgets/datechooser/datechooser.php
+
+(source) <br>
+http://dev.eclipse.org/viewcvs/index.cgi/org.eclipse.swt.nebula/org.eclipse.nebula.widgets.datechooser/src/org/eclipse/nebula/widgets/datechooser/AbstractCombo.java?revision=1.8&root=Technology_Project&view=markup
+
+Vertical Alignment of Text or Label <br>
+http://dev.eclipse.org/newslists/news.eclipse.platform.swt/msg33339.html
