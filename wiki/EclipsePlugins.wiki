@@ -42,6 +42,9 @@ http://jiemamy.sourceforge.jp/eclipse/
 JadClipse
 http://sourceforge.net/projects/jadclipse/
 
+JAD
+http://www.varaneckas.com/jad
+
 === Others ===
 eclipse.ini
 -vm
