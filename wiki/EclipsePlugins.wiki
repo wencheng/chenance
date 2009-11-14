@@ -40,7 +40,7 @@ Jiemamy
 http://jiemamy.sourceforge.jp/eclipse/
 
 JadClipse
-http://sourceforge.net/projects/jadclipse/
+http://jadclipse.sf.net/update
 
 JAD
 http://www.varaneckas.com/jad
