@@ -68,7 +68,7 @@ public class CategoryEditForm implements Listener {
 		setFormLayoutData(lblName, 0, 0, 0, 10);
 		setFormLayoutData(name, lblName, 0, SWT.TOP, lblName, 20, SWT.NONE).width = 100;
 		setFormLayoutData(lblDesc, lblName, 20, SWT.NONE, lblName, 0, SWT.LEFT);
-		FormData fd = setFormLayoutData(desc, lblDesc, 10, SWT.NONE, lblDesc,
+		FormData fd = setFormLayoutData(desc, lblDesc, 0, SWT.NONE, lblDesc,
 				0, SWT.LEFT);
 		fd.width = 200;
 		fd.height = 80;

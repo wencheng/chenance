@@ -38,7 +38,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
-import org.h2.tools.Csv;
 
 //@Transactional(propagation=Propagation.MANDATORY)
 //@Transactional
@@ -68,24 +67,6 @@ public abstract class BaseService {
 	}
 
 	public static void init() throws SQLException {
-		// 1.2 -> 1.3, h2sql -> sqlite3 migration
-		if (new File(System.getProperty("user.home") + "/chenance/db.data.db").exists()) {
-			LOG.warn("v1.2 data file found, starting migration ...");
-
-			needMigrate = true;
-			
-			try {
-				Class.forName("org.h2.Driver");
-			} catch (ClassNotFoundException e) {
-				// ignore
-			}
-			conn = DriverManager.getConnection("jdbc:h2:" + System.getProperty("user.home") + "/chenance/db;user=sa");
-			
-			save1_2Data();
-			
-			conn.close();
-		}
-		
 		try {
 			Class.forName(driverClass);
 		} catch (ClassNotFoundException e) {
@@ -253,16 +234,22 @@ public abstract class BaseService {
 	}
 
 	private static String getCurrentDataVersion() {
-		BufferedReader r = new BufferedReader(
-				new InputStreamReader(BaseService.class.getResourceAsStream("/META-INF/VERSION")));
-		String ver = null;
-		try {
-			ver = r.readLine();
-		} catch (IOException e) {
-			LOG.error(e);
+		InputStream as = BaseService.class.getResourceAsStream("/META-INF/VERSION");
+		if ( as == null ) {
+			LOG.debug("impl-ver: 0");
+			return "0";
+		} else {
+			BufferedReader r = new BufferedReader(
+				new InputStreamReader(as));
+			String ver = null;
+			try {
+				ver = r.readLine();
+			} catch (IOException e) {
+				LOG.error(e);
+			}
+			LOG.debug("impl-ver:" + ver);
+			return ver;
 		}
-		LOG.debug("impl-ver:" + ver);
-		return ver;
 	}
 
 	private static String getLocalDataVersion() throws SQLException {
@@ -276,26 +263,6 @@ public abstract class BaseService {
 		}
 	}
 	
-	private static void save1_2Data() throws SQLException {
-		Statement stmt = conn.createStatement();
-		String sql = "select * from t_account";
-		ResultSet rs = stmt.executeQuery(sql);
-		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/account.csv", rs, "UTF-8");
-		rs.close();
-
-		sql = "select * from t_category";
-		rs = stmt.executeQuery(sql);
-		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/category.csv", rs, "UTF-8");
-		rs.close();
-	
-		sql = "select * from t_transaction";
-		rs = stmt.executeQuery(sql);
-		Csv.getInstance().write(System.getProperty("user.home") + "/chenance/transaction.csv", rs, "UTF-8");
-		rs.close();
-
-		stmt.close();
-	}
-
 	static String[] vers = { "1.0", "1.1", "1.2" };
 
 	private static void updateData(String oldVer, String newVer)

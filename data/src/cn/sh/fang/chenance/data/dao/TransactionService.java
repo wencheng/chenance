@@ -209,7 +209,7 @@ public class TransactionService extends BaseService {
 	 * @param account
 	 * @param bDate
 	 * @param eDate
-	 * @return
+	 * @return bDate <= x < eDate
 	 */
 	public List<Transaction> find(Account account, Date bDate, Date eDate) {
         Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0" +
