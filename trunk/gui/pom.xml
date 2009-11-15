@@ -54,7 +54,7 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
 		</dependency>
-		<!-- swt from chenance.googlecode.com -->
+		<!-- from chenance.googlecode.com -->
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>swt</artifactId>
@@ -65,6 +65,26 @@
 			<groupId>org.eclipse.jface</groupId>
 			<artifactId>databinding</artifactId>
 			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.swtchart</groupId>
+			<artifactId>swtchart</artifactId>
+			<version>0.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.nebula.widgets</groupId>
+			<artifactId>nebula-datechooser</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.nebula.widgets</groupId>
+			<artifactId>nebula-formattedtext</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.nebula.widgets</groupId>
+			<artifactId>nebula-pshelf</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -27,6 +27,9 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.nebula.widgets.pshelf.PShelf;
+import org.eclipse.nebula.widgets.pshelf.PShelfItem;
+import org.eclipse.nebula.widgets.pshelf.RedmondShelfRenderer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,7 +39,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -53,7 +55,9 @@ public class CategoryTab {
 
 	private CategoryTree tree;
 
-	private CategoryEditForm form;
+	private CategoryEditForm infoForm;
+	
+	private CategoryStatsForm statsForm;
 
 	private Category root;
 
@@ -85,23 +89,38 @@ public class CategoryTab {
 		
 		prov.addChangeListener(new CategoryListListener(tree));
 
+		PShelf shelf = new PShelf(comp, SWT.BORDER);
+		shelf.setRenderer(new RedmondShelfRenderer());
+		
 		// 編集フォーム
-		Group group = new Group(comp, SWT.RESIZE);
-		setText(group, "Category Info");
+		PShelfItem item0 = new PShelfItem(shelf,SWT.NONE);
+		Composite group = item0.getBody();
+		setText(item0, "Category Info");
 		FormLayout formLayout = new FormLayout();
 		group.setLayout(formLayout);
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
-		form = new CategoryEditForm(group, comp.getStyle());
-		form.btnSave.addSelectionListener(new SelectionAdapter() {
+		formLayout.spacing = 10;
+		infoForm = new CategoryEditForm(group, comp.getStyle());
+		infoForm.btnSave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
 				prov.itemChanged(tree.getSelected());
 			}
 		});
-		// group.pack();
-	
+
+		// 集計フォーム
+		item0 = new PShelfItem(shelf,SWT.NONE);
+		group = item0.getBody();
+		setText(item0, "Category Statistics");
+		formLayout = new FormLayout();
+		group.setLayout(formLayout);
+		formLayout.marginHeight = 10;
+		formLayout.marginWidth = 10;
+		formLayout.spacing = 10;
+		statsForm = new CategoryStatsForm(group, comp.getStyle());
+
 		// レイアウト
 		formLayout = new FormLayout();
 		comp.setLayout(formLayout);
@@ -118,7 +137,9 @@ public class CategoryTab {
 		fd = setFormLayoutDataRight(btnAdd, t, 2, SWT.NONE, btnDel, 0,
 				SWT.NONE);
 		fd.width = fd.height;
-		setFormLayoutData(group, t, 0, SWT.TOP, t, 20, SWT.NONE);
+		fd = setFormLayoutData(shelf, t, 0, SWT.TOP, t, 20, SWT.NONE);
+		fd.width = 780;
+		fd.height = 400;
 	
 		initDataBindings();
 
@@ -136,7 +157,7 @@ public class CategoryTab {
 
 		// "name" field
 		IObservableValue w1 = SWTObservables.observeText(
-				this.form.name, SWT.Modify);
+				this.infoForm.name, SWT.Modify);
 		IObservableValue v1 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
 						observeSelection, "name",
@@ -144,7 +165,7 @@ public class CategoryTab {
 		bindingContext.bindValue(w1, v1, null, null);
 
 		// "description" field
-		IObservableValue w2 = new StyledTextObservableValue(this.form.desc, SWT.Modify);
+		IObservableValue w2 = new StyledTextObservableValue(this.infoForm.desc, SWT.Modify);
 		IObservableValue v2 = BeansObservables
 				.observeDetailValue(Realm.getDefault(),
 						observeSelection, "description",
@@ -160,7 +181,7 @@ public class CategoryTab {
 				return Boolean.valueOf(((Category)observeSelection.getValue()).getParent() != null);
 			}
 		};
-		bindingContext.bindValue(SWTObservables.observeEnabled(this.form.btnSave),
+		bindingContext.bindValue(SWTObservables.observeEnabled(this.infoForm.btnSave),
 				isSavable, null, null);
 
 		// "+" button
@@ -192,7 +213,13 @@ public class CategoryTab {
 		bindingContext.bindValue(SWTObservables.observeEnabled(this.btnDel),
 				isDeletable, null, null);
 
-		//
+		// stats id field
+		IObservableValue v3 = BeansObservables
+				.observeDetailValue(Realm.getDefault(),
+						observeSelection, "id",
+						java.lang.Integer.class);
+		bindingContext.bindValue(this.statsForm.id, v3, null, null);
+
 		return bindingContext;
 	}
 
@@ -216,8 +243,8 @@ public class CategoryTab {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				prov.addItem();
-				form.name.selectAll();
-				form.name.setFocus();
+				infoForm.name.selectAll();
+				infoForm.name.setFocus();
 			}
 		});
 	}

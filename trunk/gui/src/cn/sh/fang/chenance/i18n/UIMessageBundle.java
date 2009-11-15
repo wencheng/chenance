@@ -31,7 +31,7 @@ public class UIMessageBundle {
 
 	 static ResourceBundle res;
 
-	 static Map<Widget, String> widgets = new HashMap<Widget, String>();
+	 static Map<Object, String> widgets = new HashMap<Object, String>();
 	 
 	 static {
 		 try {
@@ -56,8 +56,8 @@ public class UIMessageBundle {
 	 public static void reload(Locale locale) {
 		res = ResourceBundle.getBundle("cn.sh.fang.chenance.i18n.gui", locale);
 		try {
-			for ( Entry<Widget, String> e : widgets.entrySet() ) {
-				Widget w = e.getKey();
+			for ( Entry<Object, String> e : widgets.entrySet() ) {
+				Object w = e.getKey();
 				Method m = w.getClass().getMethod( "setText", new Class[]{ String.class } );
 				m.invoke( w, new Object[]{ _( e.getValue() ) } );
 			 }
@@ -103,7 +103,7 @@ public class UIMessageBundle {
 		}
 	}
 
-	public static void setText(Widget w, String s) {
+	public static void setText(Object w, String s) {
 		try {
 			Method m = w.getClass().getMethod( "setText", new Class[]{ String.class } );
 			widgets.put( w, s );
