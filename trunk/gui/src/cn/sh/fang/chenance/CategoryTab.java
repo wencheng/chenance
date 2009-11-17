@@ -139,7 +139,7 @@ public class CategoryTab {
 		fd.width = fd.height;
 		fd = setFormLayoutData(shelf, t, 0, SWT.TOP, t, 20, SWT.NONE);
 		fd.width = 780;
-		fd.height = 400;
+		fd.height = 420;
 	
 		initDataBindings();
 
