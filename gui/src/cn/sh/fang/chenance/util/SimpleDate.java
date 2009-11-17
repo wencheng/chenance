@@ -1,5 +1,7 @@
 package cn.sh.fang.chenance.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,21 +27,35 @@ public class SimpleDate extends Date {
 		return cal;
 	}
 	
+	/**
+	 * presume the date is right about the local time,
+	 * but not right about the timezone.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
 	public static SimpleDate UTC(Date date) {
-		return new SimpleDate(date.getTime() + ONE_DAY_MILI);
+		date.setHours(-date.getTimezoneOffset()/60);
+		return new SimpleDate(date);
+	}
+
+	public static SimpleDate UTC(String string) {
+		try {
+			return UTC(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(string));
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static SimpleDate yyyyww(String yyyyww) {
 		Calendar cal = Calendar.getInstance();
+		cal.setMinimalDaysInFirstWeek(7);
 		cal.set(Calendar.YEAR, Integer.parseInt(yyyyww.substring(0,4)));
-		cal.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(yyyyww.substring(4))+1);
-		return new SimpleDate(cal.getTimeInMillis());
-	}
-
-	@SuppressWarnings("deprecation")
-	public SimpleDate clearHour() {
-		this.setHours(0);
-		return this;
+		cal.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(yyyyww.substring(4)));
+		cal.set(Calendar.DAY_OF_WEEK, 1);
+		return SimpleDate.UTC(cal.getTime());
 	}
 
 	/**
@@ -60,6 +76,13 @@ public class SimpleDate extends Date {
 
 	public SimpleDate nextWeek() {
 		return new SimpleDate(this.getTime() + ONE_DAY_MILI * 7);
+	}
+
+	public SimpleDate nextMonth() {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(this);
+		cal.add(Calendar.MONTH, 1);
+		return new SimpleDate(cal.getTime());
 	}
 
 	/**
@@ -125,6 +148,60 @@ public class SimpleDate extends Date {
 		
 		bDate.setTime(bgn.getTimeInMillis());
 		eDate.setTime(end.getTimeInMillis());
+
+	}
+
+	public static SimpleDate yyyymm(String yyyymm) {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, Integer.parseInt(yyyymm.substring(0,4)));
+		cal.set(Calendar.MONTH, Integer.parseInt(yyyymm.substring(4))-1);
+		cal.set(Calendar.DATE, 1);
+		return new SimpleDate(cal.getTimeInMillis());
+	}
+
+	public static void main(String[] s) {
+		/*
+select strftime('%Y%W', '2007-12-31')
+union all
+select strftime('%Y%W', '2008-01-01')
+union all
+select strftime('%Y%W', '2008-01-05', 'localtime')
+union all
+select strftime('%Y%W', '2008-01-06','localtime')
+union all
+select strftime('%Y%W', '2008-01-07','localtime');
+		 */
+		Calendar cal = Calendar.getInstance();
+		cal.setMinimalDaysInFirstWeek(7);
+		cal.setFirstDayOfWeek(1);
+		cal.set(Calendar.YEAR, 2009);
+		cal.set(Calendar.MONTH, 10);
+		// sqlite3: 45
+		cal.set(Calendar.DATE, 14);
+		System.err.println(cal.get(Calendar.WEEK_OF_YEAR));
+		System.err.println(SimpleDate.yyyyww("200945"));
+		// s: 46
+		cal.set(Calendar.DATE, 16);
+		System.err.println(cal.get(Calendar.WEEK_OF_YEAR));
+		// s: 46
+		cal.set(Calendar.DATE, 17);
+		System.err.println(cal.get(Calendar.WEEK_OF_YEAR));
+		cal.set(Calendar.MONTH, 0);
+		// s: 0
+		cal.set(Calendar.DATE, 1);
+		System.err.println(cal.get(Calendar.WEEK_OF_YEAR));
+		// s: 0
+		cal.set(Calendar.DATE, 4);
+		System.err.println(cal.get(Calendar.WEEK_OF_YEAR));
+		// s: 1
+		cal.set(Calendar.DATE, 5);
+		System.err.println(cal.get(Calendar.WEEK_OF_YEAR));
+
+		System.err.println(cal.getMinimalDaysInFirstWeek());
+		cal.set(Calendar.YEAR, 2010);
+		System.err.println(cal.getMinimalDaysInFirstWeek());
+		cal.set(Calendar.YEAR, 2008);
+		System.err.println(cal.getMinimalDaysInFirstWeek());
 
 	}
 

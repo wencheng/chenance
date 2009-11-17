@@ -36,7 +36,7 @@ import cn.sh.fang.chenance.listener.AbstractDataAdapter;
 // 編集欄
 public class CategoryEditForm implements Listener {
 
-	private static final int MAX_HEIGHT = 260;
+	private static final int MAX_HEIGHT = 200;
 	private static final int MIN_HEIGHT = 50;
 	private static final int RESIZE_STEP = 15;
 
@@ -106,12 +106,7 @@ public class CategoryEditForm implements Listener {
 					Point p = desc.getSize();
 					p.y += RESIZE_STEP;
 					desc.setSize(p);
-					fd = (FormData) parent.getLayoutData();
-					fd.height += RESIZE_STEP;
 					parent.layout();
-					p = parent.getSize();
-					p.y += RESIZE_STEP;
-					parent.setSize(p);
 				}
 
 				if (e.y - height <= -RESIZE_STEP && height > MIN_HEIGHT) {
@@ -122,12 +117,7 @@ public class CategoryEditForm implements Listener {
 					Point p = desc.getSize();
 					p.y -= RESIZE_STEP;
 					desc.setSize(p);
-					fd = (FormData) parent.getLayoutData();
-					fd.height -= RESIZE_STEP;
 					parent.layout();
-					p = parent.getSize();
-					p.y -= RESIZE_STEP;
-					parent.setSize(p);
 				}
 			} else {
 				if (Math.abs(e.y - height) <= 9) {

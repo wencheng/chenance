@@ -38,13 +38,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.Chart;
+import org.swtchart.IAxis;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 import org.swtchart.ISeriesLabel;
 import org.swtchart.ISeriesSet;
+import org.swtchart.Range;
 import org.swtchart.ISeries.SeriesType;
 
-import cn.sh.fang.chenance.data.dao.CategoryService;
+import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.util.SimpleDate;
 import cn.sh.fang.chenance.util.swt.DateChooserCombo;
@@ -59,7 +61,7 @@ public class CategoryStatsForm {
 	private DateChooserCombo to;
 	private Chart chart;
 	private Composite parent;
-
+	
 	public CategoryStatsForm(Composite parent, int style) {
 		this.parent = parent;
 		createControl(parent);
@@ -76,7 +78,6 @@ public class CategoryStatsForm {
 	
 		Calendar cal = Calendar.getInstance();
 		Date t1 = cal.getTime();
-		t1.setHours(0);
 		to.setValue(t1);
 		cal.add(Calendar.MONTH, -1);
 		cal.add(Calendar.DATE, 1);
@@ -84,9 +85,9 @@ public class CategoryStatsForm {
 		from.setValue(t1);
 		
 		// レイアウト
-		setFormLayoutData(from, 0, 0, 0, 10).width = 130;
+		setFormLayoutData(from, 0, 0, 0, 10);//.width = 130;
 		setFormLayoutData(lblTo, from, 0, SWT.TOP, from, 20, SWT.NONE);
-		setFormLayoutData(to, from, 0, SWT.TOP, lblTo, 20, SWT.NONE).width = 130;
+		setFormLayoutData(to, from, 0, SWT.TOP, lblTo, 20, SWT.NONE);//.width = 130;
 
 		createChart();
 		
@@ -129,24 +130,23 @@ public class CategoryStatsForm {
 	}
 	
 	private void refreshChart() {
-//		createChart();
 		ISeriesSet ss = chart.getSeriesSet();
 		for ( ISeries s : ss.getSeries() ) {
-			LOG.debug(s.getId());
 			ss.deleteSeries(s.getId());
 		}
-		LOG.debug("refresh chart category: " + id.doGetValue());
+
 		if (id.doGetValue() == null) {
 			return;
 		}
 
-		SimpleDate from = new SimpleDate(this.from.getValue());
-		SimpleDate to = new SimpleDate(this.to.getValue());
+		// DateChooser gives us a time of 00:00:00
+		SimpleDate from = SimpleDate.UTC(this.from.getValue());
+		SimpleDate to = SimpleDate.UTC(this.to.getValue());
 		int diff = to.dayDiff(from);
-		LOG.debug("refresh chart category: " + this.from.getValue() + " " + this.to.getValue());
-		LOG.debug("refresh chart category: " + from + " " + to);
+		LOG.debug("refresh chart category: " + id.doGetValue() + " " + from + " " + to);
 		LOG.debug("diff: " + diff);
 
+		TransactionService cs = new TransactionService();
 		SimpleDateFormat dateFormat = null;
 		List<Date> xseries = new ArrayList<Date>();
 		HashMap<Account, List<Object[]>>  yl = null;
@@ -159,15 +159,14 @@ public class CategoryStatsForm {
 				xseries.add(l);
 			}
 
-			CategoryService cs = new CategoryService();
-			yl = cs.getDailyAmount((Integer)id.doGetValue(), from, to.nextDay());
+			yl = cs.getDailyAmount((Integer)id.doGetValue(), from, to);
 
-			// Map<Account, List<{YYYYWW, Long}>> => Map<Account, List<{Date, Long}>>
+			// Map<Account, List<{String, Long}>> => Map<Account, List<{Date, Long}>>
 			for ( Account a : yl.keySet() ) {
 				List<Object[]> l = yl.get(a);
 				for ( int i = 0; i < l.size(); i++ ) {
-					LOG.debug((Date)l.get(i)[0] + " " + SimpleDate.UTC((Date)l.get(i)[0]));
-					l.get(i)[0] = SimpleDate.UTC((Date)l.get(i)[0]);
+					LOG.debug((String)l.get(i)[0] + " " + SimpleDate.UTC((String)l.get(i)[0]));
+					l.get(i)[0] = SimpleDate.UTC((String)l.get(i)[0]);
 				}
 			}
 		} else if ( diff <= 186 ) {
@@ -179,8 +178,7 @@ public class CategoryStatsForm {
 				xseries.add(l);
 			}
 
-			CategoryService cs = new CategoryService();
-			yl = cs.getWeeklyAmount((Integer)id.doGetValue(), from, to.nextDay());
+			yl = cs.getWeeklyAmount((Integer)id.doGetValue(), from, to);
 
 			// Map<Account, List<{YYYYWW, Long}>> => Map<Account, List<{Date, Long}>>
 			for ( Account a : yl.keySet() ) {
@@ -190,12 +188,47 @@ public class CategoryStatsForm {
 					l.get(i)[0] = SimpleDate.yyyyww((String)l.get(i)[0]);
 				}
 			}
-		} else if ( diff <= 1100 ) {
+		} else {//if ( diff <= 1100 ) {
 			// monthly
-			
+			SimpleDate.resetDateRange(from, to, Calendar.MONTH, null);
+			dateFormat = new SimpleDateFormat("yyyy/MM");
+
+			for ( SimpleDate l = from; l.compareTo(to) <= 0; l = l.nextMonth() ) {
+				xseries.add(l);
+			}
+
+			yl = cs.getMonthlyAmount((Integer)id.doGetValue(), from, to);
+
+			// Map<Account, List<{YYYYMM, Long}>> => Map<Account, List<{Date, Long}>>
+			for ( Account a : yl.keySet() ) {
+				List<Object[]> l = yl.get(a);
+				for ( int i = 0; i < l.size(); i++ ) {
+					LOG.debug((String)l.get(i)[0] + " " + SimpleDate.yyyymm((String)l.get(i)[0]));
+					l.get(i)[0] = SimpleDate.yyyymm((String)l.get(i)[0]);
+				}
+			}
+			/*
 		} else {
 			// yearly
-			
+			SimpleDate.resetDateRange(from, to, Calendar.MONTH, null);
+			dateFormat = new SimpleDateFormat("yyyy/MM");
+
+			for ( SimpleDate l = from; l.compareTo(to) <= 0; l = l.nextYear() ) {
+				xseries.add(l);
+			}
+
+			CategoryService cs = new CategoryService();
+			yl = cs.getMonthlyAmount((Integer)id.doGetValue(), from, to);
+
+			// Map<Account, List<{YYYYWW, Long}>> => Map<Account, List<{Date, Long}>>
+			for ( Account a : yl.keySet() ) {
+				List<Object[]> l = yl.get(a);
+				for ( int i = 0; i < l.size(); i++ ) {
+					LOG.debug((String)l.get(i)[0] + " " + SimpleDate.yyyymm((String)l.get(i)[0]));
+					l.get(i)[0] = SimpleDate.yyyymm((String)l.get(i)[0]);
+				}
+			}
+			*/
 		}
 		
 		// Map<Account, List<{Date, Long}>> => Map<Account, double[]>
@@ -204,7 +237,7 @@ public class CategoryStatsForm {
 			double[] d = new double[xseries.size()];
 			for ( int i = 0; i < xseries.size(); i++ ) {
 				d[i] = 0;
-				LOG.debug(xseries.get(i));
+//				LOG.debug(xseries.get(i));
 			}
 
 			for ( int i = 0; i < l.size(); i++ ) {
@@ -220,12 +253,25 @@ public class CategoryStatsForm {
 		}
 		
 		// create line series
+		int color = 0;
 		for ( Account a : ym.keySet() ) {
 			ILineSeries lineSeries = (ILineSeries)ss
 				.createSeries(SeriesType.LINE, a.getName());
 			double[] y = ym.get(a);
 			lineSeries.setYSeries(y);
-			
+			lineSeries.setLineWidth(3);
+
+			// adjust the y-axis range
+			chart.getAxisSet().getYAxes()[0].adjustRange();
+
+			// no 0, no 1=SWT.COLOR_WHITE
+			int[] COLORS = {11, 3, 5, 7, 9, 2, 13, 15, 2, 4, 6, 8, 10, 12, 14, 16};
+			lineSeries.setLineColor(Display.getDefault().getSystemColor(COLORS[color++]));
+			if ( color == COLORS.length ) {
+				color = 0;
+			}
+
+			// show non-zero labels
 			ISeriesLabel seriesLabel = lineSeries.getLabel();
 			seriesLabel.setVisible(true);
 			String[] formats = new String[y.length];
@@ -238,14 +284,27 @@ public class CategoryStatsForm {
 			}
 			seriesLabel.setFormats(formats);
 
-			lineSeries.setXDateSeries(xseries.toArray(new Date[]{}));
-			chart.getAxisSet().getXAxis(lineSeries.getXAxisId()).getTick().setFormat(dateFormat);
+			IAxis xAxis = chart.getAxisSet().getXAxis(lineSeries.getXAxisId());
+			if (diff <= 31) {
+				lineSeries.setXDateSeries(xseries.toArray(new Date[]{}));
+				xAxis.getTick().setFormat(dateFormat);
+				xAxis.setRange(new Range(
+						from.getTime()-SimpleDate.ONE_DAY_MILI+1,
+						to.getTime()+SimpleDate.ONE_DAY_MILI-1));
+			} else {
+				String[] xs = new String[xseries.size()];
+				for (int i = 0; i < xs.length; i++ ) {
+					xs[i] = dateFormat.format(xseries.get(i));
+				}
+				xAxis.setCategorySeries(xs);
+				xAxis.adjustRange();
+				xAxis.enableCategory(true);
+			}
 		}
 
-		// adjust the axis range
-		chart.getAxisSet().adjustRange();
+		// redraw
 		chart.getPlotArea().update();
-		parent.getParent().getParent().redraw();
+		chart.redraw(); // work for win
 	}
 
 }

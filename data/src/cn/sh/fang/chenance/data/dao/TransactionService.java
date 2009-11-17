@@ -17,6 +17,7 @@ package cn.sh.fang.chenance.data.dao;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -229,6 +230,90 @@ public class TransactionService extends BaseService {
         cal.set(Calendar.MILLISECOND, 0);
         query.setParameter(3, cal.getTimeInMillis()/1000*1000 );
         return query.getResultList();
+	}
+
+	private HashMap<Account, List<Object[]>> getAmount(Integer id, Date from, Date to, String sql) {
+		HashMap<Account, List<Object[]>> ret = new HashMap<Account, List<Object[]>>();
+	
+		List<Account> as = new AccountService().findAll();
+		
+		for ( Account a : as ) {
+			Query query = em.createNativeQuery(sql);
+			query.setParameter(1, a.getId());
+			query.setParameter(2, id);
+	        Calendar cal = Calendar.getInstance();
+	        cal.setTime( from );
+	        cal.set(Calendar.HOUR_OF_DAY, 0);
+	        cal.set(Calendar.MINUTE, 0);
+	        cal.set(Calendar.SECOND, 0);
+	        cal.set(Calendar.MILLISECOND, 0);
+	        query.setParameter(3, cal.getTime() );
+	        cal.setTime( to );
+	        cal.set(Calendar.HOUR_OF_DAY, 0);
+	        cal.set(Calendar.MINUTE, 0);
+	        cal.set(Calendar.SECOND, 0);
+	        cal.set(Calendar.MILLISECOND, 0);
+	        query.setParameter(4, cal.getTime() );
+			
+			List<Object[]> l = query.getResultList();
+			for (int i = 0; i < l.size(); i++) {
+				Object[] o = l.get(i);
+//				LOG.debug(o);
+			}
+			ret.put(a, l); 
+		}
+	
+		return ret;
+	}
+
+	/**
+	 * 
+	 * @return <code>List<Object[]></code> is a list of {Date, Long}
+	 * from <= x < to
+	 */
+	public HashMap<Account, List<Object[]>> getDailyAmount(Integer id, Date from, Date to) {
+		return getAmount(id, from, to,
+				"SELECT datetime(_date/1000, 'unixepoch'), sum(t.debit-t.credit) FROM t_transaction t " +
+				"WHERE account_id = ? AND category_id = ? " +
+				"AND _date >= ? AND _date <= ? " +
+				"AND is_deleted = 0 " +
+				"GROUP BY _date"
+				);
+	}
+
+	public HashMap<Account,List<Object[]>> getMonthlyAmount(Integer id, Date from, Date to) {
+		return getAmount(id, from, to,
+				"SELECT strftime('%Y%m', _date/1000, 'unixepoch', 'localtime'), " +
+				"sum(t.debit - t.credit) " +
+				"FROM t_transaction t WHERE account_id = ? AND category_id = ? " +
+				"AND _date >= ? AND _date <= ? " +
+				"AND is_deleted = 0 " +
+				"GROUP BY strftime('%Y%m', _date/1000, 'unixepoch', 'localtime')"
+				);
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @param from
+	 * @param to
+	 * @return List<{"YYYYWW", Long}>
+	 */
+	public HashMap<Account,List<Object[]>> getWeeklyAmount(Integer id, Date from, Date to) {
+		// SQLite's week starts from Monday ends with Sunday, so:
+		// if our locale starts from Monday, do nothing.
+		// if starts from Sunday, move all Sunday's data to next week
+		String week = Calendar.getInstance().getFirstDayOfWeek() == 1 ? 
+				"_date/1000, 'unixepoch'" : "_date/1000, 'unixepoch', '1 day'";
+		
+		return getAmount(id, from, to,
+				"SELECT strftime('%Y%W', " + week + ", 'localtime'), " +
+				"sum(t.debit - t.credit) " +
+				"FROM t_transaction t WHERE account_id = ? AND category_id = ? " +
+				"AND _date >= ? AND _date <= ? " +
+				"AND is_deleted = 0 " +
+				"GROUP BY strftime('%Y%W', " + week + ", 'localtime') "
+				);
 	}
 
 }

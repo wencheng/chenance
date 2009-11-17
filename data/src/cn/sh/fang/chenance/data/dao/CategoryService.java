@@ -15,14 +15,11 @@
  */
 package cn.sh.fang.chenance.data.dao;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Query;
 
-import cn.sh.fang.chenance.data.entity.Account;
 import cn.sh.fang.chenance.data.entity.Category;
 
 /**
@@ -67,116 +64,6 @@ public class CategoryService extends BaseService {
 	public List<Category> getTops() {
         Query query = em.createQuery("SELECT e FROM Category e WHERE parent IS NULL AND is_deleted = 0");
         return query.getResultList();
-	}
-
-	/**
-	 * 
-	 * @return <code>List<Object[]></code> is a list of {Date, Long}
-	 * from <= x < to
-	 */
-	public HashMap<Account, List<Object[]>> getDailyAmount(Integer id, Date from, Date to) {
-		HashMap<Account, List<Object[]>> ret = new HashMap<Account, List<Object[]>>();
-
-		List<Account> as = new AccountService().findAll();
-		
-		for ( Account a : as ) {
-			Query query = em.createQuery("SELECT t.Date, sum(t.debit-t.credit) FROM Transaction t " +
-					"WHERE account.id = ? AND category.id = ? " +
-					"AND Date >= ? AND Date <= ? " +
-					"AND isDeleted = 0 " +
-					"GROUP BY Date");
-			query.setParameter(1, a.getId());
-			query.setParameter(2, id);
-	        Calendar cal = Calendar.getInstance();
-	        cal.setTime( from );
-	        cal.set(Calendar.HOUR_OF_DAY, 0);
-	        cal.set(Calendar.MINUTE, 0);
-	        cal.set(Calendar.SECOND, 0);
-	        cal.set(Calendar.MILLISECOND, 0);
-	        query.setParameter(3, cal.getTime() );
-	        cal.setTime( to );
-	        cal.set(Calendar.HOUR_OF_DAY, 0);
-	        cal.set(Calendar.MINUTE, 0);
-	        cal.set(Calendar.SECOND, 0);
-	        cal.set(Calendar.MILLISECOND, 0);
-	        query.setParameter(4, cal.getTime() );
-			
-			List<Object[]> l = query.getResultList();
-			for (int i = 0; i < l.size(); i++) {
-				Object[] o = l.get(i);
-				LOG.debug(o);
-				
-				if ( o[0] instanceof Long ) {
-					o[0] = new Date((Long) o[0]);
-				}
-			}
-			ret.put(a, l); 
-			LOG.debug(ret.get(a));
-		}
-
-		return ret;
-	}
-
-	/**
-	 * 
-	 * @param id
-	 * @param from
-	 * @param to
-	 * @return List<{"YYYYWW", Long}>
-	 */
-	public HashMap<Account,List<Object[]>> getWeeklyAmount(Integer id, Date from, Date to) {
-		HashMap<Account, List<Object[]>> ret = new HashMap<Account, List<Object[]>>();
-
-		List<Account> as = new AccountService().findAll();
-		
-		for ( Account a : as ) {
-			Query query = em.createNativeQuery(
-				"SELECT strftime('%Y%W', _date/1000,'unixepoch'), sum(t.debit - t.credit) " +
-				"FROM t_transaction t WHERE account_id = ? AND category_id = ? " +
-				"AND _date >= ? AND _date <= ? " +
-				"AND is_deleted = 0 " +
-				"GROUP BY strftime('%Y%W', _date/1000,'unixepoch')"
-			);
-			query.setParameter(1, a.getId());
-			query.setParameter(2, id);
-	        Calendar cal = Calendar.getInstance();
-	        cal.setTime( from );
-	        cal.set(Calendar.HOUR_OF_DAY, 0);
-	        cal.set(Calendar.MINUTE, 0);
-	        cal.set(Calendar.SECOND, 0);
-	        cal.set(Calendar.MILLISECOND, 0);
-	        query.setParameter(3, cal.getTime() );
-	        cal.setTime( to );
-	        cal.set(Calendar.HOUR_OF_DAY, 0);
-	        cal.set(Calendar.MINUTE, 0);
-	        cal.set(Calendar.SECOND, 0);
-	        cal.set(Calendar.MILLISECOND, 0);
-	        query.setParameter(4, cal.getTime() );
-
-	        List<Object[]> l = query.getResultList();
-			ret.put(a, l); 
-			LOG.debug(ret.get(a));
-		}
-		
-		return ret;
-	}
-
-	public HashMap<Account, List<Integer>> getTwoWeeklyAmount(Integer id, Date value, Date value2) {
-		HashMap<Account, List<Integer>> ret = new HashMap<Account, List<Integer>>();
-
-		List<Account> as = new AccountService().findAll();
-		
-		for ( Account a : as ) {
-			Query query = em.createQuery(
-				"SELECT (cast(strftime('%Y%W', _date/1000,'unixepoch')/2 as integer)+1)*2, sum(t.debit - t.credit) FROM t_transaction t WHERE account_id = ? AND category_id = ? AND is_deleted = 0"
-				+ "GROUP BY (cast(strftime('%Y%W', _date/1000,'unixepoch')/2 as integer)+1)*2"
-			);
-			query.setParameter(1, a.getId());
-			query.setParameter(2, id);
-			ret.put(a, query.getResultList());
-		}
-		
-		return ret;
 	}
 
 }
