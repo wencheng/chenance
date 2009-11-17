@@ -19,6 +19,7 @@ http://m2eclipse.sonatype.org/update/
 
 AJDT 1.6.0
 http://download.eclipse.org/tools/ajdt/34/update
+http://download.eclipse.org/tools/ajdt/35/update
 
 === Optional ===
 Emacs+
