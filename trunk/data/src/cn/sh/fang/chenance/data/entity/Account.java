@@ -60,7 +60,7 @@ public class Account extends BaseEntity {
     private Integer currency;
 
     @Column(name="closing_day")
-    private Integer closingDay;
+    private Integer closingDay = 31;
 
     public String getName() {
         return this.name;
@@ -151,7 +151,7 @@ public class Account extends BaseEntity {
     }
 
 	public Integer getClosingDay() {
-		return closingDay;
+		return ( closingDay == null ) ? 31 : closingDay;
 	}
     
 	public void setClosingDay(Integer closingDay) {
