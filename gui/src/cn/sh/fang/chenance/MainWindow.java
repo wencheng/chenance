@@ -453,6 +453,18 @@ public class MainWindow {
 				changeBsDateRange(Calendar.YEAR);
 			}
 		});
+		// 未確定のみ
+		Button unconfirmed = new Button(composite, SWT.TOGGLE);
+		setText(unconfirmed, "Show Unconfirmed");
+		unconfirmed.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				Button b = (Button)e.widget;
+				setText( b, b.getSelection() ? "Show All" : "Show Unconfirmed" );
+				switchUnconfirmed(b.getSelection());
+			}
+		});
 		
 		// カレンダー
 		DateTime listDate = new DateTime(composite, SWT.CALENDAR | SWT.SHORT);
@@ -572,6 +584,8 @@ public class MainWindow {
 				SWT.LEFT).width = 80;
 		SWTUtil.setFormLayoutData(oneYear, oneMonth, 10, SWT.NONE, oneMonth, 0,
 				SWT.LEFT).width = 80;
+		SWTUtil.setFormLayoutData(unconfirmed, oneYear, 10, SWT.NONE, oneYear, 0,
+				SWT.LEFT);//.width = 80;
 
 		SWTUtil.setFormLayoutDataRight(currentBalance, bsTable, 10, SWT.NONE, bsTable, -20,
 				SWT.RIGHT).width = 100;
@@ -726,7 +740,6 @@ public class MainWindow {
 		
 	}
 
-
 	public void changeBsDateRange(int i) {
 		if ( i == Calendar.DATE ) {
 			bslp.setDateFormat( BalanceSheetLabelProvider.DD );
@@ -745,6 +758,12 @@ public class MainWindow {
 		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 	}
 
+	public void switchUnconfirmed(boolean b) {
+		bsProv.setIsUnconfirmedOnly( b );
+		bsTableViewer.refresh();
+		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
+	}
+	
 	public void resetCategoryCombo() {
 		catCombo.setItems(catProv.reloadAll());
 		bsTableViewer.setData(CATEGORY_LIST, catProv.getAll());
