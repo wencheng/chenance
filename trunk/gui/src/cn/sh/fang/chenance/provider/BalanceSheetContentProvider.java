@@ -65,6 +65,8 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 
 	private int dateRange;
 
+	private boolean isUnconfirmedOnly = false;
+
 	static final Transaction EMPTY = new Transaction();
 
 	/**
@@ -97,7 +99,7 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 		resetDateRange();
 		
 		TransactionService ts = new TransactionService();
-		this.transactions = ts.find(account, bDate, eDate);
+		this.transactions = ts.find(account, bDate, eDate, isUnconfirmedOnly);
 		calcBalance();
 		this.transactions.add(EMPTY);
 	}
@@ -222,6 +224,11 @@ public class BalanceSheetContentProvider extends BaseProvider<Transaction>
 	}
 
 	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
+	}
+
+	public void setIsUnconfirmedOnly(boolean b) {
+		this.isUnconfirmedOnly  = b;
+		refresh();
 	}
 
 }

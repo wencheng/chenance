@@ -213,7 +213,14 @@ public class TransactionService extends BaseService {
 	 * @return bDate <= x < eDate
 	 */
 	public List<Transaction> find(Account account, Date bDate, Date eDate) {
-        Query query = em.createQuery("SELECT e FROM Transaction e WHERE account.id = ? AND _date >= ? AND _date < ? AND is_deleted = 0" +
+		return find(account, bDate, eDate, false);
+	}
+	
+	public List<Transaction> find(Account account, Date bDate, Date eDate, boolean unconfirmedOnly) {
+        Query query = em.createQuery("SELECT e FROM Transaction e " +
+        		"WHERE account.id = ? AND _date >= ? AND _date < ? " +
+        		(unconfirmedOnly ? "AND is_confirmed = 0" : "") +
+        		"AND is_deleted = 0" +
         		" ORDER BY _date, insert_datetime");
         query.setParameter(1, account.getId());
         Calendar cal = Calendar.getInstance();
