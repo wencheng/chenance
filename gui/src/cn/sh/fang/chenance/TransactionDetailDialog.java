@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 
 import cn.sh.fang.chenance.data.dao.BreakdownService;
 import cn.sh.fang.chenance.data.dao.RepeatPaymentService;
+import cn.sh.fang.chenance.data.dao.TransactionService;
 import cn.sh.fang.chenance.data.entity.Breakdown;
 import cn.sh.fang.chenance.data.entity.RepeatPayment;
 import cn.sh.fang.chenance.data.entity.Transaction;
@@ -117,18 +118,27 @@ public class TransactionDetailDialog extends Dialog {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 
-		// repeat
-		setFormLayoutData( lblRepeat, 0, 20, 0, 20 );
-		setFormLayoutData( chkRepeat, lblRepeat, -2,
-				SWT.TOP, lblRepeat, 10, SWT.NONE );
-		setFormLayoutData( chkAutoConfirm, chkRepeat, 10, SWT.NONE, lblRepeat, 10, SWT.NONE );
-		setFormLayoutData( chkConfirmed, chkAutoConfirm, 10, SWT.NONE, lblRepeat, 10, SWT.NONE );
+		setFormLayoutData( chkConfirmed, 0, 20, 0, 20 );
 
 		// separator
 		Label sep = new Label( this.parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BORDER );
 		FormData fd = new FormData();
 		sep.setLayoutData( fd );
 		fd.top = new FormAttachment( chkConfirmed, 20 );
+		fd.left = new FormAttachment( 0, 0);
+		fd.right= new FormAttachment( 100, 0 );
+
+		// repeat
+		setFormLayoutData( lblRepeat, sep, 10, SWT.NONE, chkConfirmed, 0, SWT.LEFT );
+		setFormLayoutData( chkRepeat, lblRepeat, -2,
+				SWT.TOP, lblRepeat, 10, SWT.NONE );
+		setFormLayoutData( chkAutoConfirm, chkRepeat, 10, SWT.NONE, lblRepeat, 10, SWT.NONE );
+
+		// separator
+		sep = new Label( this.parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BORDER );
+		fd = new FormData();
+		sep.setLayoutData( fd );
+		fd.top = new FormAttachment( chkAutoConfirm, 20 );
 		fd.left = new FormAttachment( 0, 0);
 		fd.right= new FormAttachment( 100, 0 );
 
@@ -144,11 +154,9 @@ public class TransactionDetailDialog extends Dialog {
 		if ( t.getRepeatPayment() != null ) {
 			chkRepeat.setSelection( true );
 			chkAutoConfirm.setSelection( t.getRepeatPayment().getAutoConfirm() );
-			chkConfirmed.setEnabled( chkRepeat.getSelection() );
 		} else {
 			chkRepeat.setSelection( false );
 			chkAutoConfirm.setEnabled( false );
-			chkConfirmed.setEnabled( false );
 		}
 		
 		for ( Breakdown b : new BreakdownService().findAll(t) ) {
@@ -162,7 +170,6 @@ public class TransactionDetailDialog extends Dialog {
 			public void widgetSelected(SelectionEvent arg0) {
 				super.widgetSelected(arg0);
 				chkAutoConfirm.setEnabled( chkRepeat.getSelection() );
-				chkConfirmed.setEnabled( chkRepeat.getSelection() );
 			}
 		});
 
@@ -250,7 +257,12 @@ public class TransactionDetailDialog extends Dialog {
 		if ( calcSum() == SWT.CANCEL ) {
 			return;
 		}
+		
+		// confirmation check
+		t.setIsConfirmed(chkConfirmed.getSelection());
+		new TransactionService().save(t);
 
+		// repeatability
 		if ( chkRepeat.getSelection() ) {
 			RepeatPayment r = null;
 			if ( t.getRepeatPayment() == null ) {
@@ -264,7 +276,7 @@ public class TransactionDetailDialog extends Dialog {
 			r.setAutoConfirm( chkAutoConfirm.getSelection() );
 			new RepeatPaymentService().save( r );
 		}
-		
+
 		BreakdownService bs = new BreakdownService();
 		for ( ComboText ct : this.breakdowns ) {
 			Breakdown bd = ct.breakdown;

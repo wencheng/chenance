@@ -58,7 +58,7 @@ public class Transaction extends BaseEntity {
     private Integer balance = 0;
 
     @Column(name="is_confirmed")
-    private Boolean isConfirmed;
+    private Boolean isConfirmed = Boolean.TRUE;
 
     public java.util.Date getDate() {
         return this.Date;
@@ -127,11 +127,11 @@ public class Transaction extends BaseEntity {
     public void setAccount(Account account) {
         this.account = account;
     }
-    
+
     public Boolean getIsConfirmed() {
-        return this.isConfirmed;
+        return this.isConfirmed != null ? this.isConfirmed : Boolean.FALSE;
     }
-    
+
     public void setIsConfirmed(Boolean isApproved) {
         this.isConfirmed = isApproved;
     }
