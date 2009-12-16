@@ -21,10 +21,13 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
@@ -35,9 +38,7 @@ import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
  * 
  * @see org.eclipse.jface.viewers.LabelProvider 
  */
-public class BalanceSheetLabelProvider 
-	extends LabelProvider
-	implements ITableLabelProvider {
+public class BalanceSheetLabelProvider extends StyledCellLabelProvider { 
 	
 	static final Logger LOG = Logger.getLogger( BalanceSheetLabelProvider.class );
 	
@@ -50,8 +51,12 @@ public class BalanceSheetLabelProvider
 	TableViewer tableViewer;
 
 	private SimpleDateFormat dateFormat = YYYYMMDD;
-	
+
+	private Color DARK_GREEN;
+
 	public BalanceSheetLabelProvider(TableViewer bsTableViewer) {
+		DARK_GREEN = Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+		 
 		this.tableViewer = bsTableViewer;
 	}
 
@@ -107,6 +112,23 @@ public class BalanceSheetLabelProvider
 			ret += "定期" + ",";
 		}
 		return ret;
+	}
+	
+	@Override
+	public void update(ViewerCell cell) {
+		Transaction t = (Transaction) cell.getElement();
+		int index = cell.getColumnIndex();
+		String columnText = getColumnText(t, index);
+		cell.setText(columnText);
+		cell.setImage(getColumnImage(t, index));
+
+		if ( ! t.getIsConfirmed() ) {
+			cell.setForeground(DARK_GREEN);
+		} else {
+			cell.setForeground(null);
+		}
+	
+		super.update(cell);
 	}
 
 	/**

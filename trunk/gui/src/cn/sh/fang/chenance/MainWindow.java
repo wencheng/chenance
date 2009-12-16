@@ -49,7 +49,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
-import org.eclipse.swt.widgets.CoolItem;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -63,8 +62,6 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import cn.sh.fang.chenance.data.dao.BaseService;
 import cn.sh.fang.chenance.data.entity.Account;
@@ -224,7 +221,6 @@ public class MainWindow {
 		sShell.setSize(1000, 400);
 
 		createMenuBar();
-//		createToolBar();
 		createControls();
 
 		arrangeWidgetsLayout();
@@ -238,6 +234,8 @@ public class MainWindow {
 		bslp.setDateFormat( BalanceSheetLabelProvider.DD );
 		bsProv.setDate( selectedCal.getTime(), Calendar.DATE );
 		bsTableViewer.refresh();
+		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
+		currentBalance.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 	}
 
 	private void createMenuBar() {
@@ -300,25 +298,6 @@ public class MainWindow {
 		setText(menuItem4, "&Help");
 	}
 
-	/**
-	 * This method initializes toolBar
-	 * 
-	 */
-	private void createToolBar() {
-		coolBar = new CoolBar(sShell, SWT.NONE);
-
-		CoolItem coolItem = new CoolItem(coolBar, SWT.PUSH);
-		ToolBar toolBar = new ToolBar(coolBar, SWT.FLAT);
-		coolItem.setControl(toolBar);
-		ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
-		toolItem.setText("A");
-		toolBar.pack();
-//		Point size = toolBar.getSize();
-		coolItem.setControl(toolBar);
-//		Point preferred = coolItem.computeSize(size.x, size.y);
-		coolItem.setPreferredSize(new org.eclipse.swt.graphics.Point(15, 26));
-	}
-
 	private void arrangeWidgetsLayout() {
 		FormLayout layout = new FormLayout();
 		layout.marginHeight = 0;
@@ -328,12 +307,6 @@ public class MainWindow {
 		coolData.left = new FormAttachment(0);
 		coolData.right = new FormAttachment(100);
 		coolData.top = new FormAttachment(0);
-//		coolBar.setLayoutData(coolData);
-//		coolBar.addListener(SWT.Resize, new Listener() {
-//			public void handleEvent(Event event) {
-//				sShell.layout();
-//			}
-//		});
 
 		FormData textData = new FormData();
 		textData.left = new FormAttachment(0);
@@ -545,10 +518,9 @@ public class MainWindow {
 		});
 		
 		// 残高ラベル
-		currentBalance = new Label(composite, SWT.RIGHT);
-		currentBalance.setText(NumberFormat.getCurrencyInstance().format(bsAccountTree.getSelected().getCurrentBalance()));
 		Label label = new Label(composite, SWT.NONE);
 		setText( label, "Balance:" );
+		currentBalance = new Label(composite, SWT.RIGHT);
 
 		// レイアウト
 		FormLayout formLayout = new FormLayout();
