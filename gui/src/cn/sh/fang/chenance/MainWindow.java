@@ -158,7 +158,7 @@ public class MainWindow {
 		final Display display = new Display();
 
 		try {
-		Realm.runWithDefault(SWTObservables.getRealm(display),
+			Realm.runWithDefault(SWTObservables.getRealm(display),
 				new Runnable() {
 			public void run() {
 				final Splash s = new Splash(display);
@@ -343,6 +343,9 @@ public class MainWindow {
 		TabItem item3 = new TabItem(tabFolder, SWT.NULL);
 		setText(item3, "Accounts");
 
+		TabItem item4 = new TabItem(tabFolder, SWT.NULL);
+		setText(item4, "Groceries");
+
 		categoryTab = new CategoryTab(this.catProv);
 		Control catTab = categoryTab.getCategoryTabControl(tabFolder);
 		Control bsTab = getBalanceSheetTabControl(tabFolder);
@@ -352,6 +355,9 @@ public class MainWindow {
 		item1.setControl(bsTab);
 		item2.setControl(catTab);
 		item3.setControl(accTab);
+		
+		GroceriesTab groTab = new GroceriesTab();
+		item4.setControl(groTab.getTabControl(tabFolder)); 
 
 		tabFolder.setSize(sShell.getSize());
 	}
