@@ -19,7 +19,7 @@ http://download.eclipse.org/tools/ajdt/34/update
 http://download.eclipse.org/tools/ajdt/35/update
 
 m2eclipse
-http://m2eclipse.sonatype.org/update/
+http://m2eclipse.sonatype.org/sites/m2e
 
 Subclipse
 http://subclipse.tigris.org/update_1.6.x
