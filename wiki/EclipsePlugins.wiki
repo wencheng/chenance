@@ -38,7 +38,7 @@ Limy
 http://www.limy.org/eclipse_plugin/latest/
 
 Jiemamy
-http://jiemamy.sourceforge.jp/eclipse/
+http://eclipse.jiemamy.org/release/
 
 JadClipse
 http://jadclipse.sf.net/update
