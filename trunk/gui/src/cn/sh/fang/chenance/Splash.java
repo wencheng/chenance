@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,7 +90,12 @@ public class Splash implements MouseListener, MouseMoveListener {
 					l.get(new Random(new Date().getTime()).nextInt(l.size()))));
 		} else {
 			File dir = null;
-			dir = new File(url.getFile());
+			try {
+				dir = new File(url.toURI());
+				LOG.debug(url.toURI());
+			} catch (URISyntaxException e) {
+				// impossible
+			}
 			CollectionUtils.addAll(l, dir.list(new FilenameFilter(){
 				public boolean accept(File dir, String name) {
 					LOG.debug(name);
