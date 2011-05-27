@@ -78,3 +78,12 @@ Supports SWT 3.4.2 and 3.5.0
 	</profiles>
 </project>
 }}}
+
+
+= Upgrade/Update repository =
+
+  # Download the latest binary from http://www.eclipse.org/swt/
+  # Checkout old maven-metadata.xml and copy it to .m2 as maven-metadata-local.xml
+  # Use "mvn install-file" to install .jar to local repo. (see http://maven.apache.org/plugins/maven-install-plugin/usage.html)
+  # Move maven-metadata-local.xml back to local svn
+  # Commit both maven-metadata.xml and binaries in .m2
