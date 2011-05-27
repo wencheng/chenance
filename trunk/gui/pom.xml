@@ -86,6 +86,31 @@
 			<artifactId>nebula-pshelf</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>jface</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+				<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>runtime</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>commands</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.equinox</groupId>
+			<artifactId>common</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>osgi</artifactId>
+			<version>3.5.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -130,8 +155,8 @@
 				</os>
 			</activation>
 			<properties>
-                <swt.os-specific-classifier>win32</swt.os-specific-classifier>
-				<swt.version>3.5.0</swt.version>
+                <swt.os-specific-classifier>win32-x86</swt.os-specific-classifier>
+				<swt.version>3.7M7</swt.version>
 			</properties>
 		</profile>
 		<profile>
@@ -143,7 +168,7 @@
 			</activation>
 			<properties>
                 <swt.os-specific-classifier>macosx</swt.os-specific-classifier>
-				<swt.version>3.5.0</swt.version>
+				<swt.version>3.7M7</swt.version>
 			</properties>
 		</profile>
 	</profiles>
