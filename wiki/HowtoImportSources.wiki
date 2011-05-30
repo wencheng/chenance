@@ -1,0 +1,12 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+  # Install eclipse
+  # Install required plugins
+    # m2eclipse
+    # subeclipse
+    # ajdt
+  # Import projects in eclipse by subeclipse plugin
+  # Wait maven dependencies downloaded
+  # Build
