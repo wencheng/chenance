@@ -93,6 +93,7 @@ CREATE TABLE t_transaction (
   is_confirmed BOOLEAN DEFAULT true NOT NULL,
   repeat_payment_id BIGINT,
   from_or_to BIGINT,
+  memo VARCHAR(100),
   insert_datetime LONG DEFAULT (strftime('%s','now')*1000),
   update_datetime LONG DEFAULT (strftime('%s','now')*1000),
   updater VARCHAR(50) DEFAULT '' NOT NULL,

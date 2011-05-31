@@ -37,6 +37,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 //@Transactional(propagation=Propagation.MANDATORY)
@@ -95,6 +96,12 @@ public abstract class BaseService {
 		String oldVer = getLocalDataVersion();
 		String newVer = getCurrentDataVersion();
 		if (Float.valueOf(oldVer) < Float.valueOf(newVer)) {
+			try {
+				FileUtils.copyFile(new File(filepath), new File(filepath + ".bak"));
+			} catch (IOException e) {
+				LOG.fatal("Backuping database failed", e);
+				throw new SQLException("Backuping database failed", e);
+			}
 			updateData(oldVer, newVer);
 		}
 
@@ -263,7 +270,7 @@ public abstract class BaseService {
 		}
 	}
 	
-	static String[] vers = { "1.0", "1.1", "1.2" };
+	static String[] vers = { "1.0", "1.1", "1.2", "1.3", "1.4" };
 
 	private static void updateData(String oldVer, String newVer)
 			throws SQLException {
@@ -281,8 +288,7 @@ public abstract class BaseService {
 		try {
 			conn.commit();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("commit update failed", e);
 		}
 
 		updateVersion(newVer);
@@ -294,15 +300,22 @@ public abstract class BaseService {
 			throws SQLException {
 		LOG.warn("Updating database from version " + from + " to " + to);
 
-		Statement stmt = conn.createStatement();
-
-		String sql = null;
 		try {
-			sql = readAsString(BaseService.class
-					.getResourceAsStream("/sql/upgrades/" + from + "-" + to
-							+ ".sql"), "Shift-JIS");
+			InputStream is = BaseService.class
+			.getResourceAsStream("/sql/upgrades/" + from + "-" + to
+					+ ".sql");
+			
+			if (is == null) {
+				LOG.info("no database changes from " + from +
+						" to " + to);
+				return;
+			}
+			
+			String sql = null;
+			sql = readAsString(is, "Shift-JIS");
 			LOG.debug(sql);
 
+			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(sql);
 		} catch (IOException e) {
 			LOG.error(e);

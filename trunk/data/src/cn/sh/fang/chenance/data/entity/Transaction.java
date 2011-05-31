@@ -60,6 +60,9 @@ public class Transaction extends BaseEntity {
     @Column(name="is_confirmed")
     private Boolean isConfirmed = Boolean.TRUE;
 
+    @Column(name="memo")
+    private String memo = "";
+
     public java.util.Date getDate() {
         return this.Date;
     }
@@ -150,6 +153,14 @@ public class Transaction extends BaseEntity {
 
 	public void setBudget(Integer budget) {
 		this.budget = budget;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
+
+	public String getMemo() {
+		return memo;
 	}
 
 }

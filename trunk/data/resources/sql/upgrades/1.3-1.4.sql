@@ -1,0 +1,1 @@
+ALTER TABLE t_transaction ADD COLUMN memo VARCHAR(100) DEFAULT '';

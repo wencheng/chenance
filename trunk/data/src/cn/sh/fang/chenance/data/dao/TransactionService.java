@@ -15,6 +15,7 @@
  */
 package cn.sh.fang.chenance.data.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -213,13 +214,20 @@ public class TransactionService extends BaseService {
 	 * @return bDate <= x < eDate
 	 */
 	public List<Transaction> find(Account account, Date bDate, Date eDate) {
-		return find(account, bDate, eDate, false);
+		return find(account, bDate, eDate, true, true);
 	}
 	
-	public List<Transaction> find(Account account, Date bDate, Date eDate, boolean unconfirmedOnly) {
+	public List<Transaction> find(Account account, Date bDate, Date eDate,
+			boolean showConfirmed, boolean showUnconfirmed) {
+		if (!showConfirmed && !showUnconfirmed) {
+			return new ArrayList<Transaction>();
+		}
+
         Query query = em.createQuery("SELECT e FROM Transaction e " +
         		"WHERE account.id = ? AND _date >= ? AND _date < ? " +
-        		(unconfirmedOnly ? "AND is_confirmed = 0" : "") +
+        		((showConfirmed&&showUnconfirmed) ? "" :
+        		(showConfirmed ? "AND is_confirmed = 1" : "") +
+        		(showUnconfirmed ? "AND is_confirmed = 0" : "")) +
         		"AND is_deleted = 0" +
         		" ORDER BY _date, insert_datetime");
         query.setParameter(1, account.getId());
