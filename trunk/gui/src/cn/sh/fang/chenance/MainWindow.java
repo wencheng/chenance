@@ -432,16 +432,31 @@ public class MainWindow {
 				changeBsDateRange(Calendar.YEAR);
 			}
 		});
-		// 未確定のみ
-		Button unconfirmed = new Button(composite, SWT.TOGGLE);
-		setText(unconfirmed, "Show Unconfirmed");
-		unconfirmed.addSelectionListener(new SelectionAdapter(){
+		// 確定、未確定選択
+		final Button btnConfirmed = new Button(composite, SWT.CHECK);
+		setText(btnConfirmed, "Confirmed");
+		btnConfirmed.setSelection(true);
+		final Button btnUnconfirmed = new Button(composite, SWT.CHECK);
+		setText(btnUnconfirmed, "Unconfirmed");
+		btnUnconfirmed.setSelection(true);
+		btnConfirmed.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				super.widgetSelected(e);
-				Button b = (Button)e.widget;
-				setText( b, b.getSelection() ? "Show All" : "Show Unconfirmed" );
-				switchUnconfirmed(b.getSelection());
+//				Button b = (Button)e.widget;
+				switchUnconfirmed(btnConfirmed.getSelection(),
+						btnUnconfirmed.getSelection()
+						);
+			}
+		});
+		btnUnconfirmed.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+//				Button b = (Button)e.widget;
+				switchUnconfirmed(btnConfirmed.getSelection(),
+						btnUnconfirmed.getSelection()
+						);
 			}
 		});
 		
@@ -562,7 +577,9 @@ public class MainWindow {
 				SWT.LEFT).width = 80;
 		SWTUtil.setFormLayoutData(oneYear, oneMonth, 10, SWT.NONE, oneMonth, 0,
 				SWT.LEFT).width = 80;
-		SWTUtil.setFormLayoutData(unconfirmed, oneYear, 10, SWT.NONE, oneYear, 0,
+		SWTUtil.setFormLayoutData(btnConfirmed, oneYear, 10, SWT.NONE, oneYear, 0,
+				SWT.LEFT);//.width = 80;
+		SWTUtil.setFormLayoutData(btnUnconfirmed, btnConfirmed, 10, SWT.NONE, oneYear, 0,
 				SWT.LEFT);//.width = 80;
 
 		SWTUtil.setFormLayoutDataRight(currentBalance, bsTable, 10, SWT.NONE, bsTable, -20,
@@ -736,8 +753,8 @@ public class MainWindow {
 		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 	}
 
-	public void switchUnconfirmed(boolean b) {
-		bsProv.setIsUnconfirmedOnly( b );
+	public void switchUnconfirmed(boolean b, boolean c) {
+		bsProv.setShowConfirmed(b, c);
 		bsTableViewer.refresh();
 		currentBalance.setText(numberFormat.format(bsProv.getBalance()));
 	}
