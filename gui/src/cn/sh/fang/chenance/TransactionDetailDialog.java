@@ -66,6 +66,7 @@ public class TransactionDetailDialog extends Dialog {
 	private DataBindingContext cnxt = new DataBindingContext();
 	private Button btnDebit;
 	private Button btnCredit;
+	private Text txtMemo;
 
 	public TransactionDetailDialog(Shell shell, Transaction t) {
 		super(shell);
@@ -93,6 +94,9 @@ public class TransactionDetailDialog extends Dialog {
 		setText( btnDebit, "Debit" );
 		this.btnCredit = new Button( this.parent, SWT.RADIO);
 		setText( btnCredit, "Credit" );
+		this.txtMemo = new Text( this.parent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL );
+		txtMemo.setText( t.getMemo() );
+		txtMemo.setTextLimit( 100 );
 
 		lblRepeat = new Label( this.parent, SWT.NONE );
 		setText( lblRepeat, "Repeatability:" );
@@ -124,14 +128,18 @@ public class TransactionDetailDialog extends Dialog {
 		formLayout.marginWidth = 10;
 
 		setFormLayoutData( chkConfirmed, 0, 20, 0, 20 );
-		setFormLayoutData( btnDebit, 0, 20, SWT.NONE, chkConfirmed, 20, SWT.NONE );
-		setFormLayoutData( btnCredit, 0, 20, SWT.NONE, btnDebit, 20, SWT.NONE );
+
+		setFormLayoutData( btnDebit, chkConfirmed, 20, SWT.NONE, chkConfirmed, 0, SWT.LEFT);
+		setFormLayoutData( btnCredit, chkConfirmed, 20, SWT.NONE, btnDebit, 20, SWT.NONE );
+		FormData fd = setFormLayoutData( txtMemo, btnDebit, 20, SWT.NONE, btnDebit, 0, SWT.LEFT );
+		fd.width = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+		fd.height = 80;
 
 		// separator
 		Label sep = new Label( this.parent, SWT.SEPARATOR | SWT.HORIZONTAL | SWT.BORDER );
-		FormData fd = new FormData();
+		fd = new FormData();
 		sep.setLayoutData( fd );
-		fd.top = new FormAttachment( chkConfirmed, 20 );
+		fd.top = new FormAttachment( txtMemo, 20 );
 		fd.left = new FormAttachment( 0, 0);
 		fd.right= new FormAttachment( 100, 0 );
 
@@ -279,6 +287,7 @@ public class TransactionDetailDialog extends Dialog {
 		
 		// confirmation check
 		t.setIsConfirmed(chkConfirmed.getSelection());
+		t.setMemo(txtMemo.getText());
 		new TransactionService().save(t);
 
 		// repeatability
