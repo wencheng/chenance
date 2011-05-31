@@ -27,5 +27,6 @@
     <minVersion>1.5.0</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
+	<opt>-Dlog4j.configuration=log4j.release.properties</opt>
   </jre>
 </launch4jConfig>
