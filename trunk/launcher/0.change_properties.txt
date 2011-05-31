@@ -1,0 +1,2 @@
+1. change <properties> tag in pom.xml
+2. change bundle.properties
