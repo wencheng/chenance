@@ -107,11 +107,20 @@ public class BalanceSheetLabelProvider extends StyledCellLabelProvider {
 		if ( t == null ) return "";
 
 		String ret = "";
+		if ( t.getIsConfirmed() == false ) {
+			ret += "未,";
+		}
+		
 		// TODO implement this
 		if ( t.getRepeatPayment() != null ) {
 			ret += "定期" + ",";
 		}
-		return ret;
+		
+		if (ret.length() > 0) {
+			return ret.substring(0, ret.length()-1);
+		} else {
+			return "";
+		}
 	}
 	
 	@Override
