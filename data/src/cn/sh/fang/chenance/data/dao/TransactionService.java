@@ -288,7 +288,8 @@ public class TransactionService extends BaseService {
 	 */
 	public HashMap<Account, List<Object[]>> getDailyAmount(Integer id, Date from, Date to) {
 		return getAmount(id, from, to,
-				"SELECT datetime(_date/1000, 'unixepoch'), sum(t.debit-t.credit) FROM t_transaction t " +
+				"SELECT datetime(_date/1000, 'unixepoch'), " +
+				"sum(t.debit+t.credit) FROM t_transaction t " +
 				"WHERE account_id = ? AND category_id = ? " +
 				"AND _date >= ? AND _date <= ? " +
 				"AND is_deleted = 0 " +
@@ -299,7 +300,7 @@ public class TransactionService extends BaseService {
 	public HashMap<Account,List<Object[]>> getMonthlyAmount(Integer id, Date from, Date to) {
 		return getAmount(id, from, to,
 				"SELECT strftime('%Y%m', _date/1000, 'unixepoch', 'localtime'), " +
-				"sum(t.debit - t.credit) " +
+				"sum(t.debit + t.credit) " +
 				"FROM t_transaction t WHERE account_id = ? AND category_id = ? " +
 				"AND _date >= ? AND _date <= ? " +
 				"AND is_deleted = 0 " +
@@ -323,7 +324,8 @@ public class TransactionService extends BaseService {
 		
 		return getAmount(id, from, to,
 				"SELECT strftime('%Y%W', " + week + ", 'localtime'), " +
-				"sum(t.debit - t.credit) " +
+				// TODO fix the plus/minus
+				"sum(t.debit + t.credit) " +
 				"FROM t_transaction t WHERE account_id = ? AND category_id = ? " +
 				"AND _date >= ? AND _date <= ? " +
 				"AND is_deleted = 0 " +

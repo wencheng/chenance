@@ -26,6 +26,7 @@ import java.util.Locale;
 import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -36,11 +37,13 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -75,11 +78,12 @@ import cn.sh.fang.chenance.listener.NumberVerifyListener;
 import cn.sh.fang.chenance.provider.AccountContentProvider;
 import cn.sh.fang.chenance.provider.BalanceSheetCellModifier;
 import cn.sh.fang.chenance.provider.BalanceSheetContentProvider;
+import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
 import cn.sh.fang.chenance.provider.BalanceSheetDetailCellEditor;
 import cn.sh.fang.chenance.provider.BalanceSheetLabelProvider;
 import cn.sh.fang.chenance.provider.CategoryComboCellEditor;
 import cn.sh.fang.chenance.provider.CategoryContentProvider;
-import cn.sh.fang.chenance.provider.BalanceSheetContentProvider.Column;
+import cn.sh.fang.chenance.util.ExchangeRateHandler;
 import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.CalendarCellEditor;
 
@@ -519,6 +523,32 @@ public class MainWindow {
 				}
 				bsTableViewer.refresh();
 				currentBalance.setText(numberFormat.format(bsProv.getBalance()));
+			}
+		});
+		MenuItem miExchg = new MenuItem(mePopup, SWT.PUSH);
+		setText(miExchg, "Exchange");
+		miExchg.addSelectionListener(new SelectionAdapter(){
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				super.widgetSelected(e);
+				
+				sShell.setCursor(new Cursor(null, SWT.CURSOR_WAIT));
+				ExchangeRateHandler.getRate();
+				sShell.setCursor(new Cursor(null, SWT.NONE));
+				
+				Transaction t = (Transaction) bsTable.getSelection()[0].getData();
+				if ( ExchangeRateHandler.getRate() == 0 ) {
+					InputDialog d = new InputDialog(sShell, "", "Input JPY for ￥1 RMB:", "12.0", null);
+					if ( d.open() == Window.OK ) {
+						System.err.println(d.getValue());
+						ExchangeRateHandler.setRate(Double.valueOf(d.getValue()));
+					} else {
+						return;
+					}
+				}
+				t.setDebit( (int) (t.getDebit() * ExchangeRateHandler.getRate()) );
+				t.setCredit( (int) (t.getCredit() * ExchangeRateHandler.getRate()) );
+				bsProv.itemChanged(t);
 			}
 		});
 		bsTable.setMenu(mePopup);
