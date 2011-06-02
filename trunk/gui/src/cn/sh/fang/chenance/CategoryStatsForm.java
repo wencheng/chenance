@@ -172,7 +172,7 @@ public class CategoryStatsForm {
 		} else if ( diff <= 186 ) {
 			// weekly
 			SimpleDate.resetDateRange(from, to, Calendar.WEEK_OF_YEAR, null);
-			dateFormat = new SimpleDateFormat("MM/dd");
+			dateFormat = new SimpleDateFormat("MM/dd~");
 
 			for ( SimpleDate l = from; l.compareTo(to) <= 0; l = l.nextWeek() ) {
 				xseries.add(l);
@@ -231,22 +231,34 @@ public class CategoryStatsForm {
 			*/
 		}
 		
+		// find max for range
+		double max = 1;
 		// Map<Account, List<{Date, Long}>> => Map<Account, double[]>
 		for ( Account a : yl.keySet() ) {
 			List<Object[]> l = yl.get(a);
 			double[] d = new double[xseries.size()];
-			for ( int i = 0; i < xseries.size(); i++ ) {
-				d[i] = 0;
+//			for ( int i = 0; i < xseries.size(); i++ ) {
+//				d[i] = 0;
 //				LOG.debug(xseries.get(i));
-			}
+//			}
 
 			for ( int i = 0; i < l.size(); i++ ) {
 				int idx = xseries.indexOf((Date)l.get(i)[0]);
 				if ( idx >= 0 ) {
-					d[idx] = ((Number) l.get(i)[1]).doubleValue();
+					d[idx] = (idx==0?0:d[idx-1])
+						+ ((Number) l.get(i)[1]).doubleValue();
+					LOG.debug(d[idx]);
+					if ( d[idx] > max ) {
+						max = d[idx];
+					}
 				} else {
 					LOG.warn("cannot found " + (Date)l.get(i)[0] + " in x axis");
 				}
+			}
+			
+			// make a increasing graph
+			for ( int i = 1; i < d.length; i++ ) {
+				d[i] += d[i-1];
 			}
 
 			ym.put(a, d);
@@ -262,7 +274,8 @@ public class CategoryStatsForm {
 			lineSeries.setLineWidth(3);
 
 			// adjust the y-axis range
-			chart.getAxisSet().getYAxes()[0].adjustRange();
+			chart.getAxisSet().getYAxis(0).setRange(
+					new Range(0, max * 1.1));
 
 			// no 0, no 1=SWT.COLOR_WHITE
 			int[] COLORS = {11, 3, 5, 7, 9, 2, 13, 15, 2, 4, 6, 8, 10, 12, 14, 16};
@@ -276,10 +289,10 @@ public class CategoryStatsForm {
 			seriesLabel.setVisible(true);
 			String[] formats = new String[y.length];
 			for ( int i = 0; i < y.length; i++ ) {
-				if ( y[i] == 0 ) {
+				if ( y[i] == 0 || (i > 0 && y[i] == y[i-1]) ) {
 					formats[i] = "";
 				} else {
-					formats[i] = "###################";
+					formats[i] = "￥#,###";
 				}
 			}
 			seriesLabel.setFormats(formats);

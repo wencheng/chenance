@@ -22,6 +22,7 @@ import static cn.sh.fang.chenance.util.SWTUtil.setFormLayoutDataRight;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeansObservables;
@@ -29,6 +30,8 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -54,6 +57,8 @@ import cn.sh.fang.chenance.i18n.UIMessageBundle;
 
 public class TransactionDetailDialog extends Dialog {
 	
+	Logger LOG = Logger.getLogger(TransactionDetailDialog.class);
+
 	private Transaction t;
 	private Button chkRepeat;
 	private Button chkAutoConfirm;
@@ -200,6 +205,8 @@ public class TransactionDetailDialog extends Dialog {
 				Breakdown bd = new Breakdown();
 				bd.setTransaction(t);
 				bd.setItemName("Unset");
+				bd.setPrice(0);
+				bd.setQuantity(1);
 				bd.setAmount(0);
 				bd.setUpdater("");
 				
@@ -213,11 +220,37 @@ public class TransactionDetailDialog extends Dialog {
 	}
 	
 	private ComboText addBreakdown(Breakdown breakdown) {
-		ComboText ct = new ComboText();
+		final ComboText ct = new ComboText();
 		ct.breakdown = breakdown;
 		ct.itemName = new Text( parent , SWT.BORDER );
-		ct.category = new Combo( parent, SWT.BORDER );
+//		ct.category = new Combo( parent, SWT.BORDER );
+		ct.price = new Text( parent, SWT.BORDER | SWT.RIGHT );
+		AutoSelection autoselection = new AutoSelection();
+		ct.price.addFocusListener(autoselection);
+		ct.multiply = new Label( parent, SWT.NONE );
+		ct.multiply.setText( "×" );
+		ct.qty = new Text( parent, SWT.BORDER | SWT.CENTER );
+		ct.qty.addFocusListener(autoselection);
+		ct.equal = new Label( parent, SWT.NONE );
+		ct.equal.setText( "pcs. =" );
 		ct.amount = new Text( parent, SWT.BORDER | SWT.RIGHT );
+		ct.amount.addFocusListener(new FocusListener() {
+
+			public void focusLost(FocusEvent arg0) {
+				// do nothing
+			}
+			
+			public void focusGained(FocusEvent arg0) {
+				if ( ct.price.getText() != "" 
+					&& ct.qty.getText() != "" ) {
+					((Text)arg0.widget).setText(
+							Integer.valueOf(ct.price.getText())
+							* Integer.valueOf(ct.qty.getText()) + ""
+							);
+				}
+			}
+		});
+		ct.amount.addFocusListener(autoselection);
 		ct.btnDelete = new Button( parent, SWT.PUSH );
 		ct.btnDelete.setText("-");
 		ct.btnDelete.addSelectionListener(new SelectionAdapter() {
@@ -225,11 +258,12 @@ public class TransactionDetailDialog extends Dialog {
 			public void widgetSelected(SelectionEvent e) {
 				ComboText c = (ComboText) e.widget.getData();
 				c.itemName.dispose();
-				c.category.dispose();
+//				c.category.dispose();
 				c.amount.dispose();
+				c.price.dispose();
+				c.qty.dispose();
 				c.btnDelete.dispose();
 
-				//breakdowns.remove(c);
 				c.breakdown.setDeleted(true);
 				
 				reLayout();
@@ -241,13 +275,20 @@ public class TransactionDetailDialog extends Dialog {
         IObservableValue observeWidget = SWTObservables.observeText(ct.amount, SWT.Modify);
         IObservableValue observeValue = BeansObservables.observeValue(ct.breakdown, "amount");
         cnxt.bindValue(observeWidget, observeValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), null);
-		
-		// bind name
+		// name
         observeWidget = SWTObservables.observeText(ct.itemName, SWT.Modify);
         observeValue = BeansObservables.observeValue(ct.breakdown, "itemName");
         cnxt.bindValue(observeWidget, observeValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), null);
+        // price
+        observeWidget = SWTObservables.observeText(ct.price, SWT.Modify);
+        observeValue = BeansObservables.observeValue(ct.breakdown, "price");
+        cnxt.bindValue(observeWidget, observeValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), null);
+        // quantity
+        observeWidget = SWTObservables.observeText(ct.qty, SWT.Modify);
+        observeValue = BeansObservables.observeValue(ct.breakdown, "quantity");
+        cnxt.bindValue(observeWidget, observeValue, new UpdateValueStrategy(UpdateValueStrategy.POLICY_UPDATE), null);
 
-		breakdowns.add(ct);
+        breakdowns.add(ct);
 		return ct;
 	}
 	
@@ -270,9 +311,13 @@ public class TransactionDetailDialog extends Dialog {
 			} else {
 				setFormLayoutData( ct.itemName, last.itemName, 10, SWT.NONE, last.itemName, 0, SWT.LEFT ).width = 100;
 			}
-			setFormLayoutData( ct.amount, ct.itemName, 0, SWT.TOP, ct.itemName, 10, SWT.NONE ).width = 80;
+			setFormLayoutData( ct.price, ct.itemName, 0, SWT.TOP, ct.itemName, 10, SWT.NONE ).width = 30;
+			setFormLayoutData( ct.multiply, ct.itemName, 3, SWT.TOP, ct.price, 5, SWT.NONE ).width = 10;
+			setFormLayoutData( ct.qty, ct.itemName, 0, SWT.TOP, ct.multiply, 5, SWT.NONE ).width = 15;
+			setFormLayoutData( ct.equal, ct.itemName, 2, SWT.TOP, ct.qty, 5, SWT.NONE ).width = 35;
+			setFormLayoutData( ct.amount, ct.itemName, 0, SWT.TOP, ct.equal, 5, SWT.NONE ).width = 35;
 			setFormLayoutData( ct.btnDelete, ct.amount, -3, SWT.TOP, ct.amount, 10, SWT.NONE );
-			setFormLayoutData( ct.category, ct.amount, 0, SWT.TOP, ct.btnDelete, 10, SWT.NONE ).width = 50;
+			//setFormLayoutData( ct.category, ct.amount, 0, SWT.TOP, ct.btnDelete, 10, SWT.NONE ).width = 50;
 			last = ct;
 		}
 //		parent.pack();
@@ -325,7 +370,7 @@ public class TransactionDetailDialog extends Dialog {
 			}
 		}
 
-		if ( sum != t.getCredit() - t.getDebit()) {
+		if ( breakdowns.size() > 0 && sum != t.getCredit() - t.getDebit()) {
 			MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell(), SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
 			mb.setText(MainWindow.TITLE);
 			mb.setMessage( UIMessageBundle._("Total amount of breakdowns you entered DOES NOT match the amount of transaction.\n\n" +
@@ -337,7 +382,7 @@ public class TransactionDetailDialog extends Dialog {
 					this.t.setCredit(sum);
 					this.t.setDebit(0);
 				} else {
-					this.t.setDebit(-sum);
+					this.t.setDebit(sum);
 					this.t.setCredit(0);
 				}
 			}
@@ -374,11 +419,31 @@ public class TransactionDetailDialog extends Dialog {
 	}
 	
 	class ComboText {
+		public Label equal;
+		public Label multiply;
+		public Text price;
+		public Text qty;
 		Text itemName;
 		Combo category;
 		Text amount;
 		Button btnDelete;
 		Breakdown breakdown;
+	}
+	
+	class AutoSelection implements FocusListener {
+
+		public void focusGained(FocusEvent arg0) {
+			if ( arg0.widget instanceof Text ) {
+				((Text)arg0.widget).selectAll();
+			}
+		}
+
+		public void focusLost(FocusEvent arg0) {
+			if ( arg0.widget instanceof Text ) {
+				((Text)arg0.widget).setSelection(0, 0);
+			}
+		}
+		
 	}
 	
 	public final static void main(String[] args) {

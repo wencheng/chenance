@@ -56,6 +56,13 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.0.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 		<!-- from chenance.googlecode.com -->
 		<dependency>
 			<groupId>org.eclipse</groupId>
@@ -71,7 +78,7 @@
 		<dependency>
 			<groupId>org.swtchart</groupId>
 			<artifactId>swtchart</artifactId>
-			<version>0.6.0</version>
+			<version>0.7.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.nebula.widgets</groupId>
@@ -117,6 +124,7 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>

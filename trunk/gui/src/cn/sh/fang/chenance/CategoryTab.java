@@ -50,7 +50,7 @@ import cn.sh.fang.chenance.util.SWTUtil;
 import cn.sh.fang.chenance.util.swt.StyledTextObservableValue;
 
 public class CategoryTab {
-
+	
 	private CategoryContentProvider prov;
 
 	private CategoryTree tree;
@@ -119,6 +119,7 @@ public class CategoryTab {
 		formLayout.marginHeight = 10;
 		formLayout.marginWidth = 10;
 		formLayout.spacing = 10;
+
 		statsForm = new CategoryStatsForm(group, comp.getStyle());
 
 		// レイアウト
