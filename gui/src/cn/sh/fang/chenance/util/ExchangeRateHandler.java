@@ -28,11 +28,22 @@
 package cn.sh.fang.chenance.util;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Properties;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
@@ -67,14 +78,37 @@ public class ExchangeRateHandler {
             HttpGet httpget = new HttpGet("http://xurrency.com/api/cny/jpy/1");
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             
-//            HttpHost proxy = new HttpHost("127.0.0.1", 8080, "http");
-//            httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+            System.setProperty("java.net.useSystemProxies","true");
+            ProxySelector ps = ProxySelector.getDefault();
+            URI uri = null;
+            try {
+              uri = new URI("http://xurrency.com");
+            }
+            catch (URISyntaxException e) {
+            	// impossible
+            }
+            List<Proxy> proxyList = ps.select(uri);
+            int len = proxyList.size();
+            for (int i = 0; i < len; i++) {
+            	Proxy p = (Proxy) proxyList.get(i);
+            	InetSocketAddress addr = (InetSocketAddress) p.address();
+            	LOG.info("Use system default proxy: " + addr);
+            	if (addr == null) {
+            		// Use a direct connection - no proxy
+            	} else {
+                    HttpHost proxy = new HttpHost(addr.getHostName(),
+                    		addr.getPort(), "http");
+                    httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+            	}
+            	break;
+            }
 
             res = httpclient.execute(httpget, responseHandler);
             LOG.debug("Get exchange rate response: " + res);
             int i = res.indexOf("value\":");
             if ( i < 0 ) {
             	// wrong response format
+            	LOG.debug("Wrong format response: " + res);
             	CNY_JPY = 0.0;
             	return 0.0;
             }
@@ -101,5 +135,4 @@ public class ExchangeRateHandler {
 	public static void setRate(Double valueOf) {
 		CNY_JPY = valueOf;
 	}
-
 }
