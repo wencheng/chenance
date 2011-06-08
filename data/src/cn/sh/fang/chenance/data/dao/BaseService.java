@@ -15,9 +15,12 @@
  */
 package cn.sh.fang.chenance.data.dao;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,7 +32,9 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -44,27 +49,48 @@ import org.apache.log4j.Logger;
 //@Transactional
 public abstract class BaseService {
 
+	private static final String PROP_DB_FILEPATH = "db.filepath";
+
+	private static final String CHENANCE_PROPERTIES = "chenance.properties";
+
 	static Logger LOG = Logger.getLogger(BaseService.class);
 
 	static EntityManagerFactory factory;
 	static protected EntityManager em;
 	static EntityTransaction t;
-	public static String filepath = System.getProperty("user.home") + "/chenance.db";
-	public static String jdbcUrl = "jdbc:sqlite:" + filepath;
+	public static String filepath = null;
+	public static String jdbcUrl;
 	public static String driverClass = "org.sqlite.JDBC";
+	
+	static Properties props = new Properties();
 	
 	static boolean needMigrate = false;
 
 	static Connection conn;
+	
+	static {
+		InputStream is;
+		try {
+			is = new FileInputStream(new File(CHENANCE_PROPERTIES));
+			props.load(is);
+			filepath = props.getProperty(PROP_DB_FILEPATH);
+		} catch (FileNotFoundException e) {
+			LOG.info("chenance.properties not found");
+		} catch (IOException e) {
+			LOG.error("Read chenance.properties failed", e);
+			System.exit(0);
+		} finally {
+			if (filepath == null) {
+				filepath = System.getProperty("user.home") +
+				File.separator + "chenance.db";
+			}
+		}
+		LOG.info("Open db from: " + filepath);
+		
+		jdbcUrl = "jdbc:sqlite:" + filepath;
+	}
 
 	public BaseService() {
-		if (em == null) {
-			LOG.debug("creating em " + this);
-			em = factory.createEntityManager();
-			em.setFlushMode(FlushModeType.AUTO);
-			t = em.getTransaction();
-			t.begin();
-		}
 	}
 
 	public static void init() throws SQLException {
@@ -117,6 +143,14 @@ public abstract class BaseService {
 		props.put("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect");
 		factory = Persistence
 				.createEntityManagerFactory("chenance-data", props);
+		
+		if (em == null) {
+			LOG.debug("creating em");
+			em = factory.createEntityManager();
+			em.setFlushMode(FlushModeType.AUTO);
+			t = em.getTransaction();
+			t.begin();
+		}
 	}
 
 	private static void migrateData() throws SQLException {
@@ -389,10 +423,61 @@ public abstract class BaseService {
 		t.commit();
 		em.close();
 		factory.close();
+		
+		t = null;
+		em = null;
+		factory = null;
 	}
 
 	public static void commit() {
 		t.commit();
+	}
+	
+	public static void moveTo(String newdir) throws IOException {
+		newdir = newdir + File.separator + "chenance.db";
+		
+		// close db
+		BaseService.shutdown();
+		
+		File f = null;
+		try {
+			f = new File(BaseService.filepath);
+			
+			// copy file
+			FileUtils.copyFile(f,
+					new File(newdir));
+		} catch (IOException e) {
+			throw new IOException("Move .db file failed", e);
+		}
+		
+		// re-open db
+		try {
+			jdbcUrl = "jdbc:sqlite:" + newdir;
+			BaseService.init();
+		} catch (SQLException e) {
+			throw new IOException("Reopen .db file failed", e);
+		}
+
+		// move old file to .bak
+		try {
+			FileUtils.moveFile(f, new File(BaseService.filepath + "." +
+					new Date().getTime() + ".bak"));
+		} catch (IOException e) {
+			throw new IOException("Backup .db file failed", e);
+		}
+
+		// save filename
+		BaseService.filepath = newdir;
+		props.setProperty(PROP_DB_FILEPATH, newdir);
+		try {
+			props.store(new FileOutputStream(CHENANCE_PROPERTIES),
+					null);
+		} catch (FileNotFoundException e) {
+			throw new IOException("Cannot save chenance.properties", e);
+		} catch (IOException e) {
+			throw new IOException("Cannot save chenance.properties", e);
+		}
+		
 	}
 
 }

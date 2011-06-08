@@ -17,6 +17,8 @@ package cn.sh.fang.chenance;
 
 import static cn.sh.fang.chenance.i18n.UIMessageBundle.setText;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Calendar;
@@ -27,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
@@ -43,6 +46,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -53,8 +57,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.DateTime;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -252,8 +258,53 @@ public class MainWindow {
 		Menu fileMenu = new Menu(sShell, SWT.DROP_DOWN);
 		fileMenuHeader.setMenu(fileMenu);
 		MenuItem fileNewItem = new MenuItem(fileMenu, SWT.PUSH);
-		setText(fileNewItem, "&New");
-		// fileNewItem.addSelectionListener(new FileNewListener());
+		setText(fileNewItem, "&Move to ...");
+		fileNewItem.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+			}
+
+			public void widgetSelected(SelectionEvent arg0) {
+				DirectoryDialog dlg = new DirectoryDialog(sShell);
+				dlg.setMessage("Please select the destination folder you want to move the file to.");
+				String filename = dlg.open();
+				if (filename != null) {
+					if ((filename + File.separator + "chenance.db").equals(BaseService.filepath)) {
+						SWTUtil.showErrorMessage(sShell,
+								"Source = Destination.  " +
+								"Please select another different dir.");
+						return;
+					}
+					
+					MessageDialog ret = new MessageDialog(sShell, "Chenance", null,
+							"Are you sure to move the file in which " +
+							"Chenance saves all your " +
+							"householding data \n\n" +
+							"From: \n\n" +
+							BaseService.filepath + "\n\n" +
+							"To: \n\n" +
+							filename, SWT.ICON_QUESTION, 
+							new String[]{"Yes", "No"}, 1
+							);
+					if (ret.open() == 0) {
+						LOG.info("moving .db file to " + filename);
+
+						try {
+							BaseService.moveTo(filename);
+						} catch (IOException e) {
+							LOG.error("move .db failed", e);
+							SWTUtil.showErrorMessage(sShell,
+									"Moving file failed.  The file remains its original place: \n\n" +
+									BaseService.filepath + "\n\n" +
+									"Chenance will be closed due to this error and " +
+									"Chenance will use that file as usual.");
+							System.exit(0);
+						}
+						
+						LOG.info(".db file moved successfully");
+					}
+				}
+			}
+		});
 		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
 		setText(fileOpenItem, "&Open");
 		// fileOpenItem.addSelectionListener(new FileOpenListener());
