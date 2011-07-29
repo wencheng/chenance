@@ -60,7 +60,6 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
@@ -79,6 +78,7 @@ import cn.sh.fang.chenance.data.entity.Transaction;
 import cn.sh.fang.chenance.listener.BalanceSheetTransactionListener;
 import cn.sh.fang.chenance.listener.BaseDataAdapter;
 import cn.sh.fang.chenance.listener.ChangeLanguageListener;
+import cn.sh.fang.chenance.listener.FileListener.FileSaveListener;
 import cn.sh.fang.chenance.listener.IDataAdapter;
 import cn.sh.fang.chenance.listener.NumberVerifyListener;
 import cn.sh.fang.chenance.provider.AccountContentProvider;
@@ -305,12 +305,12 @@ public class MainWindow {
 				}
 			}
 		});
-		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
-		setText(fileOpenItem, "&Open");
-		// fileOpenItem.addSelectionListener(new FileOpenListener());
+//		MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
+//		setText(fileOpenItem, "&Open");
+//		fileOpenItem.addSelectionListener(new FileOpenListener());
 		MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
 		setText(fileSaveItem, "&Save");
-		// fileSaveItem.addSelectionListener(new FileSaveListener());
+		fileSaveItem.addSelectionListener(new FileSaveListener());
 
 		// Edit
 		MenuItem menuItem2 = new MenuItem(menuBar, SWT.CASCADE);
