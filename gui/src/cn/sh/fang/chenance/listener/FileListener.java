@@ -68,7 +68,7 @@ public class FileListener {
 
 		@Override
 		public void widgetSelected(SelectionEvent event) {
-			BaseService.commit();
+			BaseService.flushSession();
 		}
 
 	}
