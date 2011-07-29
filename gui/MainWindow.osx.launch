@@ -15,5 +15,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="cn.sh.fang.chenance.MainWindow"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="chenance-gui"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.maven.ide.eclipse.launchconfig.sourcepathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XstartOnFirstThread"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-d32 -XstartOnFirstThread"/>
 </launchConfiguration>
