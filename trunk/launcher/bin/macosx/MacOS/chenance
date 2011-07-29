@@ -2,9 +2,10 @@
 BASEDIR=`dirname $0`
 cd $BASEDIR/../Resources/Java
 exec java \
+    -d32 \
     -XstartOnFirstThread -Dapple.laf.useScreenMenuBar=true \
     -Djava.library.path=.:./swt/${swt.version} \
-    -Dlog4j.configuration=log4j.release.properties
+    -Dlog4j.configuration=log4j.release.properties \
     -classpath .:chenance-gui-${chenance.gui.version}.jar:chenance-data-${chenance.data.version}.jar:beansbinding-1.2.1-swt.jar \
     cn.sh.fang.chenance.MainWindow
     
