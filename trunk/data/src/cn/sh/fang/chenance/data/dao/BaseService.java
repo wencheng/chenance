@@ -145,12 +145,16 @@ public abstract class BaseService {
 				.createEntityManagerFactory("chenance-data", props);
 		
 		if (em == null) {
-			LOG.debug("creating em");
-			em = factory.createEntityManager();
-			em.setFlushMode(FlushModeType.AUTO);
-			t = em.getTransaction();
-			t.begin();
+			openSession();
 		}
+	}
+
+	private static void openSession() {
+		LOG.debug("creating em");
+		em = factory.createEntityManager();
+		em.setFlushMode(FlushModeType.AUTO);
+		t = em.getTransaction();
+		t.begin();
 	}
 
 	private static void migrateData() throws SQLException {
@@ -420,17 +424,23 @@ public abstract class BaseService {
 	 */
 
 	public static void shutdown() {
+		closeSession();
+		
+		factory.close();
+		factory = null;
+	}
+	
+	private static void closeSession() {
 		t.commit();
 		em.close();
-		factory.close();
 		
 		t = null;
 		em = null;
-		factory = null;
 	}
 
-	public static void commit() {
-		t.commit();
+	public static void flushSession() {
+		closeSession();
+		openSession();
 	}
 	
 	public static void moveTo(String newdir) throws IOException {
